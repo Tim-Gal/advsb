@@ -1,0 +1,48 @@
+
+.register-section {
+    min-height: 80vh;
+    background-color: #00A8E8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-section .card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF;
+}
+
+.register-section h2 {
+    color: #00171F;
+    font-family: 'Oswald', sans-serif;
+}
+
+.register-section label {
+    color: #00171F;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.register-section .form-control {
+    border-radius: 5px;
+}
+
+.register-section .btn-success {
+    background-color: #00A8E8;
+    border: none;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.register-section .btn-success:hover {
+    background-color: #0087c3;
+}
+
+.register-section a {
+    color: #00A8E8;
+}
+
+.register-section a:hover {
+    color: #0087c3;
+    text-decoration: underline;
+}

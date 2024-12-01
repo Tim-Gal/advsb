@@ -1,0 +1,40 @@
+
+.hero-section {
+    height: 80vh;
+    background-image: url('../images/hero.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 23, 31, 0.6);
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.features-section {
+    background-color: #007EA7;
+}
+
+.features-section i {
+    margin-bottom: 20px;
+}
+
+.features-section h3 {
+    font-family: 'Rubik', sans-serif;
+    margin-bottom: 15px;
+}
+
+.features-section p {
+    font-family: 'Open Sans', sans-serif;
+}

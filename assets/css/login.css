@@ -1,0 +1,48 @@
+
+.login-section {
+    min-height: 80vh;
+    background-color: #00A8E8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-section .card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF;
+}
+
+.login-section h2 {
+    color: #00171F;
+    font-family: 'Oswald', sans-serif;
+}
+
+.login-section label {
+    color: #00171F;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.login-section .form-control {
+    border-radius: 5px;
+}
+
+.login-section .btn-primary {
+    background-color: #007EA7;
+    border: none;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.login-section .btn-primary:hover {
+    background-color: #005f7a;
+}
+
+.login-section a {
+    color: #007EA7;
+}
+
+.login-section a:hover {
+    color: #005f7a;
+    text-decoration: underline;
+}
