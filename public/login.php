@@ -9,13 +9,26 @@
 
     include '../includes/header.php';
 ?>
-    
+
 <section class="login-section d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6" data-aos="fade-up">
                 <div class="card p-4">
                     <h2 class="text-center mb-4" style="font-family: 'Oswald', sans-serif;">Login</h2>
+
+                    <?php
+                        if (isset($_SESSION['success'])) {
+                            echo '<div class="alert alert-success" role="alert" style="font-family: \'Open Sans\', sans-serif;">' . $_SESSION['success'] . '</div>';
+                            unset($_SESSION['success']);
+                        }
+
+                        if (isset($_SESSION['error'])) {
+                            echo '<div class="alert alert-danger" role="alert" style="font-family: \'Open Sans\', sans-serif;">' . $_SESSION['error'] . '</div>';
+                            unset($_SESSION['error']);
+                        }
+                    ?>
+
                     <form action="authenticate.php" method="POST" id="loginForm">
                         <div class="mb-3">
                             <label for="email" class="form-label" style="font-family: 'Open Sans', sans-serif;">Email address</label>
