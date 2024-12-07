@@ -45,6 +45,7 @@ if (isset($_SESSION['user_id'])) {
         $stmt->fetch();
         $stmt->close();
     }
+}
     
    
 ?>
@@ -105,5 +106,3 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 </nav>
-<?php
-}
