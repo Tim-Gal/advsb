@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const item = document.createElement('div');
                                 item.className = 'suggestion-item';
                                 // No inline styles, rely on dashboard.css
-                                item.textContent = c.code + ' - ' + c.name;
+                                item.textContent = c.course_code + ' - ' + c.course_name;
                                 item.addEventListener('click', () => {
-                                    courseSearchInput.value = c.code;
+                                    courseSearchInput.value = c.course_code + ' - ' + c.course_name;
                                     searchSuggestions.style.display = 'none';
                                 });
                                 searchSuggestions.appendChild(item);
