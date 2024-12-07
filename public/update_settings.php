@@ -29,7 +29,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit();
 }
 
-// If password fields are provided, validate them
 if (!empty($password) || !empty($confirm_password)) {
     if ($password !== $confirm_password) {
         $_SESSION['error'] = "Passwords do not match.";
@@ -39,12 +38,10 @@ if (!empty($password) || !empty($confirm_password)) {
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // Update fname, lname, email, password
     $sql = "UPDATE students SET fname=?, lname=?, email=?, password_hash=? WHERE student_id=?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssi", $fname, $lname, $email, $password_hash, $user_id);
 } else {
-    // Update only fname, lname, email
     $sql = "UPDATE students SET fname=?, lname=?, email=? WHERE student_id=?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssi", $fname, $lname, $email, $user_id);

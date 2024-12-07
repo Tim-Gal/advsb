@@ -1,5 +1,4 @@
 <?php
-// public/search_users.php
 include '../includes/config.php';
 include '../includes/functions.php';
 
@@ -19,8 +18,6 @@ if (strlen($query) < 1) {
 
 $user_id = $_SESSION['user_id'];
 
-// Search by first name, last name, or email
-// We'll look for matches in any of these fields.
 $sql = "
 SELECT student_id, fname, lname 
 FROM students

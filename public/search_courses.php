@@ -1,5 +1,4 @@
 <?php
-// public/search_courses.php
 include '../includes/config.php';
 include '../includes/functions.php';
 
@@ -11,7 +10,6 @@ if (strlen($query) < 2) {
     exit();
 }
 
-// Search by course_code or course_name
 $sql = "SELECT course_code, course_name 
         FROM courses
         WHERE course_code LIKE ? OR course_name LIKE ?

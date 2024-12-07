@@ -1,37 +1,42 @@
-/* settings.css */
+/* assets/css/settings.css */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
 }
 
 .settings-container {
-    max-width: 400px;
+    max-width: 500px;
     margin: 50px auto;
-    padding: 20px;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .settings-container h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    color: #007EA7;
 }
 
 .alert {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 3px;
-    font-size: 0.9em;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.95em;
     text-align: center;
 }
 
 .alert-success {
-    background: #d4edda;
+    background-color: #d4edda;
     color: #155724;
 }
 
 .alert-danger {
-    background: #f8d7da;
+    background-color: #f8d7da;
     color: #721c24;
 }
 
@@ -41,35 +46,48 @@ body {
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333333;
 }
 
 .input-field {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+.input-field:focus {
+    border-color: #007EA7;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 126, 167, 0.5);
 }
 
 .btn {
-    padding: 10px;
-    background: #007EA7;
+    padding: 12px;
+    background-color: #007EA7;
     color: #ffffff;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     font-size: 1em;
     cursor: pointer;
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
+    transition: background-color 0.3s;
 }
 
 .btn:hover {
-    background: #005f7a;
+    background-color: #005f7a;
+}
+
+@media (max-width: 576px) {
+    .settings-container {
+        padding: 20px;
+        margin: 20px;
+    }
 }

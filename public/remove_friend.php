@@ -1,5 +1,4 @@
 <?php
-// public/remove_friend.php
 include '../includes/config.php';
 include '../includes/functions.php';
 

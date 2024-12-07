@@ -1,14 +1,22 @@
 <?php
+// includes/functions.php
 
-
-function generateVerificationCode($length = 50) {
-    return bin2hex(random_bytes($length / 2));
+/**
+ * Generates a random 6-digit verification code.
+ *
+ * @return string
+ */
+function generateVerificationCode() {
+    return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 }
 
-function checkAuth() {
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ../public/login.php");
-        exit();
-    }
+/**
+ * Sanitizes user input.
+ *
+ * @param string $data
+ * @return string
+ */
+function sanitizeInput($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
 }
 ?>
