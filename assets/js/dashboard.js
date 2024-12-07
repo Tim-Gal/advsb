@@ -12,9 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(offerings => {
                 clearScheduleTable();
-                offerings.forEach(o => {
-                    populateCourseBlock(o.code, o.day_of_week, o.start_time, o.end_time, o.location);
-                });
+                if (!offerings.error) {
+                    offerings.forEach(o => {
+                        populateCourseBlock(o.code, o.day_of_week, o.start_time, o.end_time, o.location);
+                    });
+                }
             })
             .catch(err => console.error('Error loading user schedule:', err));
     }
@@ -23,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.course-block').forEach(block => block.remove());
     }
 
-    // Populate a course block for a given course/time slot
     function populateCourseBlock(courseCode, day, startTime, endTime, location) {
         const startHour = parseInt(startTime.split(':')[0]);
         const endHour = parseInt(endTime.split(':')[0]);
@@ -33,28 +34,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (cell) {
                 const block = document.createElement('div');
                 block.className = 'course-block';
+                // We rely on CSS for styling now
                 block.textContent = `${courseCode}\n${location}\n(${startTime}-${endTime})`;
-                block.style.whiteSpace = 'pre-wrap';
-                block.style.backgroundColor = '#B3E5FC';
-                block.style.margin = '2px 0';
-                block.style.padding = '5px';
-                block.style.border = '1px solid #ccc';
-                block.style.fontSize = '0.9em';
                 cell.appendChild(block);
             }
         }
     }
 
-    // Update selectedSemester when a different semester radio is chosen
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             selectedSemester = radio.value;
-            // Load the user's schedule for the newly selected semester
             loadUserSchedule();
         });
     });
 
-    // Autocomplete search on keyup in the course search input
     courseSearchInput.addEventListener('keyup', function() {
         const query = courseSearchInput.value.trim();
         if (query.length >= 2) {
@@ -69,8 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             courses.forEach(c => {
                                 const item = document.createElement('div');
                                 item.className = 'suggestion-item';
-                                item.style.padding = '5px';
-                                item.style.cursor = 'pointer';
+                                // No inline styles, rely on dashboard.css
                                 item.textContent = c.code + ' - ' + c.name;
                                 item.addEventListener('click', () => {
                                     courseSearchInput.value = c.code;
@@ -86,13 +78,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error('Error fetching courses:', err);
                         searchSuggestions.style.display = 'none';
                     });
-            }, 300); // debounce
+            }, 300);
         } else {
             searchSuggestions.style.display = 'none';
         }
     });
 
-    // On "Go" button click, add the selected course to user's schedule (DB) and reload
     addCourseButton.addEventListener('click', function() {
         const courseCode = courseSearchInput.value.trim();
         if (!courseCode) {
@@ -100,7 +91,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Add course to the user's schedule
         fetch('add_course_to_schedule.php?code=' + encodeURIComponent(courseCode) + '&semester=' + encodeURIComponent(selectedSemester))
             .then(res => res.json())
             .then(data => {
@@ -108,12 +98,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert(data.error);
                     return;
                 }
-                // After adding to DB, reload user schedule from DB
                 loadUserSchedule();
             })
             .catch(err => console.error('Error adding course to schedule:', err));
     });
 
-    // On page load, fetch the user's current schedule
     loadUserSchedule();
 });

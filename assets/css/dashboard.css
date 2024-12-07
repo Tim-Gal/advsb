@@ -1,0 +1,80 @@
+.dashboard-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.semester-selection {
+    margin-bottom: 20px;
+}
+
+.course-search {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.course-search input {
+    padding: 5px;
+    width: 250px;
+}
+
+.course-search button {
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 250px;
+    background: #fff;
+    border: 1px solid #ccc;
+    display: none;
+    z-index: 1000;
+    max-height: 200px;
+    overflow: auto;
+}
+
+.suggestions-dropdown .suggestion-item:hover {
+    background: #eee;
+}
+
+.schedule-container {
+    overflow-x: auto;
+}
+
+.schedule-table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+.schedule-table th {
+    background: #f0f0f0;
+    width: 80px;
+}
+
+.schedule-table td {
+    vertical-align: top;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.time-cell {
+    background: #f9f9f9;
+    font-weight: bold;
+}
+
+.course-block {
+    white-space: pre-wrap;
+    background-color: #B3E5FC;
+    margin: 2px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+}
+
+.suggestion-item {
+    padding: 5px;
+    cursor: pointer;
+}

@@ -1,57 +1,62 @@
 <?php
-// public/add_course_to_schedule.php
 include '../includes/config.php';
 include '../includes/functions.php';
 
 session_start();
+header('Content-Type: application/json');
+
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
-    echo json_encode(["error" => "Not logged in"]);
+    echo json_encode(["error"=>"Not logged in"]);
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-$semesterName = $_GET['semester'] ?? 'Fall';
+
+$semesterName = $_GET['semester'] ?? '';
 $code = $_GET['code'] ?? '';
 
-// Find semester_id
-$sql_sem = "SELECT id FROM semesters WHERE name=? ORDER BY year LIMIT 1";
-$stmt_sem = $conn->prepare($sql_sem);
-$stmt_sem->bind_param("s", $semesterName);
-$stmt_sem->execute();
-$res_sem = $stmt_sem->get_result();
-if ($res_sem->num_rows === 0) {
-    echo json_encode(["error"=>"No such semester"]);
+// Validate inputs
+if (empty($semesterName) || empty($code)) {
+    echo json_encode(["error"=>"Invalid parameters"]);
     exit();
 }
-$semester_id = $res_sem->fetch_assoc()['id'];
 
-// Get all offerings for that course in that semester
-$sql = "
-SELECT co.id AS course_offering_id
-FROM course_offerings co
-JOIN courses c ON co.course_id = c.id
-WHERE c.code = ? AND co.semester_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("si", $code, $semester_id);
+// Find all section_code(s) for this course and semester
+$sql_sections = "
+SELECT section_code
+FROM sections
+WHERE course_code = ? AND semester = ?
+";
+$stmt = $conn->prepare($sql_sections);
+$stmt->bind_param("ss", $code, $semesterName);
 $stmt->execute();
-$offeringsResult = $stmt->get_result();
+$sectionsResult = $stmt->get_result();
+
+if ($sectionsResult->num_rows === 0) {
+    echo json_encode(["success"=>true, "inserted"=>0]);
+    exit();
+}
+
 $insertCount = 0;
 
-while ($offering = $offeringsResult->fetch_assoc()) {
-    // Check if already inserted
-    $check_sql = "SELECT id FROM users_schedules WHERE user_id=? AND semester_id=? AND course_offering_id=?";
+while ($section = $sectionsResult->fetch_assoc()) {
+    $section_code = $section['section_code'];
+
+    // Check if already enrolled
+    $check_sql = "SELECT student_id FROM coursesEnrolled WHERE student_id=? AND section_code=?";
     $check_stmt = $conn->prepare($check_sql);
-    $check_stmt->bind_param("iii", $user_id, $semester_id, $offering['course_offering_id']);
+    $check_stmt->bind_param("ii", $user_id, $section_code);
     $check_stmt->execute();
     $check_res = $check_stmt->get_result();
+
     if ($check_res->num_rows === 0) {
-        // Insert new record
-        $ins_sql = "INSERT INTO users_schedules (user_id, semester_id, course_offering_id) VALUES (?,?,?)";
+        $ins_sql = "INSERT INTO coursesEnrolled (student_id, section_code) VALUES (?,?)";
         $ins_stmt = $conn->prepare($ins_sql);
-        $ins_stmt->bind_param("iii", $user_id, $semester_id, $offering['course_offering_id']);
+        $ins_stmt->bind_param("ii", $user_id, $section_code);
         $ins_stmt->execute();
-        $insertCount++;
+        if ($ins_stmt->affected_rows > 0) {
+            $insertCount++;
+        }
     }
 }
 

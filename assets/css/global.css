@@ -1,83 +1,23 @@
-
-* {
+/* global.css */
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-.navbar-brand img {
-    height: auto;
-    width: 100px;
-}
-
-body {
-    font-family: 'Open Sans', Arial, sans-serif;
-    color: #00171F;
-    background-color: #FFFFFF;
-}
-
-h1, h2, h3, h4, h5, h6 {
     font-family: 'Rubik', sans-serif;
+    background: #ffffff;
+    color: #00171F;
 }
 
-.navbar {
-    background-color: #00171F;
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
 .navbar .navbar-brand img {
-    filter: brightness(0) invert(1); 
+    height: 40px;
 }
 
-.nav-link.btn {
-    background-color: #007EA7;
-    border: none;
-}
-
-.nav-link.btn:hover {
-    background-color: #005f7a;
-}
-
-.footer-section {
-    background-color: #00171F;
-    color: #FFFFFF;
-}
-
-.footer-section a {
-    color: #FFFFFF;
-}
-
-.footer-section a:hover {
-    text-decoration: underline;
-}
-
-.footer-section img {
-    filter: brightness(0) invert(1); 
-}
-
-.btn-primary {
-    background-color: #007EA7;
-    border: none;
-}
-
-.btn-primary:hover {
-    background-color: #005f7a;
-}
-
-.btn-success {
-    background-color: #00A8E8;
-    border: none;
-}
-
-.btn-success:hover {
-    background-color: #0087c3;
-}
-
-@media (max-width: 768px) {
-    .hero-section {
-        height: 60vh;
-    }
-
-    .login-section {
-        padding: 20px;
-    }
+.footer {
+    font-size: 0.9em;
+    background: #00171F;
+    color: #ffffff;
 }

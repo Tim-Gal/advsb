@@ -1,0 +1,80 @@
+/* network.css */
+
+.network-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-container input {
+    padding: 5px;
+    width: 250px;
+}
+
+.search-container button {
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 250px;
+    background: #fff;
+    border: 1px solid #ccc;
+    display: none;
+    z-index: 1000;
+    max-height: 200px;
+    overflow: auto;
+}
+
+.suggestions-dropdown div {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.suggestions-dropdown div:hover {
+    background: #eee;
+}
+
+.friends-list {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.schedule-table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.schedule-table th {
+    background: #f0f0f0;
+    width: 80px;
+}
+
+.schedule-table td {
+    vertical-align: top;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.time-cell {
+    background: #f9f9f9;
+    font-weight: bold;
+}
+
+.course-block {
+    white-space: pre-wrap;
+    background-color: #B3E5FC;
+    margin: 2px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+}

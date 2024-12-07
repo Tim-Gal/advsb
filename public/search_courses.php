@@ -1,19 +1,30 @@
 <?php
-include '../includes/config.php'; 
-$semester = $_GET['semester'];
-$query = $_GET['query'];
+// public/search_courses.php
+include '../includes/config.php';
+include '../includes/functions.php';
 
-$sql = "SELECT code, name FROM courses 
-        WHERE code LIKE ? OR name LIKE ?
+header('Content-Type: application/json');
+
+$query = $_GET['query'] ?? '';
+if (strlen($query) < 2) {
+    echo json_encode([]);
+    exit();
+}
+
+// Search by course_code or course_name
+$sql = "SELECT course_code, course_name 
+        FROM courses
+        WHERE course_code LIKE ? OR course_name LIKE ?
         LIMIT 10";
 $stmt = $conn->prepare($sql);
-$like = "%{$query}%";
+$like = "%$query%";
 $stmt->bind_param("ss", $like, $like);
 $stmt->execute();
 $result = $stmt->get_result();
+
 $courses = [];
-while($row = $result->fetch_assoc()) {
+while ($row = $result->fetch_assoc()) {
     $courses[] = $row;
 }
-header('Content-Type: application/json');
+
 echo json_encode($courses);

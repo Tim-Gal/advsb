@@ -1,27 +1,37 @@
 <?php
+// public/get_course_offerings.php
 include '../includes/config.php';
+include '../includes/functions.php';
 
-$code = $_GET['code'];
-$semesterName = $_GET['semester'];
+header('Content-Type: application/json');
 
-$sql_sem = "SELECT id FROM semesters WHERE name=? ORDER BY year LIMIT 1";
-$stmt_sem = $conn->prepare($sql_sem);
-$stmt_sem->bind_param("s", $semesterName);
-$stmt_sem->execute();
-$res_sem = $stmt_sem->get_result();
-$semester_id = $res_sem->fetch_assoc()['id'];
+$code = $_GET['code'] ?? '';
+$semesterName = $_GET['semester'] ?? '';
 
-$sql = "SELECT co.day_of_week, co.start_time, co.end_time, co.location
-        FROM course_offerings co
-        JOIN courses c ON co.course_id = c.id
-        WHERE c.code = ? AND co.semester_id = ?";
+// Validate inputs
+if (empty($code) || empty($semesterName)) {
+    echo json_encode([]); 
+    exit();
+}
+
+// In the new schema, we have no `semesters` table. `semester` is stored directly in `sections`.
+$sql = "
+SELECT l.day_of_week, l.start_time, l.end_time, l.location
+FROM lectures l
+JOIN sections s ON l.section_code = s.section_code
+JOIN courses c ON s.course_code = c.course_code
+WHERE c.course_code = ? AND s.semester = ?
+";
+
+// Prepare and execute statement
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("si", $code, $semester_id);
+$stmt->bind_param("ss", $code, $semesterName);
 $stmt->execute();
 $result = $stmt->get_result();
+
 $offerings = [];
-while($row = $result->fetch_assoc()) {
+while ($row = $result->fetch_assoc()) {
     $offerings[] = $row;
 }
-header('Content-Type: application/json');
+
 echo json_encode($offerings);

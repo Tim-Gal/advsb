@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 include '../includes/config.php';
@@ -22,29 +21,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    $stmt = $conn->prepare("SELECT id, password_hash FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT student_id, password_hash FROM students WHERE email = ?");
     if (!$stmt) {
         $_SESSION['error'] = "An error occurred. Please try again.";
         header("Location: login.php");
         exit();
     }
+
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($user_id, $password_hash);
+        $stmt->bind_result($student_id, $password_hash);
         $stmt->fetch();
 
         if (password_verify($password, $password_hash)) {
-            $_SESSION['user_id'] = $user_id;
+            // user_id in session still references student_id for consistency
+            $_SESSION['user_id'] = $student_id;
 
             if ($remember_me) {
                 $token = bin2hex(random_bytes(16));
 
-                $stmt_update = $conn->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+                // Update the remember_token in 'students' table
+                $stmt_update = $conn->prepare("UPDATE students SET remember_token = ? WHERE student_id = ?");
                 if ($stmt_update) {
-                    $stmt_update->bind_param("si", $token, $user_id);
+                    $stmt_update->bind_param("si", $token, $student_id);
                     $stmt_update->execute();
                     $stmt_update->close();
 
@@ -76,4 +78,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: login.php");
     exit();
 }
-?>
