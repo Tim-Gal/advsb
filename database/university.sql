@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 
 
 CREATE TABLE `courses` (
-  `course_code` varchar(50) NOT NULL AUTO_INCREMENT,
+  `course_code` varchar(50) NOT NULL,
   `course_name` varchar(255) NOT NULL,
   `course_description` text DEFAULT NULL,
   PRIMARY KEY (`course_code`)
@@ -125,16 +125,16 @@ INSERT INTO `lectures` (`lecture_id`, `location`, `day_of_week`, `start_time`, `
 
 
 INSERT INTO `students` (`student_id`, `fname`, `lname`, `email`, `password_hash`, `remember_token`) VALUES
-(1, 'John', 'Wood', 'alice.smith@university.edu', 'Efstarisback', '$2y$10$QUvS4QATistNhdFM2qTf7u2cUfphR9LGbowI8Y2ZIf8rrKvBeM9C6', NULL),
-(2, 'Jim', 'King', 'bob.johnson@university.edu', NULL, NULL, NULL),
-(3, 'Tony', 'Cole', 'charlie.brown@university.edu', 'Efert', '$2y$10$AJPLF204rYwoLfsFsfbMTuOw6kXkCAbJu7ZYMvDqabQlRAbWDVGfK', NULL),
-(4, 'Mike', 'Reed', 'diana.prince@university.edu', NULL, NULL, NULL),
-(5, 'David', 'West', 'edward.norton@university.edu', NULL, NULL, NULL),
-(6, 'Tim', 'Page', 'fiona.apple@university.edu', NULL, NULL, NULL),
-(7, 'Frank', 'Snow', 'george.clooney@university.edu', NULL, NULL, NULL),
-(8, 'Ben', 'Gray', 'hannah.montana@university.edu', NULL, NULL, NULL),
-(9, 'Mark', 'Lane', 'ian.mckellen@university.edu', NULL, NULL, NULL),
-(10, 'Paul', 'Ford', 'julia.roberts@university.edu', NULL, NULL, NULL);
+(1, 'John', 'Wood', 'alice.smith@university.edu', '$2y$10$QUvS4QATistNhdFM2qTf7u2cUfphR9LGbowI8Y2ZIf8rrKvBeM9C6', NULL),
+(2, 'Jim', 'King', 'bob.johnson@university.edu', NULL, NULL),
+(3, 'Tony', 'Cole', 'charlie.brown@university.edu', '$2y$10$AJPLF204rYwoLfsFsfbMTuOw6kXkCAbJu7ZYMvDqabQlRAbWDVGfK', NULL),
+(4, 'Mike', 'Reed', 'diana.prince@university.edu', NULL, NULL),
+(5, 'David', 'West', 'edward.norton@university.edu', NULL, NULL),
+(6, 'Tim', 'Page', 'fiona.apple@university.edu', NULL, NULL),
+(7, 'Frank', 'Snow', 'george.clooney@university.edu', NULL, NULL),
+(8, 'Ben', 'Gray', 'hannah.montana@university.edu', NULL, NULL),
+(9, 'Mark', 'Lane', 'ian.mckellen@university.edu', NULL, NULL),
+(10, 'Paul', 'Ford', 'julia.roberts@university.edu', NULL, NULL);
 
 
 INSERT INTO `coursesEnrolled` (`student_id`, `section_code`) VALUES
