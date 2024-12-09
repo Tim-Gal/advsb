@@ -38,8 +38,12 @@ body {
 }
 
 .register-form {
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    margin: auto;
+    border: 1px solid black;
+    border-radius: 10px;
 }
 
 .form-group {

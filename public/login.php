@@ -32,7 +32,7 @@ if (isset($_SESSION['user_id'])) {
     }
     ?>
 
-    <form action="authenticate.php" method="POST" class="login-form">
+    <form action="authenticate.php" method="POST" class="login-form mb-5">
         <div class="mb-3">
             <label for="student_id" class="form-label">Student ID</label>
             <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter your Student ID" required>
@@ -46,10 +46,10 @@ if (isset($_SESSION['user_id'])) {
             <label class="form-check-label" for="remember_me">Remember Me</label>
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
+        <div class="text-center mt-3">
+            <a href="register.php" class="link">Don't have an account? Register here</a>
+        </div>
     </form>
-    <div class="text-center mt-3">
-        <a href="register.php" class="link">Don't have an account? Register here</a>
-    </div>
 </div>
 
 <?php

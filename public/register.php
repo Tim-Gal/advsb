@@ -11,48 +11,48 @@ include '../includes/header.php';
 ?>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Register</h2>
+  <h2 class="text-center mb-4">Register</h2>
 
-    <?php
-    if (isset($_SESSION['success'])) {
-        echo '<script type="text/javascript">',
-             'document.addEventListener("DOMContentLoaded", function() {',
-             'var myModal = new bootstrap.Modal(document.getElementById("verificationModal"), {});',
-             'myModal.show();',
-             '});',
-             '</script>';
-        echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success']) . '</div>';
-        unset($_SESSION['success']);
-    }
+  <?php
+  if (isset($_SESSION['success'])) {
+    echo '<script type="text/javascript">',
+         'document.addEventListener("DOMContentLoaded", function() {',
+          'var myModal = new bootstrap.Modal(document.getElementById("verificationModal"), {});',
+          'myModal.show();',
+          '});',
+          '</script>';
+    echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success']) . '</div>';
+    unset($_SESSION['success']);
+  }
 
-    if (isset($_SESSION['error'])) {
-        echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
-        unset($_SESSION['error']);
-    }
-    ?>
+  if (isset($_SESSION['error'])) {
+    echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
+    unset($_SESSION['error']);
+  }
+  ?>
 
-    <form action="process_register.php" method="POST" class="register-form">
-        <div class="mb-3">
-            <label for="student_id" class="form-label">Student ID</label>
-            <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter your Student ID" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">School Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your school email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
-        </div>
-        <div class="mb-3">
-            <label for="confirm_password" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-    <div class="text-center mt-3">
-        <a href="login.php" class="link">Already have an account? Login here</a>
+  <form action="process_register.php" method="POST" class="register-form mb-5">
+    <div class="mb-3">
+      <label for="student_id" class="form-label">Student ID</label>
+      <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter your Student ID" required>
     </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">School Email</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="Enter your school email" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+    </div>
+    <div class="mb-3">
+      <label for="confirm_password" class="form-label">Confirm Password</label>
+      <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <div class="text-center mt-3">
+      <a href="login.php" class="link">Already have an account? Login here</a>
+    </div>
+  </form>
 </div>
 
 <!-- Verification Modal -->
