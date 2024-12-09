@@ -55,3 +55,14 @@
 .features-section p {
     font-family: 'Open Sans', sans-serif;
 }
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    background: #007EA7;
+    color: #ffffff;
+    border: none;
+    border-radius: 3px;
+    font-size: 1em;
+    cursor: pointer;
+}
