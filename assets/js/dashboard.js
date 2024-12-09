@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    /**
+     * Clear the existing schedule table
+     */
     function clearScheduleTable() {
         document.querySelectorAll('.course-block').forEach(block => block.remove());
     }
@@ -105,12 +108,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 block.style.margin = '2px 0';
                 block.style.padding = '5px';
                 block.style.border = '1px solid #ccc';
+                block.style.borderRadius = '4px';
                 block.style.fontSize = '0.9em';
                 cell.appendChild(block);
             }
         }
     }
 
+    // Event listener for semester selection changes
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             selectedSemester = radio.value;
@@ -118,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Event listener for course search input
     courseSearchInput.addEventListener('keyup', function () {
         const query = courseSearchInput.value.trim();
         if (query.length >= 2) {
@@ -135,8 +141,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (!courses.error && courses.length > 0) {
                             searchSuggestions.style.display = 'block';
                             courses.forEach(c => {
-                                const item = document.createElement('div');
-                                item.className = 'suggestion-item';
+                                const item = document.createElement('button');
+                                item.type = 'button';
+                                item.className = 'list-group-item list-group-item-action';
                                 item.textContent = `${c.code} - ${c.name}`;
                                 item.addEventListener('click', () => {
                                     courseSearchInput.value = c.code;
@@ -162,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Event listener for adding a course to the schedule
     addCourseButton.addEventListener('click', function () {
         const courseCode = courseSearchInput.value.trim();
         if (!courseCode) {
@@ -191,5 +199,114 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
+    // Google Maps Functionality
+    const mapButton = document.getElementById('mapButton');
+    const mapsModal = new bootstrap.Modal(document.getElementById('mapsModal'), {
+        keyboard: false
+    });
+
+    let mapInitialized = false;
+    let map;
+
+    // Function to initialize Google Map
+    function initMap(locations) {
+        // Default center (e.g., University Main Campus)
+        // Replace with the central point relevant to your institution
+        const defaultCenter = { lat: 40.7128, lng: -74.0060 }; // Example: New York City
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: defaultCenter
+        });
+
+        // Add markers for each location
+        locations.forEach(location => {
+            if (location.latitude && location.longitude) {
+                const marker = new google.maps.Marker({
+                    position: { lat: parseFloat(location.latitude), lng: parseFloat(location.longitude) },
+                    map: map,
+                    title: location.name // Assuming each location has a 'name' property
+                });
+
+                // Add info windows
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.name}</strong><br>${location.address}`
+                });
+
+                marker.addListener('click', function () {
+                    infoWindow.open(map, marker);
+                });
+            }
+        });
+
+        // Adjust map bounds to fit all markers
+        const bounds = new google.maps.LatLngBounds();
+        locations.forEach(location => {
+            if (location.latitude && location.longitude) {
+                bounds.extend({ lat: parseFloat(location.latitude), lng: parseFloat(location.longitude) });
+            }
+        });
+        map.fitBounds(bounds);
+    }
+
+    // Event listener for Google Maps Button
+    mapButton.addEventListener('click', function () {
+        // Fetch class locations from the server
+        fetch('get_class_locations.php?semester=' + encodeURIComponent(selectedSemester))
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch class locations.');
+                }
+                return response.json();
+            })
+            .then(locations => {
+                if (locations.error) {
+                    showToast(locations.error, 'error');
+                    return;
+                }
+
+                // Initialize map if not already done
+                if (!mapInitialized) {
+                    initMap(locations);
+                    mapInitialized = true;
+                } else {
+                    // Re-center and add markers if map is already initialized
+                    initMap(locations);
+                }
+
+                // Show the modal
+                mapsModal.show();
+            })
+            .catch(err => {
+                console.error('Error fetching class locations:', err);
+                showToast('Error fetching class locations. Please try again.', 'error');
+            });
+    });
+
+    // Download PDF Functionality
+    const downloadPdfButton = document.getElementById('downloadPdfButton');
+
+    downloadPdfButton.addEventListener('click', function () {
+        // Use html2canvas to capture the schedule table
+        const scheduleTable = document.getElementById('scheduleTable');
+
+        html2canvas(scheduleTable, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('landscape', 'pt', 'a4');
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
+            pdf.save('my_schedule.pdf');
+        }).catch(err => {
+            console.error('Error generating PDF:', err);
+            showToast('Error generating PDF. Please try again.', 'error');
+        });
+    });
+
+    // Initial load of the user's schedule
     loadUserSchedule();
 });

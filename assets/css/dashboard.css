@@ -78,3 +78,44 @@
     padding: 5px;
     cursor: pointer;
 }
+
+
+/* dashboard.css */
+
+/* Style for course blocks in the schedule table */
+.course-block {
+    white-space: pre-wrap;
+    background-color: #B3E5FC;
+    margin: 2px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Suggestions Dropdown Styling */
+#searchSuggestions {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Ensuring the suggestions dropdown appears above other elements */
+.suggestions-dropdown {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+}
+
+/* Toast Styling */
+.toast {
+    min-width: 250px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+    #mapButton, #downloadPdfButton {
+        bottom: 100px;
+        left: 10px;
+        right: 10px;
+    }
+}
