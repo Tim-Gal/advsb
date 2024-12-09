@@ -16,7 +16,7 @@ include '../includes/header.php';
         <p class="hero-subtitle mt-4">
             Build and manage your schedule effortlessly with our intuitive Advanced Schedule Builder.
         </p>
-        <a href="register.php" class="btn btn-success btn-lg mt-3">Get Started</a>
+        <a href="register.php" class="get-started btn-lg mt-3">Get Started</a>
     </div>
 </section>
 

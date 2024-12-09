@@ -1,6 +1,6 @@
 <?php
 ?>
-<footer class="footer bg-dark text-white py-3 mt-5">
+<footer class="footer bg-dark text-white py-4">
     <div class="container text-center">
         <p class="mb-0">© <?php echo date('Y'); ?> Advanced Schedule Builder. All rights reserved.</p>
     </div>
