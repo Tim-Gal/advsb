@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($verification_code)) {
         $_SESSION['error'] = "Please enter the verification code.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE verification_code=? AND is_verified=0 LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
     $stmt->bind_param("s", $verification_code);
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Invalid or expired verification code.";
         $stmt->close();
         $conn->close();
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
@@ -44,18 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $upd = $conn->prepare("UPDATE students SET is_verified=1, verification_code=NULL WHERE student_id=?");
     if (!$upd) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
     $upd->bind_param("i", $student_id);
     if ($upd->execute()) {
         $_SESSION['user_id'] = $student_id;
         $_SESSION['success'] = "Your account has been verified and you are now logged in.";
-        header("Location: dashboard.php");
+        header("Location: ../public/dashboard.php");
         exit();
     } else {
         $_SESSION['error'] = "Failed to verify your account. Please try again.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 

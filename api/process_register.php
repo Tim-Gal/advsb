@@ -11,26 +11,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($student_id) || empty($email) || empty($password) || empty($confirm_password)) {
         $_SESSION['error'] = "All fields are required.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Invalid email format.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
     if ($password !== $confirm_password) {
         $_SESSION['error'] = "Passwords do not match.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE student_id=? AND email=? AND is_verified=0 AND password_hash IS NULL LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
     $stmt->bind_param("is", $student_id, $email);
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Invalid Student ID or Email, or account already activated.";
         $stmt->close();
         $conn->close();
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
     $stmt->close();
@@ -61,29 +61,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $upd = $conn->prepare("UPDATE students SET password_hash=?, verification_code=? WHERE student_id=? AND email=?");
         if (!$upd) {
             $_SESSION['error'] = "Database error: " . $conn->error;
-            header("Location: register.php");
+            header("Location: ../public/register.php");
             exit();
         }
         $upd->bind_param("ssis", $password_hash, $verification_code, $student_id, $email);
         if ($upd->execute()) {
             $_SESSION['success'] = "Registration initiated! A 6-digit verification code has been sent to your email. Please verify your account.";
-            header("Location: register.php");
+            header("Location: ../public/register.php");
             exit();
         } else {
             $_SESSION['error'] = "Failed to update your account. Please try again.";
-            header("Location: register.php");
+            header("Location: ../public/register.php");
             exit();
         }
     } else {
         // Email failed to send, do not update the database
         $_SESSION['error'] = "Failed to send verification email. Please try again.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
     $conn->close();
 } else {
-    header("Location: register.php");
+    header("Location: ../public/register.php");
     exit();
 }
 ?>

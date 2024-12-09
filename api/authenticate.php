@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Basic validation
     if (empty($student_id) || empty($password)) {
         $_SESSION['error'] = "Please enter both Student ID and Password.";
-        header("Location: login.php");
+        header("Location: ../public/login.php");
         exit();
     }
 
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare("SELECT password_hash, is_verified FROM students WHERE student_id=? LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: login.php");
+        header("Location: ../public/login.php");
         exit();
     }
     $stmt->bind_param("i", $student_id);
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "No account found with that Student ID.";
         $stmt->close();
         $conn->close();
-        header("Location: login.php");
+        header("Location: ../public/login.php");
         exit();
     }
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Incorrect password.";
         $stmt->close();
         $conn->close();
-        header("Location: login.php");
+        header("Location: ../public/login.php");
         exit();
     }
 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Your account is not verified. Please verify your account before logging in.";
         $stmt->close();
         $conn->close();
-        header("Location: login.php");
+        header("Location: ../public/login.php");
         exit();
     }
 
@@ -76,10 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $conn->close();
-    header("Location: dashboard.php");
+    header("Location: ../public/dashboard.php");
     exit();
 } else {
-    header("Location: login.php");
+    header("Location: ../public/login.php");
     exit();
 }
 ?>
