@@ -1,5 +1,4 @@
 <?php
-// public/login.php
 $pageTitle = "Login";
 $pageCSS = [
     '../assets/css/login.css'
@@ -10,7 +9,6 @@ $pageJS = [
 
 include '../includes/header.php';
 
-// If user is already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit();

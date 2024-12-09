@@ -199,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // Google Maps Functionality
     const mapButton = document.getElementById('mapButton');
     const mapsModal = new bootstrap.Modal(document.getElementById('mapsModal'), {
         keyboard: false
@@ -307,6 +306,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Initial load of the user's schedule
     loadUserSchedule();
 });

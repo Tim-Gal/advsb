@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1
--- Üretim Zamanı: 08 Ara 2024, 00:38:17
+-- Üretim Zamanı: 09 Ara 2024, 22:40:04
 -- Sunucu sürümü: 10.4.32-MariaDB
 -- PHP Sürümü: 8.2.12
 
@@ -99,6 +99,7 @@ INSERT INTO `coursesenrolled` (`student_id`, `section_code`) VALUES
 (2, 3220),
 (2, 8301),
 (3, 2057),
+(3, 4819),
 (4, 4819),
 (5, 3220),
 (6, 8301),
@@ -110,29 +111,36 @@ INSERT INTO `coursesenrolled` (`student_id`, `section_code`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Tablo için tablo yapısı `friendrequests`
+--
+
+CREATE TABLE `friendrequests` (
+  `id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `status` enum('pending','accepted','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Tablo için tablo yapısı `friendswith`
 --
 
 CREATE TABLE `friendswith` (
+  `id` int(11) NOT NULL,
   `student_id1` int(11) NOT NULL,
-  `student_id2` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `student_id2` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `friendswith`
 --
 
-INSERT INTO `friendswith` (`student_id1`, `student_id2`) VALUES
-(1, 2),
-(1, 3),
-(2, 4),
-(2, 5),
-(3, 5),
-(4, 6),
-(5, 7),
-(6, 8),
-(7, 9),
-(8, 10);
+INSERT INTO `friendswith` (`id`, `student_id1`, `student_id2`, `created_at`) VALUES
+(1, 3, 6, '2024-12-09 21:33:35');
 
 -- --------------------------------------------------------
 
@@ -203,10 +211,10 @@ CREATE TABLE `sections` (
 --
 
 INSERT INTO `sections` (`section_code`, `semester`, `professor`, `course_code`) VALUES
-(2057, 'Fall', 'John Green', 'BIOL202'),
-(3220, 'Winter', 'Michael Rodriguez', 'BIOL303'),
-(4819, 'Fall', 'Peter Johnson', 'BIOL101'),
-(8301, 'Winter', 'Don Miller', 'BIOL404');
+(2057, 'FALL', 'John Green', 'BIOL202'),
+(3220, 'WINTER', 'Michael Rodriguez', 'BIOL303'),
+(4819, 'FALL', 'Peter Johnson', 'BIOL101'),
+(8301, 'WINTER', 'Don Miller', 'BIOL404');
 
 -- --------------------------------------------------------
 
@@ -233,10 +241,10 @@ CREATE TABLE `students` (
 INSERT INTO `students` (`student_id`, `fname`, `lname`, `email`, `password_hash`, `remember_token`, `is_verified`, `verification_code`, `password_change_code`) VALUES
 (1, 'John', 'Wood', 'alice.smith@university.edu', '$2y$10$QUvS4QATistNhdFM2qTf7u2cUfphR9LGbowI8Y2ZIf8rrKvBeM9C6', NULL, 0, NULL, NULL),
 (2, 'Jim', 'King', '', NULL, NULL, 0, NULL, NULL),
-(3, 'Efe', 'Ertugrul', 'efertugrul6@gmail.com', '$2y$10$gv9ASeGqmEmrDPF5omkJwOOpkPsMBY4Gmmr4k8IfWb64S.GhZn6xO', 'f3e7db30361e3b784509131fb10e738c', 1, NULL, '651008'),
+(3, 'Efe', 'Ertugrul', 'efertugrul6@gmail.com', '$2y$10$gv9ASeGqmEmrDPF5omkJwOOpkPsMBY4Gmmr4k8IfWb64S.GhZn6xO', NULL, 1, NULL, '651008'),
 (4, 'Mike', 'Reed', 'diana.prince@university.edu', NULL, NULL, 0, NULL, NULL),
 (5, 'David', 'West', 'edward.norton@university.edu', NULL, NULL, 0, NULL, NULL),
-(6, 'Tim', 'Page', 'fiona.apple@university.edu', NULL, NULL, 0, NULL, NULL),
+(6, 'Tim', 'Page', 'timoxa.gal@gmail.com', '$2y$10$MS0jyLdIHDcy.U3PDi3kOuqXjKwxgKUArBfBa2t3dswC2GopSdo4G', NULL, 1, NULL, NULL),
 (7, 'Frank', 'Snow', 'george.clooney@university.edu', NULL, NULL, 0, NULL, NULL),
 (8, 'Ben', 'Gray', 'hannah.montana@university.edu', NULL, NULL, 0, NULL, NULL),
 (9, 'Mark', 'Lane', 'ian.mckellen@university.edu', NULL, NULL, 0, NULL, NULL),
@@ -267,11 +275,20 @@ ALTER TABLE `coursesenrolled`
   ADD KEY `fk_enrolled_section` (`section_code`);
 
 --
+-- Tablo için indeksler `friendrequests`
+--
+ALTER TABLE `friendrequests`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_request` (`sender_id`,`receiver_id`),
+  ADD KEY `receiver_id` (`receiver_id`);
+
+--
 -- Tablo için indeksler `friendswith`
 --
 ALTER TABLE `friendswith`
-  ADD PRIMARY KEY (`student_id1`,`student_id2`),
-  ADD KEY `fk_friend2` (`student_id2`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_friendship` (`student_id1`,`student_id2`),
+  ADD KEY `student_id2` (`student_id2`);
 
 --
 -- Tablo için indeksler `lectures`
@@ -303,6 +320,18 @@ ALTER TABLE `students`
 --
 -- Dökümü yapılmış tablolar için AUTO_INCREMENT değeri
 --
+
+--
+-- Tablo için AUTO_INCREMENT değeri `friendrequests`
+--
+ALTER TABLE `friendrequests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Tablo için AUTO_INCREMENT değeri `friendswith`
+--
+ALTER TABLE `friendswith`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `lectures`
@@ -341,11 +370,18 @@ ALTER TABLE `coursesenrolled`
   ADD CONSTRAINT `fk_enrolled_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE;
 
 --
+-- Tablo kısıtlamaları `friendrequests`
+--
+ALTER TABLE `friendrequests`
+  ADD CONSTRAINT `friendrequests_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `friendrequests_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE;
+
+--
 -- Tablo kısıtlamaları `friendswith`
 --
 ALTER TABLE `friendswith`
-  ADD CONSTRAINT `fk_friend1` FOREIGN KEY (`student_id1`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_friend2` FOREIGN KEY (`student_id2`) REFERENCES `students` (`student_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `friendswith_ibfk_1` FOREIGN KEY (`student_id1`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `friendswith_ibfk_2` FOREIGN KEY (`student_id2`) REFERENCES `students` (`student_id`) ON DELETE CASCADE;
 
 --
 -- Tablo kısıtlamaları `lectures`

@@ -106,25 +106,20 @@ include '../includes/header.php';
   </div>
 </div>
 
-<!-- Google Maps Button (Bottom Left) -->
 <button type="button" class="btn btn-outline-secondary position-fixed" id="mapButton" style="bottom: 80px; left: 20px;">
     <i class="bi bi-geo-alt-fill"></i> Show Class Locations
 </button>
 
-<!-- Download PDF Button (Top Right) -->
 <button type="button" class="btn btn-outline-success position-fixed" id="downloadPdfButton" style="top: 80px; right: 20px;">
     <i class="bi bi-file-earmark-pdf-fill"></i> Download Schedule
 </button>
 
-<!-- Bootstrap Icons (for icons used in buttons) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-<!-- jsPDF and html2canvas Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- Load Google Maps JavaScript API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAc_2sgP5U-SRL68dw2XrUVq2ptSBl-3JI"></script>
 
 <script src="../assets/js/dashboard.js"></script>
 

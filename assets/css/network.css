@@ -1,0 +1,180 @@
+/* assets/css/network.css */
+
+/* Container Styling */
+.network-container {
+    background-color: #f0f4f8;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+.network-container h1 {
+    font-family: 'Rubik', sans-serif;
+    color: #00171F;
+}
+
+.network-container h3 {
+    font-family: 'Rubik', sans-serif;
+    color: #007EA7;
+    margin-bottom: 20px;
+}
+
+/* Search Container */
+.search-container .input-group {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 600px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions-dropdown .list-group-item {
+    cursor: pointer;
+}
+
+.suggestions-dropdown .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Invitations Container */
+.invitations-container .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.invitations-container .btn {
+    margin-left: 10px;
+}
+
+/* Friends List */
+.friends-list-container .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.friends-list-container .btn {
+    margin-left: 10px;
+}
+
+/* Schedule Table */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #dee2e6;
+    text-align: center;
+    padding: 8px;
+}
+
+.schedule-table th {
+    background-color: #007EA7;
+    color: #ffffff;
+}
+
+.schedule-table .time-cell {
+    background-color: #e9ecef;
+    font-weight: bold;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 15px;
+}
+
+.modal-header {
+    background-color: #007EA7;
+    color: #ffffff;
+    border-bottom: none;
+}
+
+.modal-body {
+    background-color: #f8f9fa;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #007EA7;
+    border-color: #007EA7;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #005f8a;
+    border-color: #005f8a;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-info:hover {
+    background-color: #117a8b;
+    border-color: #117a8b;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-outline-light {
+    color: #007EA7;
+    border-color: #007EA7;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: #007EA7;
+    color: #ffffff;
+}
+
+/* Friend Invitation Buttons */
+.respond-btn {
+    margin-left: 10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .network-container {
+        padding: 20px;
+    }
+
+    .search-container .input-group,
+    .suggestions-dropdown {
+        max-width: 100%;
+    }
+
+    .invitations-container .list-group-item,
+    .friends-list-container .list-group-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .invitations-container .btn,
+    .friends-list-container .btn {
+        margin-top: 10px;
+        margin-left: 0;
+    }
+}

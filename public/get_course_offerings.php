@@ -1,23 +1,27 @@
 <?php
+// public/get_course_offerings.php
 
 include '../includes/config.php';
 include '../includes/functions.php';
 
 header('Content-Type: application/json');
 
+// Retrieve and sanitize GET parameters
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $semester = isset($_GET['semester']) ? trim($_GET['semester']) : '';
 
 // Validate inputs
 if (empty($query) || empty($semester)) {
-    echo json_encode(['error' => 'Invalid parameters.']);
+    echo json_encode(['error' => 'Invalid parameters. Both query and semester are required.']);
     exit();
 }
 
+// Updated SQL Query to join courses and sections
 $sql = "
-    SELECT c.course_code AS code, c.course_name AS name
+    SELECT DISTINCT c.course_code AS code, c.course_name AS name
     FROM courses c
-    WHERE (c.course_code LIKE ? OR c.course_name LIKE ?) AND c.semester = ?
+    JOIN sections s ON c.course_code = s.course_code
+    WHERE (c.course_code LIKE ? OR c.course_name LIKE ?) AND s.semester = ?
     LIMIT 20
 ";
 
@@ -40,12 +44,14 @@ while ($row = $result->fetch_assoc()) {
     $courses[] = $row;
 }
 
+$stmt->close();
+
 // Check if any courses were found
 if (empty($courses)) {
-    echo json_encode(['error' => 'No courses found matching your query.']);
+    echo json_encode(['error' => 'No courses found matching your query for the specified semester.']);
     exit();
 }
 
 // Return the courses as JSON
-echo json_encode($courses);
+echo json_encode(['success' => true, 'courses' => $courses]);
 ?>
