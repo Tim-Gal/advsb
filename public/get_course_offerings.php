@@ -1,37 +1,51 @@
 <?php
-// public/get_course_offerings.php
+
 include '../includes/config.php';
 include '../includes/functions.php';
 
 header('Content-Type: application/json');
 
-$code = $_GET['code'] ?? '';
-$semesterName = $_GET['semester'] ?? '';
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
+$semester = isset($_GET['semester']) ? trim($_GET['semester']) : '';
 
 // Validate inputs
-if (empty($code) || empty($semesterName)) {
-    echo json_encode([]); 
+if (empty($query) || empty($semester)) {
+    echo json_encode(['error' => 'Invalid parameters.']);
     exit();
 }
 
-// In the new schema, we have no `semesters` table. `semester` is stored directly in `sections`.
 $sql = "
-SELECT l.day_of_week, l.start_time, l.end_time, l.location
-FROM lectures l
-JOIN sections s ON l.section_code = s.section_code
-JOIN courses c ON s.course_code = c.course_code
-WHERE c.course_code = ? AND s.semester = ?
+    SELECT c.course_code AS code, c.course_name AS name
+    FROM courses c
+    WHERE (c.course_code LIKE ? OR c.course_name LIKE ?) AND c.semester = ?
+    LIMIT 20
 ";
 
-// Prepare and execute statement
+// Prepare and execute the statement
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ss", $code, $semesterName);
+if (!$stmt) {
+    // Handle statement preparation error
+    echo json_encode(['error' => 'Database query preparation failed.']);
+    exit();
+}
+
+$searchTerm = '%' . $query . '%';
+$stmt->bind_param("sss", $searchTerm, $searchTerm, $semester);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$offerings = [];
+// Fetch matching courses
+$courses = [];
 while ($row = $result->fetch_assoc()) {
-    $offerings[] = $row;
+    $courses[] = $row;
 }
 
-echo json_encode($offerings);
+// Check if any courses were found
+if (empty($courses)) {
+    echo json_encode(['error' => 'No courses found matching your query.']);
+    exit();
+}
+
+// Return the courses as JSON
+echo json_encode($courses);
+?>

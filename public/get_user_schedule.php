@@ -1,5 +1,4 @@
 <?php
-// public/get_user_schedule.php
 include '../includes/config.php';
 include '../includes/functions.php';
 
@@ -19,24 +18,25 @@ if (!ctype_digit($requested_user_id)) {
 }
 $requested_user_id = (int)$requested_user_id;
 
-// In the new schema, 'semesterName' must match `sections.semester` directly
-$semesterName = $_GET['semester'] ?? 'F24'; 
-// Ensure the frontend sends something like 'F24', 'W25', etc. If 'Fall', 'Winter', 'Summer' are used,
-// you must map them to actual semester codes stored in `sections.semester`.
-// For now, assume the user provides a correct code that matches `sections.semester`.
+$semesterName = trim($_GET['semester'] ?? 'Fall'); 
 
 $sql = "
 SELECT l.day_of_week, l.start_time, l.end_time, l.location, c.course_code AS code
-FROM coursesEnrolled ce
+FROM coursesenrolled ce
 JOIN sections s ON ce.section_code = s.section_code
 JOIN courses c ON s.course_code = c.course_code
 JOIN lectures l ON l.section_code = s.section_code
 WHERE ce.student_id = ?
-  AND s.semester = ?
+  AND LOWER(s.semester) = LOWER(?)
 ";
 
 // Prepare and execute the query
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    error_log("Query preparation failed: " . $conn->error);
+    echo json_encode(["error" => "Database error while fetching schedule."]);
+    exit();
+}
 $stmt->bind_param("is", $requested_user_id, $semesterName);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -47,3 +47,4 @@ while ($row = $result->fetch_assoc()) {
 }
 
 echo json_encode($offerings);
+?>

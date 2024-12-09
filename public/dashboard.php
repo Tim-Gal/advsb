@@ -1,7 +1,6 @@
 <?php
 include '../includes/header.php'; 
 ?>
-
 <link href="../assets/css/dashboard.css" rel="stylesheet">
 
 <div class="dashboard-container">
@@ -19,7 +18,6 @@ include '../includes/header.php';
         <div id="searchSuggestions" class="suggestions-dropdown"></div>
     </div>
 
-    <!-- Schedule Table -->
     <div class="schedule-container">
         <table class="schedule-table" id="scheduleTable">
             <thead>
@@ -50,6 +48,18 @@ include '../includes/header.php';
             </tbody>
         </table>
     </div>
+</div>
+
+<!-- Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+  <div id="notificationToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody">
+        <!-- Toast message will be injected here -->
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
 </div>
 
 <script src="../assets/js/dashboard.js"></script>

@@ -203,10 +203,10 @@ CREATE TABLE `sections` (
 --
 
 INSERT INTO `sections` (`section_code`, `semester`, `professor`, `course_code`) VALUES
-(2057, 'F24', 'John Green', 'BIOL202'),
-(3220, 'W25', 'Michael Rodriguez', 'BIOL303'),
-(4819, 'F24', 'Peter Johnson', 'BIOL101'),
-(8301, 'W25', 'Don Miller', 'BIOL404');
+(2057, 'Fall', 'John Green', 'BIOL202'),
+(3220, 'Winter', 'Michael Rodriguez', 'BIOL303'),
+(4819, 'Fall', 'Peter Johnson', 'BIOL101'),
+(8301, 'Winter', 'Don Miller', 'BIOL404');
 
 -- --------------------------------------------------------
 
