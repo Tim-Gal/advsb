@@ -1,7 +1,7 @@
 <?php
 $pageTitle = "My Progress";
 $pageCSS = [
-    '../assets/css/myprogress.css'
+    '../assets/css/my_progress.css'
 ];
 
 include '../includes/header.php';

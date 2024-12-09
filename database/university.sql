@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1
--- Üretim Zamanı: 09 Ara 2024, 22:40:04
+-- Üretim Zamanı: 09 Ara 2024, 23:17:28
 -- Sunucu sürümü: 10.4.32-MariaDB
 -- PHP Sürümü: 8.2.12
 
@@ -99,6 +99,7 @@ INSERT INTO `coursesenrolled` (`student_id`, `section_code`) VALUES
 (2, 3220),
 (2, 8301),
 (3, 2057),
+(3, 3220),
 (3, 4819),
 (4, 4819),
 (5, 3220),
@@ -241,7 +242,7 @@ CREATE TABLE `students` (
 INSERT INTO `students` (`student_id`, `fname`, `lname`, `email`, `password_hash`, `remember_token`, `is_verified`, `verification_code`, `password_change_code`) VALUES
 (1, 'John', 'Wood', 'alice.smith@university.edu', '$2y$10$QUvS4QATistNhdFM2qTf7u2cUfphR9LGbowI8Y2ZIf8rrKvBeM9C6', NULL, 0, NULL, NULL),
 (2, 'Jim', 'King', '', NULL, NULL, 0, NULL, NULL),
-(3, 'Efe', 'Ertugrul', 'efertugrul6@gmail.com', '$2y$10$gv9ASeGqmEmrDPF5omkJwOOpkPsMBY4Gmmr4k8IfWb64S.GhZn6xO', 'f3e7db30361e3b784509131fb10e738c', 1, NULL, '651008'),
+(3, 'Efe', 'Ertugrul', 'efertugrul6@gmail.com', '$2y$10$gv9ASeGqmEmrDPF5omkJwOOpkPsMBY4Gmmr4k8IfWb64S.GhZn6xO', NULL, 1, NULL, '651008'),
 (4, 'Mike', 'Reed', 'diana.prince@university.edu', NULL, NULL, 0, NULL, NULL),
 (5, 'David', 'West', 'edward.norton@university.edu', NULL, NULL, 0, NULL, NULL),
 (6, 'Tim', 'Page', 'timoxa.gal@gmail.com', '$2y$10$MS0jyLdIHDcy.U3PDi3kOuqXjKwxgKUArBfBa2t3dswC2GopSdo4G', NULL, 1, NULL, NULL),

@@ -1,7 +1,6 @@
 <?php
 include '../includes/header.php'; 
 ?>
-<!-- Bootstrap CSS and Custom CSS already included in header.php -->
 
 <div class="container my-4">
     <h1 class="text-center mb-4">My Schedule Builder</h1>
@@ -25,7 +24,7 @@ include '../includes/header.php';
         </div>
     </div>
 
-    <!-- Course Search -->
+    <!-- Course Search and Add -->
     <div class="card mb-4">
         <div class="card-header">
             <h5>Add a Course</h5>
@@ -33,11 +32,20 @@ include '../includes/header.php';
         <div class="card-body">
             <div class="position-relative">
                 <div class="input-group">
-                    <input type="text" id="courseSearchInput" class="form-control" placeholder="Enter course code or name..." aria-label="Course search">
+                    <input type="text" id="courseSearchInput" class="form-control" placeholder="Enter course code or name..." aria-label="Course search" autocomplete="off">
                     <button class="btn btn-success" id="addCourseButton" type="button">Add Course</button>
                 </div>
-                <div id="searchSuggestions" class="list-group suggestions-dropdown"></div>
+                <div id="searchSuggestions" class="list-group suggestions-dropdown" style="position: absolute; width: 100%; z-index: 1000;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Selected Course Display -->
+    <div id="selectedCourseContainer" class="card mb-4" style="display: none;">
+        <div class="card-body d-flex align-items-center">
+            <span id="selectedCourseText" class="me-3"></span>
+            <button id="removeSelectedCourse" class="btn btn-sm btn-danger me-2">Remove</button>
+            <button id="confirmAddCourse" class="btn btn-sm btn-primary">Confirm Add</button>
         </div>
     </div>
 
@@ -106,6 +114,7 @@ include '../includes/header.php';
   </div>
 </div>
 
+<!-- Action Buttons -->
 <button type="button" class="btn btn-outline-secondary position-fixed" id="mapButton" style="bottom: 80px; left: 20px;">
     <i class="bi bi-geo-alt-fill"></i> Show Class Locations
 </button>
@@ -114,13 +123,15 @@ include '../includes/header.php';
     <i class="bi bi-file-earmark-pdf-fill"></i> Download Schedule
 </button>
 
+<!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+<!-- External Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAc_2sgP5U-SRL68dw2XrUVq2ptSBl-3JI"></script>
 
+<!-- Custom JavaScript -->
 <script src="../assets/js/dashboard.js"></script>
 
 <?php

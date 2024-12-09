@@ -4,6 +4,11 @@
 include '../includes/config.php';
 include '../includes/functions.php';
 
+// Start session if not already started (if required for authentication)
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 header('Content-Type: application/json');
 
 // Retrieve and sanitize GET parameters
@@ -15,6 +20,9 @@ if (empty($query) || empty($semester)) {
     echo json_encode(['error' => 'Invalid parameters. Both query and semester are required.']);
     exit();
 }
+
+// Normalize semester input (e.g., convert to uppercase)
+$semester = strtoupper($semester);
 
 // Updated SQL Query to join courses and sections
 $sql = "
@@ -29,7 +37,7 @@ $sql = "
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     // Handle statement preparation error
-    echo json_encode(['error' => 'Database query preparation failed.']);
+    echo json_encode(['error' => 'Database query preparation failed: ' . $conn->error]);
     exit();
 }
 
@@ -54,4 +62,3 @@ if (empty($courses)) {
 
 // Return the courses as JSON
 echo json_encode(['success' => true, 'courses' => $courses]);
-?>

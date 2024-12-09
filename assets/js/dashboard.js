@@ -1,11 +1,18 @@
+/* assets/js/dashboard.js */
+
 document.addEventListener('DOMContentLoaded', function () {
     const semesterRadios = document.querySelectorAll('input[name="semester"]');
     const courseSearchInput = document.getElementById('courseSearchInput');
     const searchSuggestions = document.getElementById('searchSuggestions');
     const addCourseButton = document.getElementById('addCourseButton');
+    const selectedCourseContainer = document.getElementById('selectedCourseContainer');
+    const selectedCourseText = document.getElementById('selectedCourseText');
+    const removeSelectedCourse = document.getElementById('removeSelectedCourse');
+    const confirmAddCourseButton = document.getElementById('confirmAddCourse');
 
-    let selectedSemester = 'Fall';
+    let selectedSemester = 'FALL'; // Stored in uppercase to match database
     let searchTimeout = null;
+    let selectedCourse = null; // To store the selected course object
 
     /**
      * Function to display a Bootstrap Toast notification
@@ -52,9 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /**
      * Load the user's schedule from the server
+     * (Assuming this function works correctly and is unrelated to the current issue)
      */
     function loadUserSchedule() {
-        fetch('get_user_schedule.php?semester=' + encodeURIComponent(selectedSemester))
+        fetch('../api/get_user_schedule.php?semester=' + encodeURIComponent(selectedSemester))
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -115,99 +123,189 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Event listener for semester selection changes
+    /**
+     * Event listener for semester selection changes
+     */
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
-            selectedSemester = radio.value;
+            selectedSemester = radio.value.toUpperCase(); // Ensure uppercase
             loadUserSchedule();
+            // Clear any selected course when semester changes
+            if (selectedCourse) {
+                removeSelectedCourseFunction();
+            }
         });
     });
 
-    // Event listener for course search input
-    courseSearchInput.addEventListener('keyup', function () {
+    /**
+     * Event listener for course search input
+     */
+    courseSearchInput.addEventListener('keyup', function (e) {
         const query = courseSearchInput.value.trim();
         if (query.length >= 2) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                fetch('get_course_offerings.php?query=' + encodeURIComponent(query) + '&semester=' + encodeURIComponent(selectedSemester))
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(courses => {
+                fetch(`../api/get_course_offerings.php?query=${encodeURIComponent(query)}&semester=${encodeURIComponent(selectedSemester)}`)
+                    .then(res => res.json())
+                    .then(data => {
                         searchSuggestions.innerHTML = '';
-                        if (!courses.error && courses.length > 0) {
-                            searchSuggestions.style.display = 'block';
-                            courses.forEach(c => {
-                                const item = document.createElement('button');
-                                item.type = 'button';
-                                item.className = 'list-group-item list-group-item-action';
-                                item.textContent = `${c.code} - ${c.name}`;
-                                item.addEventListener('click', () => {
-                                    courseSearchInput.value = c.code;
-                                    searchSuggestions.style.display = 'none';
-                                });
-                                searchSuggestions.appendChild(item);
-                            });
+                        if (data.success && data.courses.length > 0) {
+                            displayCourseSuggestions(data.courses);
                         } else {
-                            searchSuggestions.style.display = 'none';
-                            if (courses.error) {
-                                showToast(courses.error, 'info');
-                            }
+                            displayNoSuggestions(data.error || 'No courses found.');
                         }
                     })
                     .catch(err => {
                         console.error('Error fetching courses:', err);
-                        searchSuggestions.style.display = 'none';
-                        showToast('Error fetching courses. Please try again.', 'error');
+                        displayNoSuggestions('Error fetching courses. Please try again.');
                     });
             }, 300);
         } else {
+            searchSuggestions.innerHTML = '';
             searchSuggestions.style.display = 'none';
         }
     });
 
-    // Event listener for adding a course to the schedule
-    addCourseButton.addEventListener('click', function () {
-        const courseCode = courseSearchInput.value.trim();
-        if (!courseCode) {
-            showToast("Please enter or select a course code.", 'warning');
+    /**
+     * Display course suggestions in the suggestions dropdown
+     * @param {Array} courses 
+     */
+    function displayCourseSuggestions(courses) {
+        searchSuggestions.innerHTML = '';
+        courses.forEach(course => {
+            const suggestionItem = document.createElement('button');
+            suggestionItem.type = 'button';
+            suggestionItem.className = 'list-group-item list-group-item-action';
+            suggestionItem.textContent = `${course.code} - ${course.name}`;
+            suggestionItem.addEventListener('click', () => {
+                selectCourse(course);
+            });
+            searchSuggestions.appendChild(suggestionItem);
+        });
+        searchSuggestions.style.display = 'block';
+    }
+
+    /**
+     * Display a message when no suggestions are found
+     * @param {string} message 
+     */
+    function displayNoSuggestions(message) {
+        searchSuggestions.innerHTML = `<div class="list-group-item list-group-item-action disabled">${message}</div>`;
+        searchSuggestions.style.display = 'block';
+    }
+
+    /**
+     * Function to select a course from suggestions
+     * @param {Object} course 
+     */
+    function selectCourse(course) {
+        selectedCourse = course;
+        selectedCourseText.textContent = `${course.code} - ${course.name}`;
+        selectedCourseContainer.style.display = 'block';
+
+        // Disable the input and semester select
+        courseSearchInput.value = `${course.code} - ${course.name}`;
+        courseSearchInput.disabled = true;
+        semesterRadios.forEach(radio => {
+            radio.disabled = true;
+        });
+
+        // Hide suggestions
+        searchSuggestions.innerHTML = '';
+        searchSuggestions.style.display = 'none';
+    }
+
+    /**
+     * Function to remove the selected course
+     */
+    function removeSelectedCourseFunction() {
+        selectedCourse = null;
+        selectedCourseText.textContent = '';
+        selectedCourseContainer.style.display = 'none';
+
+        // Enable the input and semester select
+        courseSearchInput.value = '';
+        courseSearchInput.disabled = false;
+        semesterRadios.forEach(radio => {
+            radio.disabled = false;
+        });
+    }
+
+    /**
+     * Event listener for removing the selected course
+     */
+    removeSelectedCourse.addEventListener('click', function () {
+        removeSelectedCourseFunction();
+        showToast('Selected course removed.', 'info');
+    });
+
+    /**
+     * Event listener for confirming the addition of a course
+     */
+    confirmAddCourseButton.addEventListener('click', function () {
+        if (!selectedCourse) {
+            showToast('No course selected to add.', 'warning');
             return;
         }
 
-        fetch('add_course_to_schedule.php?code=' + encodeURIComponent(courseCode) + '&semester=' + encodeURIComponent(selectedSemester))
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return res.json();
+        // Implement the logic to add the course to the user's schedule
+        // For example, send a POST request to add_course_to_schedule.php
+        fetch(`../api/add_course_to_schedule.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                course_code: selectedCourse.code,
+                semester: selectedSemester
             })
+        })
+            .then(res => res.json())
             .then(data => {
-                console.log("Response:", data);
-                if (data.error) {
-                    showToast(data.error, 'error');
-                    return;
+                if (data.success) {
+                    showToast(`Course ${selectedCourse.code} - ${selectedCourse.name} added successfully!`, 'success');
+                    loadUserSchedule();
+                    removeSelectedCourseFunction();
+                } else {
+                    showToast(data.error || 'Failed to add course.', 'error');
                 }
-                showToast(`Successfully added ${data.inserted} section(s) to your schedule.`, 'success');
-                loadUserSchedule();
             })
             .catch(err => {
-                console.error('Error adding course to schedule:', err);
-                showToast('Error adding course to schedule. Please try again.', 'error');
+                console.error('Error adding course:', err);
+                showToast('Error adding course. Please try again.', 'error');
             });
     });
 
-    const mapButton = document.getElementById('mapButton');
-    const mapsModal = new bootstrap.Modal(document.getElementById('mapsModal'), {
-        keyboard: false
-    });
+    /**
+     * Function to populate the schedule table with course blocks
+     * (Assuming this function works correctly)
+     */
+    function populateCourseBlock(courseCode, day, startTime, endTime, location) {
+        const startHour = parseInt(startTime.split(':')[0]);
+        const endHour = parseInt(endTime.split(':')[0]);
+        for (let h = startHour; h < endHour; h++) {
+            const cellClass = `${day}-${h}`;
+            const cell = document.querySelector(`.${cellClass}`);
+            if (cell) {
+                const block = document.createElement('div');
+                block.className = 'course-block';
+                block.textContent = `${courseCode}\n${location}\n(${startTime}-${endTime})`;
+                block.style.whiteSpace = 'pre-wrap';
+                block.style.backgroundColor = '#B3E5FC';
+                block.style.margin = '2px 0';
+                block.style.padding = '5px';
+                block.style.border = '1px solid #ccc';
+                block.style.borderRadius = '4px';
+                block.style.fontSize = '0.9em';
+                cell.appendChild(block);
+            }
+        }
+    }
 
-    let mapInitialized = false;
-    let map;
-
-    // Function to initialize Google Map
+    /**
+     * Function to initialize Google Map
+     * (Assuming this function works correctly and is unrelated to the current issue)
+     */
     function initMap(locations) {
         // Default center (e.g., University Main Campus)
         // Replace with the central point relevant to your institution
@@ -248,10 +346,21 @@ document.addEventListener('DOMContentLoaded', function () {
         map.fitBounds(bounds);
     }
 
-    // Event listener for Google Maps Button
+    /**
+     * Event listener for Google Maps Button
+     * (Assuming this works correctly and is unrelated to the current issue)
+     */
+    const mapButton = document.getElementById('mapButton');
+    const mapsModal = new bootstrap.Modal(document.getElementById('mapsModal'), {
+        keyboard: false
+    });
+
+    let mapInitialized = false;
+    let map;
+
     mapButton.addEventListener('click', function () {
         // Fetch class locations from the server
-        fetch('get_class_locations.php?semester=' + encodeURIComponent(selectedSemester))
+        fetch(`../api/get_class_locations.php?semester=${encodeURIComponent(selectedSemester)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch class locations.');
@@ -282,7 +391,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // Download PDF Functionality
+    /**
+     * Download PDF Functionality
+     * (Assuming this works correctly and is unrelated to the current issue)
+     */
     const downloadPdfButton = document.getElementById('downloadPdfButton');
 
     downloadPdfButton.addEventListener('click', function () {
@@ -306,5 +418,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    /**
+     * Initialize the user's schedule upon page load
+     */
     loadUserSchedule();
 });
