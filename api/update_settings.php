@@ -5,7 +5,7 @@ include '../includes/config.php';
 include '../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../public/login.php");
     exit();
 }
 
@@ -19,20 +19,20 @@ $confirm_password = $_POST['confirm_password'] ?? '';
 
 if (empty($fname) || empty($lname) || empty($email)) {
     $_SESSION['error'] = "First name, last name, and email are required.";
-    header("Location: settings.php");
+    header("Location: ../public/settings.php");
     exit();
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['error'] = "Invalid email format.";
-    header("Location: settings.php");
+    header("Location: ../public/settings.php");
     exit();
 }
 
 if (!empty($password) || !empty($confirm_password)) {
     if ($password !== $confirm_password) {
         $_SESSION['error'] = "Passwords do not match.";
-        header("Location: settings.php");
+        header("Location: ../public/settings.php");
         exit();
     }
 
@@ -51,7 +51,7 @@ if (!$stmt->execute()) {
     $_SESSION['error'] = "Failed to update settings. Please try again.";
     $stmt->close();
     $conn->close();
-    header("Location: settings.php");
+    header("Location: ../public/settings.php");
     exit();
 }
 
@@ -59,5 +59,5 @@ $stmt->close();
 $conn->close();
 
 $_SESSION['success'] = "Settings updated successfully.";
-header("Location: settings.php");
+header("Location: ../public/settings.php");
 exit();

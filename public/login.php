@@ -30,7 +30,7 @@ if (isset($_SESSION['user_id'])) {
     }
     ?>
 
-    <form action="authenticate.php" method="POST" class="login-form mb-5">
+    <form action="../api/authenticate.php" method="POST" class="login-form mb-5">
         <div class="mb-3">
             <label for="student_id" class="form-label">Student ID</label>
             <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter your Student ID" required>

@@ -31,7 +31,7 @@ $userData = $res_user->fetch_assoc();
     }
     ?>
 
-    <form action="update_settings.php" method="post" class="settings-form" id="settingsForm">
+    <form action="../api/update_settings.php" method="post" class="settings-form" id="settingsForm">
         <div class="form-group">
             <label for="fname" class="form-label">First Name</label>
             <input type="text" name="fname" id="fname" class="input-field" value="<?php echo htmlspecialchars($userData['fname']); ?>" required>
@@ -59,7 +59,7 @@ $userData = $res_user->fetch_assoc();
 <div class="modal fade" id="passwordVerificationModal" tabindex="-1" aria-labelledby="passwordVerificationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="verify_password_change.php" method="POST" class="verify-form">
+      <form action="../api/verify_password_change.php" method="POST" class="verify-form">
         <div class="modal-header">
           <h5 class="modal-title" id="passwordVerificationModalLabel">Verify Password Change</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -97,7 +97,7 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
 
         e.preventDefault();
         const formData = new FormData(this);
-        fetch('send_password_verification.php', {
+        fetch('../.api/send_password_verification.php', {
             method: 'POST',
             body: formData
         })
