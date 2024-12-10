@@ -1,54 +1,77 @@
 <?php
-// public/remove_friend.php
+// public/api/remove_friend.php
 
 include '../includes/config.php';
 include '../includes/functions.php';
 
-session_start();
 header('Content-Type: application/json');
 
-if(!isset($_SESSION['user_id'])){
-    http_response_code(403);
-    echo json_encode(["error"=>"Not logged in"]);
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['error' => 'Unauthorized. Please log in.']);
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
-$friend_id = $_GET['friend_id'] ?? '';
 
-if (!ctype_digit($friend_id)){
-    echo json_encode(["error"=>"Invalid friend_id"]);
+// Retrieve and sanitize POST parameters
+$data = json_decode(file_get_contents('php://input'), true);
+$friend_id = isset($data['friend_id']) ? intval($data['friend_id']) : 0;
+
+if (empty($friend_id)) {
+    echo json_encode(['error' => 'Friend ID is required.']);
     exit();
 }
 
-$friend_id = (int)$friend_id;
+// Check if the friendship exists and involves the current user
+$sql = "
+    SELECT id, student_id1, student_id2
+    FROM friendswith
+    WHERE 
+        (student_id1 = ? AND student_id2 = ?) OR 
+        (student_id1 = ? AND student_id2 = ?)
+    LIMIT 1
+";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
+}
 
-// Determine the order
-$student_id1 = min($user_id, $friend_id);
-$student_id2 = max($user_id, $friend_id);
-
-// Check if they are friends
-$stmt = $conn->prepare("SELECT * FROM FriendsWith WHERE student_id1 = ? AND student_id2 = ?");
-$stmt->bind_param("ii", $student_id1, $student_id2);
+$stmt->bind_param("iiii", $user_id, $friend_id, $friend_id, $user_id);
 $stmt->execute();
-$stmt->store_result();
+$result = $stmt->get_result();
 
-if ($stmt->num_rows === 0) {
+if ($result->num_rows === 0) {
+    echo json_encode(['error' => 'Friendship does not exist.']);
     $stmt->close();
-    echo json_encode(["error" => "You are not friends with this user"]);
     exit();
 }
+
+$friendship = $result->fetch_assoc();
+$friendship_id = $friendship['id'];
 $stmt->close();
 
 // Delete the friendship
-$del = $conn->prepare("DELETE FROM FriendsWith WHERE student_id1 = ? AND student_id2 = ?");
-$del->bind_param("ii", $student_id1, $student_id2);
-$del->execute();
-
-if ($del->affected_rows > 0) {
-    echo json_encode(["success"=>true, "message"=>"Friend removed successfully"]);
-} else {
-    echo json_encode(["error"=>"Failed to remove friend"]);
+$sql_delete = "DELETE FROM friendswith WHERE id = ?";
+$stmt_delete = $conn->prepare($sql_delete);
+if (!$stmt_delete) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
 }
-$del->close();
+
+$stmt_delete->bind_param("i", $friendship_id);
+
+if ($stmt_delete->execute()) {
+    echo json_encode(['success' => true, 'message' => 'Friend removed successfully.']);
+} else {
+    echo json_encode(['error' => 'Failed to remove friend.']);
+}
+
+$stmt_delete->close();
 ?>

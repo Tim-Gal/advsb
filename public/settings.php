@@ -1,6 +1,7 @@
 <?php
 $pageTitle = "Settings";
 $pageCSS = [
+    '../assets/css/global.css',
     '../assets/css/settings.css'
 ];
 $pageJS = [
@@ -9,111 +10,75 @@ $pageJS = [
 
 include '../includes/header.php';
 
+// Fetch current user's data
 $user_id = $_SESSION['user_id'];
 
-$sql_user = "SELECT fname, lname, email FROM students WHERE student_id = $user_id LIMIT 1";
-$res_user = $conn->query($sql_user);
-$userData = $res_user->fetch_assoc();
+$stmt = $conn->prepare("
+    SELECT s.major_id, s.minor_id, d_major.name AS major_name, d_minor.name AS minor_name
+    FROM students s
+    LEFT JOIN degrees d_major ON s.major_id = d_major.degree_id
+    LEFT JOIN degrees d_minor ON s.minor_id = d_minor.degree_id
+    WHERE s.student_id = ?
+");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$res = $stmt->get_result();
+$user_data = $res->fetch_assoc();
+$stmt->close();
 ?>
 
-<div class="settings-container">
-    <h1>Settings</h1>
+<div class="main-content settings-container">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Settings</h2>
 
-    <?php
-    if (isset($_SESSION['error'])) {
-        echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
-        unset($_SESSION['error']);
-    }
+        <?php
+        if (isset($_SESSION['settings_success'])) {
+            echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['settings_success']) . '</div>';
+            unset($_SESSION['settings_success']);
+        }
 
-    if (isset($_SESSION['success'])) {
-        echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success']) . '</div>';
-        unset($_SESSION['success']);
-    }
-    ?>
+        if (isset($_SESSION['settings_error'])) {
+            echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['settings_error']) . '</div>';
+            unset($_SESSION['settings_error']);
+        }
+        ?>
 
-    <form action="../api/update_settings.php" method="post" class="settings-form" id="settingsForm">
-        <div class="form-group">
-            <label for="fname" class="form-label">First Name</label>
-            <input type="text" name="fname" id="fname" class="input-field" value="<?php echo htmlspecialchars($userData['fname']); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="lname" class="form-label">Last Name</label>
-            <input type="text" name="lname" id="lname" class="input-field" value="<?php echo htmlspecialchars($userData['lname']); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="input-field" value="<?php echo htmlspecialchars($userData['email']); ?>" readonly>
-        </div>
-        <div class="form-group">
-            <label for="password" class="form-label">New Password</label>
-            <input type="password" name="password" id="password" class="input-field">
-        </div>
-        <div class="form-group">
-            <label for="confirm_password" class="form-label">Confirm New Password</label>
-            <input type="password" name="confirm_password" id="confirm_password" class="input-field">
-        </div>
-        <button type="submit" class="btn submit-btn">Update Settings</button>
-    </form>
-</div>
-
-<div class="modal fade" id="passwordVerificationModal" tabindex="-1" aria-labelledby="passwordVerificationModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form action="../api/verify_password_change.php" method="POST" class="verify-form">
-        <div class="modal-header">
-          <h5 class="modal-title" id="passwordVerificationModalLabel">Verify Password Change</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>A verification code has been sent to your email. Please enter it below to confirm your password change.</p>
-          <div class="mb-3">
-              <label for="verification_code" class="form-label">Verification Code</label>
-              <input type="text" class="form-control" id="verification_code" name="verification_code" maxlength="6" placeholder="123456" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Verify Password Change</button>
-        </div>
-      </form>
+        <form action="../api/update_settings.php" method="POST" class="settings-form">
+            <div class="mb-3">
+                <label for="major" class="form-label">Update Major <span class="text-danger">*</span></label>
+                <select class="form-select" id="major" name="major_id" required>
+                    <option value="">-- Select Major --</option>
+                    <?php
+                        // Fetch all majors from degrees table
+                        $sql_majors = "SELECT degree_id, name FROM degrees WHERE type = 'Major' ORDER BY name ASC";
+                        $res_majors = $conn->query($sql_majors);
+                        while ($major = $res_majors->fetch_assoc()) {
+                            $selected = ($major['degree_id'] == $user_data['major_id']) ? 'selected' : '';
+                            echo "<option value='" . htmlspecialchars($major['degree_id']) . "' $selected>" . htmlspecialchars($major['name']) . "</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="minor" class="form-label">Update Minor</label>
+                <select class="form-select" id="minor" name="minor_id">
+                    <option value="">-- Select Minor (Optional) --</option>
+                    <?php
+                        // Fetch all minors from degrees table
+                        $sql_minors = "SELECT degree_id, name FROM degrees WHERE type = 'Minor' ORDER BY name ASC";
+                        $res_minors = $conn->query($sql_minors);
+                        while ($minor = $res_minors->fetch_assoc()) {
+                            $selected = ($minor['degree_id'] == $user_data['minor_id']) ? 'selected' : '';
+                            echo "<option value='" . htmlspecialchars($minor['degree_id']) . "' $selected>" . htmlspecialchars($minor['name']) . "</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Settings</button>
+        </form>
     </div>
-  </div>
 </div>
 
 <?php
 include '../includes/footer.php';
 ?>
-
-<script>
-document.getElementById('settingsForm').addEventListener('submit', function(e) {
-    const password = document.getElementById('password').value;
-    const confirm_password = document.getElementById('confirm_password').value;
-
-    if (password || confirm_password) { 
-        if (password !== confirm_password) {
-            e.preventDefault();
-            alert('Passwords do not match.');
-            return;
-        }
-
-        e.preventDefault();
-        const formData = new FormData(this);
-        fetch('../.api/send_password_verification.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                var passwordModal = new bootstrap.Modal(document.getElementById('passwordVerificationModal'));
-                passwordModal.show();
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while sending the verification code.');
-        });
-    }
-});
-</script>

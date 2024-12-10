@@ -1,4 +1,4 @@
-/* myprogress.css */
+/* my_progress.css */
 
 /* Container for the progress page */
 .myprogress-container {
@@ -6,22 +6,39 @@
     font-family: Arial, sans-serif;
 }
 
-/* Progress bar styling */
-.progress-bar-background {
-    background: #f0f0f0;
-    width: 100%;
-    height: 20px;
-    position: relative;
-    margin-bottom: 20px;
+/* Card styling for the circular progress chart */
+.myprogress-container .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Added margin to prevent overlapping */
 }
 
-.progress-bar-fill {
-    background: #007EA7;
-    height: 100%;
+/* Centering the canvas within the card */
+.myprogress-container .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Styling the percentage text */
+.myprogress-container h3 {
+    margin-top: 10px;
+    font-size: 2rem;
+    color: #007EA7;
 }
 
 /* Completed courses list */
-.completed-courses-list {
-    list-style-type: disc;
-    padding-left: 20px;
+.accordion-button {
+    font-weight: bold;
+}
+
+.accordion-body {
+    background-color: #f9f9f9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .myprogress-container .row {
+        flex-direction: column;
+    }
 }

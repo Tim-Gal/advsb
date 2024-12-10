@@ -1,344 +1,452 @@
 /* assets/js/network.js */
 
 document.addEventListener('DOMContentLoaded', function () {
-    const userSearchInput = document.getElementById('userSearchInput');
-    const searchUserButton = document.getElementById('searchUserButton');
-    const userSearchResults = document.getElementById('userSearchResults');
-    const incomingInvitations = document.getElementById('incomingInvitations');
-    const friendScheduleModal = new bootstrap.Modal(document.getElementById('friendScheduleModal'));
-    const friendScheduleTable = document.getElementById('friendScheduleTable');
-    const friendScheduleModalLabel = document.getElementById('friendScheduleModalLabel');
+    const friendsList = document.getElementById('friendsList');
+    const pendingReceivedList = document.getElementById('pendingReceivedList');
+    const sendFriendInput = document.getElementById('sendFriendInput');
+    const sendFriendButton = document.getElementById('sendFriendButton');
+    const sendFriendFeedback = document.getElementById('sendFriendFeedback');
+    const notificationToast = new bootstrap.Toast(document.getElementById('notificationToast'));
+    const toastBody = document.getElementById('toastBody');
+
+    const viewScheduleModal = new bootstrap.Modal(document.getElementById('viewScheduleModal'), {
+        keyboard: false
+    });
+    const friendSemesterSelect = document.getElementById('friendSemesterSelect');
+    const friendScheduleTableBody = document.querySelector('#friendScheduleTable tbody');
+
+    // Confirmation Modal Elements
+    const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'), {
+        keyboard: false
+    });
+    const confirmationModalLabel = document.getElementById('confirmationModalLabel');
+    const confirmationModalBody = document.getElementById('confirmationModalBody');
+    const confirmActionButton = document.getElementById('confirmActionButton');
+
+    let selectedAction = null; // To store the action to be confirmed
+    let selectedFriendData = {}; // To store data related to the action
 
     /**
-     * Function to fetch and display incoming friend requests
+     * Function to display toast notifications
+     * @param {string} message 
+     * @param {string} type - 'success', 'error', 'warning', 'info'
      */
-    function loadIncomingInvitations() {
-        fetch('get_invitations.php')
+    function showToast(message, type = 'primary') {
+        const toastElement = document.getElementById('notificationToast');
+        const toastBody = document.getElementById('toastBody');
+
+        // Remove existing bg classes
+        toastElement.classList.remove('bg-primary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+        // Add new bg class based on type
+        switch (type) {
+            case 'success':
+                toastElement.classList.add('bg-success');
+                break;
+            case 'error':
+                toastElement.classList.add('bg-danger');
+                break;
+            case 'warning':
+                toastElement.classList.add('bg-warning');
+                break;
+            case 'info':
+                toastElement.classList.add('bg-info');
+                break;
+            default:
+                toastElement.classList.add('bg-primary');
+        }
+
+        // Set the message
+        toastBody.textContent = message;
+
+        // Show the toast
+        notificationToast.show();
+    }
+
+    /**
+     * Function to fetch and display friends and pending requests
+     */
+    function fetchFriends() {
+        fetch('../api/get_friends.php')
             .then(response => response.json())
             .then(data => {
-                incomingInvitations.innerHTML = '';
-                if (data.success && data.invitations.length > 0) {
-                    data.invitations.forEach(invitation => {
-                        const listItem = document.createElement('div');
-                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        
-                        const infoDiv = document.createElement('div');
-                        infoDiv.innerHTML = `<strong>${invitation.name}</strong> (${invitation.email})`;
-
-                        const buttonsDiv = document.createElement('div');
-                        const acceptBtn = document.createElement('button');
-                        acceptBtn.className = 'btn btn-sm btn-success me-2';
-                        acceptBtn.textContent = 'Accept';
-                        acceptBtn.dataset.requestId = invitation.request_id;
-                        acceptBtn.addEventListener('click', respondInvitation);
-
-                        const rejectBtn = document.createElement('button');
-                        rejectBtn.className = 'btn btn-sm btn-danger';
-                        rejectBtn.textContent = 'Reject';
-                        rejectBtn.dataset.requestId = invitation.request_id;
-                        rejectBtn.addEventListener('click', respondInvitation);
-
-                        buttonsDiv.appendChild(acceptBtn);
-                        buttonsDiv.appendChild(rejectBtn);
-
-                        listItem.appendChild(infoDiv);
-                        listItem.appendChild(buttonsDiv);
-
-                        incomingInvitations.appendChild(listItem);
-                    });
+                if (data.success) {
+                    populateFriendsList(data.friends);
+                    populatePendingReceivedList(data.pending_received);
+                    // Optionally, handle pending_sent if you want to display sent requests
                 } else {
-                    incomingInvitations.innerHTML = '<p class="text-muted">No incoming friend requests.</p>';
+                    showToast(data.error || 'Failed to fetch friends.', 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error fetching invitations:', error);
-                incomingInvitations.innerHTML = '<p class="text-danger">Failed to load invitations.</p>';
+            .catch(err => {
+                console.error('Error fetching friends:', err);
+                showToast('Error fetching friends. Please try again.', 'error');
             });
     }
 
     /**
-     * Function to handle accepting or rejecting invitations
+     * Function to populate the Friends List
+     * @param {Array} friends 
      */
-    function respondInvitation(event) {
-        const requestId = event.target.dataset.requestId;
-        const action = event.target.textContent.toLowerCase();
+    function populateFriendsList(friends) {
+        friendsList.innerHTML = '';
+        if (friends.length === 0) {
+            friendsList.innerHTML = '<li class="list-group-item">You have no friends yet.</li>';
+            return;
+        }
 
-        fetch('respond_invitation.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `request_id=${encodeURIComponent(requestId)}&action=${encodeURIComponent(action)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                loadIncomingInvitations();
-                loadFriendsList();
-                showToast(data.message, 'success');
-            } else {
-                showToast(data.error, 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Error responding to invitation:', error);
-            showToast('Failed to respond to the invitation.', 'danger');
+        friends.forEach(friend => {
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.textContent = friend.name;
+
+            const buttonsDiv = document.createElement('div');
+
+            // View Schedule Button
+            const viewButton = document.createElement('button');
+            viewButton.className = 'btn btn-sm btn-info me-2';
+            viewButton.textContent = 'View Schedule';
+            viewButton.addEventListener('click', () => {
+                viewFriendSchedule(friend.id, friend.name);
+            });
+
+            // Remove Friend Button
+            const removeButton = document.createElement('button');
+            removeButton.className = 'btn btn-sm btn-danger';
+            removeButton.textContent = 'Remove Friend';
+            removeButton.addEventListener('click', () => {
+                // Set the action and data
+                selectedAction = 'removeFriend';
+                selectedFriendData = { id: friend.id, name: friend.name };
+                // Configure and show the confirmation modal
+                confirmationModalLabel.textContent = 'Confirm Removal';
+                confirmationModalBody.textContent = `Are you sure you want to remove ${friend.name} from your friends?`;
+                confirmActionButton.textContent = 'Remove';
+                confirmActionButton.classList.remove('btn-primary');
+                confirmActionButton.classList.add('btn-danger');
+                confirmationModal.show();
+            });
+
+            buttonsDiv.appendChild(viewButton);
+            buttonsDiv.appendChild(removeButton);
+            listItem.appendChild(buttonsDiv);
+
+            friendsList.appendChild(listItem);
         });
     }
 
     /**
-     * Function to search for users
+     * Function to populate the Pending Received Friend Requests List
+     * @param {Array} pending 
      */
-    function searchUsers() {
-        const query = userSearchInput.value.trim();
-        if (query.length < 2) {
-            userSearchResults.innerHTML = '';
-            userSearchResults.style.display = 'none';
+    function populatePendingReceivedList(pending) {
+        pendingReceivedList.innerHTML = '';
+        if (pending.length === 0) {
+            pendingReceivedList.innerHTML = '<li class="list-group-item">No pending friend requests.</li>';
             return;
         }
 
-        fetch(`search_users.php?query=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => {
-                userSearchResults.innerHTML = '';
-                if (data.success && data.users.length > 0) {
-                    data.users.forEach(user => {
-                        const item = document.createElement('div');
-                        item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                        
-                        const userInfo = document.createElement('div');
-                        userInfo.innerHTML = `<strong>${user.name}</strong> (${user.email})`;
+        pending.forEach(request => {
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.textContent = request.name;
 
-                        const actionBtn = document.createElement('button');
-                        actionBtn.className = 'btn btn-sm';
-                        if (user.status === 'friends') {
-                            actionBtn.classList.add('btn-secondary');
-                            actionBtn.textContent = 'Friends';
-                            actionBtn.disabled = true;
-                        } else {
-                            actionBtn.classList.add('btn-primary');
-                            actionBtn.textContent = 'Add Friend';
-                            actionBtn.dataset.friendId = user.student_id;
-                            actionBtn.addEventListener('click', sendFriendRequest);
-                        }
+            const buttonsDiv = document.createElement('div');
 
-                        item.appendChild(userInfo);
-                        item.appendChild(actionBtn);
-
-                        userSearchResults.appendChild(item);
-                    });
-                    userSearchResults.style.display = 'block';
-                } else {
-                    userSearchResults.innerHTML = '<p class="text-muted">No users found.</p>';
-                    userSearchResults.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error searching users:', error);
-                userSearchResults.innerHTML = '<p class="text-danger">Error searching users.</p>';
-                userSearchResults.style.display = 'block';
+            // Accept Friend Request Button
+            const acceptButton = document.createElement('button');
+            acceptButton.className = 'btn btn-sm btn-success me-2';
+            acceptButton.textContent = 'Accept';
+            acceptButton.addEventListener('click', () => {
+                // Set the action and data
+                selectedAction = 'acceptFriendRequest';
+                selectedFriendData = { id: request.id, name: request.name };
+                // Configure and show the confirmation modal
+                confirmationModalLabel.textContent = 'Confirm Acceptance';
+                confirmationModalBody.textContent = `Do you want to accept the friend request from ${request.name}?`;
+                confirmActionButton.textContent = 'Accept';
+                confirmActionButton.classList.remove('btn-danger');
+                confirmActionButton.classList.add('btn-primary');
+                confirmationModal.show();
             });
+
+            // Optionally, you can add a "Reject" button here
+
+            buttonsDiv.appendChild(acceptButton);
+            listItem.appendChild(buttonsDiv);
+            pendingReceivedList.appendChild(listItem);
+        });
     }
 
     /**
      * Function to send a friend request
      */
-    function sendFriendRequest(event) {
-        const friendId = event.target.dataset.friendId;
+    function sendFriendRequest() {
+        const receiverUsername = sendFriendInput.value.trim();
 
-        fetch('send_invitation.php', {
+        if (receiverUsername === '') {
+            showToast('Please enter an email to send a friend request.', 'warning');
+            return;
+        }
+
+        // Simple email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(receiverUsername)) {
+            showToast('Please enter a valid email address.', 'warning');
+            return;
+        }
+
+        // Disable the button to prevent multiple clicks
+        sendFriendButton.disabled = true;
+        sendFriendFeedback.innerHTML = '';
+
+        fetch('../api/send_friend_request.php', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json'
             },
-            body: `friend_id=${encodeURIComponent(friendId)}`
+            body: JSON.stringify({ receiver_username: receiverUsername })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                searchUsers(); // Refresh search results
-                showToast(data.message, 'success');
-                loadFriendsList(); // Refresh friends list
-            } else {
-                showToast(data.error, 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Error sending friend request:', error);
-            showToast('Failed to send friend request.', 'danger');
-        });
-    }
-
-    /**
-     * Function to load the friends list
-     */
-    function loadFriendsList() {
-        fetch('get_friends.php')
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                const friendsListContainer = document.querySelector('.friends-list-container');
                 if (data.success) {
-                    if (data.friends.length > 0) {
-                        let listHtml = '<ul class="list-group">';
-                        data.friends.forEach(friend => {
-                            listHtml += `
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>${friend.name}</div>
-                                    <div>
-                                        <button class="btn btn-sm btn-info viewFriendScheduleBtn" data-friend-id="${friend.student_id}">View Schedule</button>
-                                        <button class="btn btn-sm btn-danger removeFriendBtn" data-friend-id="${friend.student_id}">Remove Friend</button>
-                                    </div>
-                                </li>
-                            `;
-                        });
-                        listHtml += '</ul>';
-                        friendsListContainer.innerHTML = listHtml;
-                    } else {
-                        friendsListContainer.innerHTML = '<p>You have no friends yet.</p>';
-                    }
+                    showToast(data.message, 'success');
+                    sendFriendInput.value = '';
+                    fetchFriends();
                 } else {
-                    friendsListContainer.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                    showToast(data.error || 'Failed to send friend request.', 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error loading friends list:', error);
-                const friendsListContainer = document.querySelector('.friends-list-container');
-                friendsListContainer.innerHTML = '<p class="text-danger">Failed to load friends list.</p>';
+            .catch(err => {
+                console.error('Error sending friend request:', err);
+                showToast('Error sending friend request. Please try again.', 'error');
+            })
+            .finally(() => {
+                sendFriendButton.disabled = false;
             });
     }
 
     /**
-     * Function to handle viewing a friend's schedule
+     * Function to accept a friend request
+     * @param {number} requesterId 
+     * @param {string} requesterName 
      */
-    function viewFriendSchedule(event) {
-        const friendId = event.target.dataset.friendId;
-
-        // Fetch the friend's schedule
-        fetch(`get_friend_schedule.php?friend_id=${encodeURIComponent(friendId)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Clear existing schedule
-                    friendScheduleTable.querySelector('tbody').innerHTML = '';
-
-                    // Populate schedule
-                    data.schedule.forEach(row => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${row.time}</td>
-                            <td>${row.Monday || ''}</td>
-                            <td>${row.Tuesday || ''}</td>
-                            <td>${row.Wednesday || ''}</td>
-                            <td>${row.Thursday || ''}</td>
-                            <td>${row.Friday || ''}</td>
-                        `;
-                        friendScheduleTable.querySelector('tbody').appendChild(tr);
-                    });
-
-                    // Update modal title
-                    const friendName = data.friend_name;
-                    friendScheduleModalLabel.textContent = `${friendName}'s Schedule`;
-
-                    // Show the modal
-                    friendScheduleModal.show();
-                } else {
-                    showToast(data.error, 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching friend schedule:', error);
-                showToast('Failed to fetch friend schedule.', 'danger');
-            });
+    function acceptFriendRequest(requesterId, requesterName) {
+        // This function is no longer directly called; confirmation is handled via the modal
+        // The actual logic is handled in the confirmActionButton event listener
     }
 
     /**
      * Function to remove a friend
+     * @param {number} friendId 
+     * @param {string} friendName 
      */
-    function removeFriend(event) {
-        const friendId = event.target.dataset.friendId;
+    function removeFriend(friendId, friendName) {
+        // This function is no longer directly called; confirmation is handled via the modal
+        // The actual logic is handled in the confirmActionButton event listener
+    }
 
-        if (!confirm('Are you sure you want to remove this friend?')) {
+    /**
+     * Function to view a friend's schedule
+     * @param {number} friendId 
+     * @param {string} friendName 
+     */
+    function viewFriendSchedule(friendId, friendName) {
+        selectedFriendId = friendId;
+        document.getElementById('viewScheduleModalLabel').textContent = `${friendName}'s Schedule`;
+        friendSemesterSelect.value = '';
+        friendScheduleTableBody.innerHTML = '';
+        viewScheduleModal.show();
+    }
+
+    /**
+     * Function to fetch and display a friend's schedule based on selected semester
+     */
+    function fetchFriendSchedule() {
+        const semester = friendSemesterSelect.value;
+        if (semester === '') {
+            showToast('Please select a semester to view the schedule.', 'warning');
             return;
         }
 
-        fetch(`remove_friend.php?friend_id=${encodeURIComponent(friendId)}`)
-            .then(response => response.json())
+        // Clear existing schedule
+        friendScheduleTableBody.innerHTML = '';
+
+        fetch(`../api/view_friend_schedule.php?friend_id=${encodeURIComponent(selectedFriendId)}&semester=${encodeURIComponent(semester)}`)
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    loadFriendsList();
-                    showToast('Friend removed successfully.', 'success');
+                    populateFriendSchedule(data.schedule);
                 } else {
-                    showToast(data.error, 'danger');
+                    showToast(data.error || 'Failed to fetch friend\'s schedule.', 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error removing friend:', error);
-                showToast('Failed to remove friend.', 'danger');
+            .catch(err => {
+                console.error('Error fetching friend\'s schedule:', err);
+                showToast('Error fetching friend\'s schedule. Please try again.', 'error');
             });
     }
 
     /**
-     * Function to show toast notifications
-     * @param {string} message 
-     * @param {string} type - 'success', 'danger', 'info', 'warning'
+     * Function to populate the friend's schedule table
+     * @param {Array} schedule 
      */
-    function showToast(message, type = 'info') {
-        // Create toast container if it doesn't exist
-        let toastContainer = document.getElementById('toastContainer');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'toastContainer';
-            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
-            document.body.appendChild(toastContainer);
+    function populateFriendSchedule(schedule) {
+        if (schedule.length === 0) {
+            friendScheduleTableBody.innerHTML = '<tr><td colspan="6" class="text-center">No courses scheduled for this semester.</td></tr>';
+            return;
         }
 
-        // Create the toast element
-        const toastEl = document.createElement('div');
-        toastEl.className = `toast align-items-center text-bg-${type} border-0`;
-        toastEl.role = 'alert';
-        toastEl.ariaLive = 'assertive';
-        toastEl.ariaAtomic = 'true';
-        toastEl.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
-        toastContainer.appendChild(toastEl);
+        // Initialize a map to track schedule blocks
+        const scheduleMap = {};
 
-        // Initialize and show the toast
-        const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
-        bsToast.show();
+        schedule.forEach(course => {
+            const day = course.day_of_week;
+            const startHour = parseInt(course.start_time.split(':')[0]);
+            const endHour = parseInt(course.end_time.split(':')[0]);
 
-        // Remove the toast after it hides
-        toastEl.addEventListener('hidden.bs.toast', () => {
-            toastEl.remove();
+            for (let h = startHour; h < endHour; h++) {
+                const cellClass = `${day}-${h}`;
+                if (!scheduleMap[cellClass]) {
+                    scheduleMap[cellClass] = [];
+                }
+                scheduleMap[cellClass].push({
+                    course_code: course.course_code,
+                    course_name: course.course_name,
+                    start_time: course.start_time,
+                    end_time: course.end_time,
+                    location: course.location
+                });
+            }
         });
+
+        // Populate the table
+        for (let row of friendScheduleTableBody.parentElement.children) {
+            if (row.tagName.toLowerCase() !== 'tr') continue;
+            const timeCell = row.querySelector('.time-cell');
+            const time = timeCell.textContent.trim();
+            const hour = parseInt(time.split(':')[0]);
+
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].forEach(day => {
+                const cellClass = `${day}-${hour}`;
+                const cell = row.querySelector(`.${cellClass}`);
+                if (scheduleMap[cellClass]) {
+                    scheduleMap[cellClass].forEach(course => {
+                        const block = document.createElement('div');
+                        block.className = 'course-block';
+                        block.textContent = `${course.course_code} - ${course.course_name}\n${course.location}\n(${course.start_time}-${course.end_time})`;
+                        block.style.whiteSpace = 'pre-wrap';
+                        block.style.backgroundColor = '#FFC107';
+                        block.style.margin = '2px 0';
+                        block.style.padding = '5px';
+                        block.style.border = '1px solid #ccc';
+                        block.style.borderRadius = '4px';
+                        block.style.fontSize = '0.9em';
+                        cell.appendChild(block);
+                    });
+                }
+            });
+        }
     }
 
     /**
-     * Event listeners
+     * Event listener for Send Friend Request button
      */
-    searchUserButton.addEventListener('click', searchUsers);
-    userSearchInput.addEventListener('keyup', function (e) {
+    sendFriendButton.addEventListener('click', sendFriendRequest);
+
+    /**
+     * Event listener for Enter key in Send Friend Request input
+     */
+    sendFriendInput.addEventListener('keyup', function (e) {
         if (e.key === 'Enter') {
-            searchUsers();
+            sendFriendRequest();
         }
     });
 
-    // Event delegation for dynamically added buttons
-    document.addEventListener('click', function (event) {
-        if (event.target.classList.contains('viewFriendScheduleBtn')) {
-            viewFriendSchedule(event);
+    /**
+     * Event listener for Semester Selection in View Schedule Modal
+     */
+    friendSemesterSelect.addEventListener('change', fetchFriendSchedule);
+
+    /**
+     * Event listener for Confirm Action Button in Confirmation Modal
+     */
+    confirmActionButton.addEventListener('click', function () {
+        if (!selectedAction || !selectedFriendData.id) {
+            showToast('No action selected.', 'error');
+            confirmationModal.hide();
+            return;
         }
-        if (event.target.classList.contains('removeFriendBtn')) {
-            removeFriend(event);
+
+        if (selectedAction === 'removeFriend') {
+            // Proceed with removing the friend
+            const friendId = selectedFriendData.id;
+            const friendName = selectedFriendData.name;
+
+            fetch('../api/remove_friend.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ friend_id: friendId })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        fetchFriends();
+                    } else {
+                        showToast(data.error || 'Failed to remove friend.', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error removing friend:', err);
+                    showToast('Error removing friend. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Reset the action and data
+                    selectedAction = null;
+                    selectedFriendData = {};
+                    confirmationModal.hide();
+                });
+
+        } else if (selectedAction === 'acceptFriendRequest') {
+            // Proceed with accepting the friend request
+            const requesterId = selectedFriendData.id;
+            const requesterName = selectedFriendData.name;
+
+            fetch('../api/accept_friend_request.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ requester_id: requesterId })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        fetchFriends();
+                    } else {
+                        showToast(data.error || 'Failed to accept friend request.', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error accepting friend request:', err);
+                    showToast('Error accepting friend request. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Reset the action and data
+                    selectedAction = null;
+                    selectedFriendData = {};
+                    confirmationModal.hide();
+                });
+        } else {
+            showToast('Unknown action.', 'error');
+            confirmationModal.hide();
         }
     });
 
-    // Initial load
-    loadIncomingInvitations();
-    loadFriendsList();
+    // Initial fetch of friends and pending requests
+    fetchFriends();
 });

@@ -1,43 +1,109 @@
 <?php
-// public/get_friends.php
 
 include '../includes/config.php';
 include '../includes/functions.php';
 
-session_start();
 header('Content-Type: application/json');
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
-    echo json_encode(["error" => "Not logged in"]);
+    echo json_encode(['error' => 'Unauthorized. Please log in.']);
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch current friends
-$stmt = $conn->prepare("
-    SELECT s.student_id, s.fname, s.lname
-    FROM FriendsWith fw
-    JOIN students s ON fw.student_id2 = s.student_id
-    WHERE fw.student_id1 = ?
-    UNION
-    SELECT s.student_id, s.fname, s.lname
-    FROM FriendsWith fw
-    JOIN students s ON fw.student_id1 = s.student_id
-    WHERE fw.student_id2 = ?
-");
+// Fetch accepted friends
+$sql = "
+    SELECT u.student_id, u.fname, u.lname, u.email
+    FROM friendswith fw
+    JOIN students u ON 
+        (fw.student_id1 = u.student_id AND fw.student_id2 = ?) OR 
+        (fw.student_id2 = u.student_id AND fw.student_id1 = ?)
+";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
+}
+
 $stmt->bind_param("ii", $user_id, $user_id);
 $stmt->execute();
-$res_friends = $stmt->get_result();
-$friendsList = [];
-while ($row = $res_friends->fetch_assoc()) {
-    $friendsList[] = [
-        "student_id" => $row['student_id'],
-        "name" => htmlspecialchars($row['fname'] . ' ' . $row['lname'])
+$result = $stmt->get_result();
+
+$friends = [];
+while ($row = $result->fetch_assoc()) {
+    $friends[] = [
+        'id' => $row['student_id'],
+        'name' => $row['fname'] . ' ' . $row['lname'],
+        'email' => $row['email']
     ];
 }
 $stmt->close();
 
-echo json_encode(["success" => true, "friends" => $friendsList]);
+// Fetch pending friend requests received by the user
+$sql = "
+    SELECT u.student_id, u.fname, u.lname, u.email
+    FROM friendrequests fr
+    JOIN students u ON fr.sender_id = u.student_id
+    WHERE fr.receiver_id = ? AND fr.status = 'pending'
+";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
+}
+
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$pending_received = [];
+while ($row = $result->fetch_assoc()) {
+    $pending_received[] = [
+        'id' => $row['student_id'],
+        'name' => $row['fname'] . ' ' . $row['lname'],
+        'email' => $row['email']
+    ];
+}
+$stmt->close();
+
+// Fetch pending friend requests sent by the user
+$sql = "
+    SELECT u.student_id, u.fname, u.lname, u.email
+    FROM friendrequests fr
+    JOIN students u ON fr.receiver_id = u.student_id
+    WHERE fr.sender_id = ? AND fr.status = 'pending'
+";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
+}
+
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$pending_sent = [];
+while ($row = $result->fetch_assoc()) {
+    $pending_sent[] = [
+        'id' => $row['student_id'],
+        'name' => $row['fname'] . ' ' . $row['lname'],
+        'email' => $row['email']
+    ];
+}
+$stmt->close();
+
+// Return the friends and pending requests
+echo json_encode([
+    'success' => true,
+    'friends' => $friends,
+    'pending_received' => $pending_received,
+    'pending_sent' => $pending_sent
+]);
 ?>

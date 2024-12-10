@@ -1,142 +1,147 @@
 <?php
-// public/network.php
-
-$pageTitle = "Network";
-$pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/network.css'
-];
-$pageJS = [
-    '../assets/js/network.js'
-];
-
-include '../includes/header.php';
-
-// Ensure the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-
-// Fetch current friends
-$sql_friends = "
-SELECT s.student_id, s.fname, s.lname
-FROM FriendsWith fw
-JOIN students s ON (
-    (fw.student_id1 = ? AND fw.student_id2 = s.student_id)
-)
-OR (
-    (fw.student_id2 = ? AND fw.student_id1 = s.student_id)
-)
-";
-
-$stmt_friends = $conn->prepare($sql_friends);
-$stmt_friends->bind_param("ii", $user_id, $user_id);
-$stmt_friends->execute();
-$res_friends = $stmt_friends->get_result();
-$friendsList = [];
-while ($row = $res_friends->fetch_assoc()) {
-    $friendsList[] = $row;
-}
-$stmt_friends->close();
+include '../includes/header.php'; 
 ?>
+<div class="container my-4">
+    <h1 class="text-center mb-4">My Network</h1>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Head content is handled in header.php -->
-</head>
-<body>
-    <div class="main-content network-container container py-5">
-        <h1 class="mb-4">Network</h1>
-        
-        <!-- Search for Friends -->
-        <div class="search-container mb-5">
-            <h3>Search and Add Friends</h3>
-            <div class="input-group">
-                <input type="text" id="userSearchInput" class="form-control" placeholder="Enter name or email...">
-                <button id="searchUserButton" class="btn btn-primary">Search</button>
-            </div>
-            <div id="userSearchResults" class="suggestions-dropdown mt-2"></div>
+    <!-- Friends List Section -->
+    <!-- Friends List Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Friends</h5>
         </div>
-
-        <!-- Incoming Friend Invitations -->
-        <div class="invitations-container mb-5">
-            <h3>Incoming Friend Requests</h3>
-            <div id="incomingInvitations" class="list-group">
-                <!-- Friend requests will be dynamically loaded here -->
-            </div>
+        <div class="card-body">
+            <ul class="list-group" id="friendsList">
+                <!-- Friends will be dynamically loaded here -->
+            </ul>
         </div>
-
-        <!-- Your Friends List -->
-        <div class="friends-list-container">
-            <h3>Your Friends</h3>
-            <?php if (count($friendsList) > 0): ?>
-                <ul class="list-group">
-                    <?php foreach ($friendsList as $friend): ?>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div><?php echo htmlspecialchars($friend['fname'] . ' ' . $friend['lname']); ?></div>
-                            <div>
-                                <button class="btn btn-sm btn-info viewFriendScheduleBtn" data-friend-id="<?php echo $friend['student_id']; ?>">View Schedule</button>
-                                <button class="btn btn-sm btn-danger removeFriendBtn" data-friend-id="<?php echo $friend['student_id']; ?>">Remove Friend</button>
-                            </div>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <p>You have no friends yet.</p>
-            <?php endif; ?>
-        </div>
-
-        <!-- Friend's Schedule Modal -->
-        <div class="modal fade" id="friendScheduleModal" tabindex="-1" aria-labelledby="friendScheduleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="friendScheduleModalLabel">Friend's Schedule</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table table-bordered schedule-table" id="friendScheduleTable">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Monday</th>
-                                    <th>Tuesday</th>
-                                    <th>Wednesday</th>
-                                    <th>Thursday</th>
-                                    <th>Friday</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                $hours = range(8, 18);
-                                foreach ($hours as $h) {
-                                    $timeLabel = sprintf("%02d:00", $h);
-                                    echo "<tr>";
-                                    echo "<td class='time-cell'>$timeLabel</td>";
-                                    echo "<td class='Mon-$h day-cell'></td>";
-                                    echo "<td class='Tue-$h day-cell'></td>";
-                                    echo "<td class='Wed-$h day-cell'></td>";
-                                    echo "<td class='Thu-$h day-cell'></td>";
-                                    echo "<td class='Fri-$h day-cell'></td>";
-                                    echo "</tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <script src="../assets/js/network.js"></script>
-</body>
-</html>
+
+    <!-- Pending Friend Requests Received -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Pending Friend Requests</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group" id="pendingReceivedList">
+                <!-- Pending received requests will be loaded here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Send Friend Request Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Send Friend Request</h5>
+        </div>
+        <div class="card-body">
+            <div class="input-group">
+                <input type="text" id="sendFriendInput" class="form-control" placeholder="Enter email to add as friend..." aria-label="Send friend request">
+                <button class="btn btn-primary" id="sendFriendButton" type="button">Send Request</button>
+            </div>
+            <div id="sendFriendFeedback" class="mt-2"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+  <div id="notificationToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody">
+        <!-- Toast message will be injected here -->
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal to View Friend's Schedule -->
+<div class="modal fade" id="viewScheduleModal" tabindex="-1" aria-labelledby="viewScheduleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="viewScheduleModalLabel">Friend's Schedule</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Semester Selection -->
+        <div class="mb-3">
+            <label for="friendSemesterSelect" class="form-label">Select Semester:</label>
+            <select class="form-select" id="friendSemesterSelect">
+                <option value="">-- Select Semester --</option>
+                <option value="FALL">Fall</option>
+                <option value="WINTER">Winter</option>
+                <option value="SUMMER">Summer</option>
+            </select>
+        </div>
+        <!-- Schedule Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="friendScheduleTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $hours = range(8, 18);
+                    foreach ($hours as $h) {
+                        $timeLabel = sprintf("%02d:00", $h);
+                        echo "<tr>";
+                        echo "<td class='time-cell'>$timeLabel</td>";
+                        echo "<td class='Mon-$h day-cell'></td>";
+                        echo "<td class='Tue-$h day-cell'></td>";
+                        echo "<td class='Wed-$h day-cell'></td>";
+                        echo "<td class='Thu-$h day-cell'></td>";
+                        echo "<td class='Fri-$h day-cell'></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="confirmationModalLabel">Confirm Action</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="confirmationModalBody">
+        <!-- Confirmation message will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmActionButton">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<!-- External Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAc_2sgP5U-SRL68dw2XrUVq2ptSBl-3JI"></script>
+
+<!-- Custom JavaScript -->
+<script src="../assets/js/network.js"></script>
+
 <?php
 include '../includes/footer.php';
 ?>

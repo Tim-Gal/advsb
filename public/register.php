@@ -1,11 +1,11 @@
 <?php
 $pageTitle = "Register";
 $pageCSS = [
+    '../assets/css/global.css',
     '../assets/css/register.css'
 ];
 $pageJS = [
-  '../assets/css/global.css',
-  '../assets/js/register.js'
+    '../assets/js/register.js'
 ];
 
 include '../includes/header.php';
@@ -41,6 +41,34 @@ include '../includes/header.php';
       <div class="mb-3">
         <label for="email" class="form-label">School Email</label>
         <input type="email" class="form-control" id="email" name="email" placeholder="Enter your school email" required>
+      </div>
+      <div class="mb-3">
+        <label for="major" class="form-label">Select Major <span class="text-danger">*</span></label>
+        <select class="form-select" id="major" name="major_id" required>
+            <option value="">-- Select Major --</option>
+            <?php
+                // Fetch all majors from degrees table
+                $sql_majors = "SELECT degree_id, name FROM degrees WHERE type = 'Major' ORDER BY name ASC";
+                $res_majors = $conn->query($sql_majors);
+                while ($major = $res_majors->fetch_assoc()) {
+                    echo "<option value='" . htmlspecialchars($major['degree_id']) . "'>" . htmlspecialchars($major['name']) . "</option>";
+                }
+            ?>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="minor" class="form-label">Select Minor</label>
+        <select class="form-select" id="minor" name="minor_id">
+            <option value="">-- Select Minor (Optional) --</option>
+            <?php
+                // Fetch all minors from degrees table
+                $sql_minors = "SELECT degree_id, name FROM degrees WHERE type = 'Minor' ORDER BY name ASC";
+                $res_minors = $conn->query($sql_minors);
+                while ($minor = $res_minors->fetch_assoc()) {
+                    echo "<option value='" . htmlspecialchars($minor['degree_id']) . "'>" . htmlspecialchars($minor['name']) . "</option>";
+                }
+            ?>
+        </select>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>

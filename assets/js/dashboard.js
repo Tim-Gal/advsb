@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const semesterRadios = document.querySelectorAll('input[name="semester"]');
     const courseSearchInput = document.getElementById('courseSearchInput');
     const searchSuggestions = document.getElementById('searchSuggestions');
-    const addCourseButton = document.getElementById('addCourseButton');
+    // const addCourseButton = document.getElementById('addCourseButton'); // Removed as per instruction
     const selectedCourseContainer = document.getElementById('selectedCourseContainer');
     const selectedCourseText = document.getElementById('selectedCourseText');
     const removeSelectedCourse = document.getElementById('removeSelectedCourse');
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                course_code: selectedCourse.code,
+                course_code: selectedCourse.code, // Only the course code is sent
                 semester: selectedSemester
             })
         })
