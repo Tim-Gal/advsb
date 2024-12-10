@@ -3,6 +3,7 @@
 
 $pageTitle = "Network";
 $pageCSS = [
+    '../assets/css/global.css',
     '../assets/css/network.css'
 ];
 $pageJS = [
@@ -41,13 +42,14 @@ while ($row = $res_friends->fetch_assoc()) {
 }
 $stmt_friends->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Head content is handled in header.php -->
 </head>
 <body>
-    <div class="network-container container py-5">
+    <div class="main-content network-container container py-5">
         <h1 class="mb-4">Network</h1>
         
         <!-- Search for Friends -->

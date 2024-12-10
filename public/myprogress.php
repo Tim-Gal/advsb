@@ -1,6 +1,7 @@
 <?php
 $pageTitle = "My Progress";
 $pageCSS = [
+    '../assets/css/global.css',
     '../assets/css/my_progress.css'
 ];
 
@@ -27,7 +28,7 @@ $completedCount = count($completedCourses);
 $progress = ($totalCourses > 0) ? ($completedCount / $totalCourses) * 100 : 0;
 ?>
 
-<div class="myprogress-container">
+<div class=" main-content myprogress-container">
     <h1>My Progress</h1>
     <p>Your progress in the program:</p>
     <div class="progress-bar-background">
