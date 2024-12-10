@@ -1,25 +1,17 @@
 <?php
-// public/api/accept_friend_request.php
-
 include '../includes/config.php';
 include '../includes/functions.php';
 
 header('Content-Type: application/json');
-
-// Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorized. Please log in.']);
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
-
-// Retrieve and sanitize POST parameters
 $data = json_decode(file_get_contents('php://input'), true);
 $requester_id = isset($data['requester_id']) ? intval($data['requester_id']) : 0;
 
@@ -28,7 +20,6 @@ if (empty($requester_id)) {
     exit();
 }
 
-// Check if there is a pending friend request from requester_id to user_id
 $sql = "SELECT id, status FROM friendrequests WHERE sender_id = ? AND receiver_id = ? AND status = 'pending'";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -45,12 +36,25 @@ if ($result->num_rows === 0) {
     $stmt->close();
     exit();
 }
+$sql_delete = "DELETE FROM friendrequests WHERE sender_id = ? AND receiver_id = ? AND status = 'pending'";
+$stmt_delete = $conn->prepare($sql_delete);
+if (!$stmt_delete) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
+}
+$stmt_delete->bind_param("ii", $requester_id, $user_id);
+
+if (!$stmt_delete->execute()) {
+    echo json_encode(['error' => 'Failed to delete friend request.']);
+    $stmt_delete->close();
+    exit();
+}
+
+$stmt_delete->close();
 
 $friendship = $result->fetch_assoc();
 $friendship_id = $friendship['id'];
 $stmt->close();
-
-// Update the friendship status to 'accepted'
 $sql = "UPDATE friendrequests SET status = 'accepted' WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -61,7 +65,6 @@ if (!$stmt) {
 $stmt->bind_param("i", $friendship_id);
 
 if ($stmt->execute()) {
-    // Insert into friendswith table for mutual friendship
     $sql_insert = "INSERT INTO friendswith (student_id1, student_id2) VALUES (?, ?)";
     $stmt_insert = $conn->prepare($sql_insert);
     if (!$stmt_insert) {

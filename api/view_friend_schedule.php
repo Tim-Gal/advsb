@@ -1,6 +1,9 @@
 <?php
 // public/api/view_friend_schedule.php
 
+// Start output buffering to prevent accidental output
+ob_start();
+
 include '../includes/config.php';
 include '../includes/functions.php';
 
@@ -38,7 +41,8 @@ $sql = "
 ";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    error_log("Prepare failed in view_friend_schedule.php: (" . $conn->errno . ") " . $conn->error);
+    echo json_encode(['error' => 'An internal server error occurred. Please try again later.']);
     exit();
 }
 
@@ -64,7 +68,8 @@ $sql = "
 ";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    error_log("Prepare failed in view_friend_schedule.php: (" . $conn->errno . ") " . $conn->error);
+    echo json_encode(['error' => 'An internal server error occurred. Please try again later.']);
     exit();
 }
 
@@ -85,5 +90,7 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// Clean the output buffer and send the JSON response
+ob_clean();
 echo json_encode(['success' => true, 'schedule' => $schedule]);
-?>
+// No closing PHP tag to prevent accidental whitespace

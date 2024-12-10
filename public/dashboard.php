@@ -1,7 +1,25 @@
 <?php
-include '../includes/header.php'; 
-?>
+// public/dashboard.php
 
+// Include necessary configuration and function files
+include '../includes/header.php'; 
+
+// Define days of the week for the schedule
+$daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+$startHour = 8;  
+$endHour = 18;   
+
+// Ensure the user is authenticated
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page if not authenticated
+    header('Location: login.php');
+    exit();
+}
+?>
+<!DOCTYPE html>
+<head>
+</head>
 <div class="container my-4">
     <h1 class="text-center mb-4">My Schedule Builder</h1>
 
@@ -12,14 +30,13 @@ include '../includes/header.php';
         </div>
         <div class="card-body">
             <div class="btn-group" role="group" aria-label="Semester selection">
-                <input type="radio" class="btn-check" name="semester" id="semesterFall" value="Fall" autocomplete="off" checked>
-                <label class="btn btn-outline-primary" for="semesterFall">Fall</label>
-
-                <input type="radio" class="btn-check" name="semester" id="semesterWinter" value="Winter" autocomplete="off">
-                <label class="btn btn-outline-primary" for="semesterWinter">Winter</label>
-
-                <input type="radio" class="btn-check" name="semester" id="semesterSummer" value="Summer" autocomplete="off">
-                <label class="btn btn-outline-primary" for="semesterSummer">Summer</label>
+                <?php
+                $semesters = ['Fall', 'Winter', 'Summer'];
+                foreach ($semesters as $semester) {
+                    echo '<input type="radio" class="btn-check" name="semester" id="semester' . $semester . '" value="' . $semester . '"' . ($semester === 'Fall' ? ' checked' : '') . '>';
+                    echo '<label class="btn btn-outline-primary" for="semester' . $semester . '">' . $semester . '</label>';
+                }
+                ?>
             </div>
         </div>
     </div>
@@ -33,7 +50,6 @@ include '../includes/header.php';
             <div class="position-relative">
                 <div class="input-group">
                     <input type="text" id="courseSearchInput" class="form-control" placeholder="Enter course code or name..." aria-label="Course search" autocomplete="off">
-                    <!-- Removed the Green "Add Course" Button -->
                 </div>
                 <div id="searchSuggestions" class="list-group suggestions-dropdown" style="position: absolute; width: 100%; z-index: 1000;"></div>
             </div>
@@ -59,25 +75,22 @@ include '../includes/header.php';
                 <thead class="table-dark">
                     <tr>
                         <th>Time</th>
-                        <th>Monday</th>
-                        <th>Tuesday</th>
-                        <th>Wednesday</th>
-                        <th>Thursday</th>
-                        <th>Friday</th>
+                        <?php foreach ($daysOfWeek as $day): ?>
+                            <th><?php echo $day; ?></th>
+                        <?php endforeach; ?>
                     </tr>
                 </thead>
                 <tbody>
                     <?php 
-                    $hours = range(8, 18);
-                    foreach ($hours as $h) {
-                        $timeLabel = sprintf("%02d:00", $h);
+                    for ($hour = $startHour; $hour <= $endHour; $hour++) {
+                        // Generate time label
+                        $timeLabel = sprintf("%02d:00", $hour);
                         echo "<tr>";
                         echo "<td class='time-cell'>$timeLabel</td>";
-                        echo "<td class='Mon-$h day-cell'></td>";
-                        echo "<td class='Tue-$h day-cell'></td>";
-                        echo "<td class='Wed-$h day-cell'></td>";
-                        echo "<td class='Thu-$h day-cell'></td>";
-                        echo "<td class='Fri-$h day-cell'></td>";
+                        foreach ($daysOfWeek as $day) {
+                            // Unique class for each cell based on day and hour
+                            echo "<td class='{$day}-{$hour} day-cell'><div class='course-block-container'></div></td>";
+                        }
                         echo "</tr>";
                     }
                     ?>
@@ -87,19 +100,17 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- Toast Container -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-  <div id="notificationToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="toastBody">
-        <!-- Toast message will be injected here -->
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body" id="toastBody">
+            <!-- Toast message will be injected here -->
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
-  </div>
 </div>
 
-<!-- Google Maps Modal -->
+<!-- Google Maps Modal (Optional) -->
 <div class="modal fade" id="mapsModal" tabindex="-1" aria-labelledby="mapsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -123,17 +134,9 @@ include '../includes/header.php';
     <i class="bi bi-file-earmark-pdf-fill"></i> Download Schedule
 </button>
 
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-<!-- External Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAc_2sgP5U-SRL68dw2XrUVq2ptSBl-3JI"></script>
-
-<!-- Custom JavaScript -->
 <script src="../assets/js/dashboard.js"></script>
 
 <?php
 include '../includes/footer.php';
+
 ?>

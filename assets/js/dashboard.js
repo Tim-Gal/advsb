@@ -4,13 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const semesterRadios = document.querySelectorAll('input[name="semester"]');
     const courseSearchInput = document.getElementById('courseSearchInput');
     const searchSuggestions = document.getElementById('searchSuggestions');
-    // const addCourseButton = document.getElementById('addCourseButton'); // Removed as per instruction
     const selectedCourseContainer = document.getElementById('selectedCourseContainer');
     const selectedCourseText = document.getElementById('selectedCourseText');
     const removeSelectedCourse = document.getElementById('removeSelectedCourse');
     const confirmAddCourseButton = document.getElementById('confirmAddCourse');
+    const downloadPdfButton = document.getElementById('downloadPdfButton'); // PDF Download Button
 
-    let selectedSemester = 'FALL'; // Stored in uppercase to match database
+    let selectedSemester = 'Fall'; // Default semester
     let searchTimeout = null;
     let selectedCourse = null; // To store the selected course object
 
@@ -59,10 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /**
      * Load the user's schedule from the server
-     * (Assuming this function works correctly and is unrelated to the current issue)
      */
     function loadUserSchedule() {
-        fetch('../api/get_user_schedule.php?semester=' + encodeURIComponent(selectedSemester))
+        fetch(`../api/get_user_schedule.php?semester=${encodeURIComponent(selectedSemester)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -73,8 +72,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 clearScheduleTable();
                 if (!offerings.error) {
                     offerings.forEach(o => {
-                        populateCourseBlock(o.code, o.day_of_week, o.start_time, o.end_time, o.location);
+                        populateCourseBlock(o.section_code, o.code, o.day_of_week, o.start_time, o.end_time, o.location);
                     });
+                    // Attach delete listeners after populating
+                    attachDeleteListeners();
                 } else {
                     console.error("Error fetching schedule:", offerings.error);
                     showToast("Error fetching schedule: " + offerings.error, 'error');
@@ -95,31 +96,63 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /**
      * Populate the schedule table with course blocks
+     * @param {number} sectionCode - The unique code of the section enrollment
      * @param {string} courseCode 
      * @param {string} day 
      * @param {string} startTime 
      * @param {string} endTime 
      * @param {string} location 
      */
-    function populateCourseBlock(courseCode, day, startTime, endTime, location) {
-        const startHour = parseInt(startTime.split(':')[0]);
-        const endHour = parseInt(endTime.split(':')[0]);
-        for (let h = startHour; h < endHour; h++) {
-            const cellClass = `${day}-${h}`;
-            const cell = document.querySelector(`.${cellClass}`);
-            if (cell) {
-                const block = document.createElement('div');
-                block.className = 'course-block';
-                block.textContent = `${courseCode}\n${location}\n(${startTime}-${endTime})`;
-                block.style.whiteSpace = 'pre-wrap';
-                block.style.backgroundColor = '#B3E5FC';
-                block.style.margin = '2px 0';
-                block.style.padding = '5px';
-                block.style.border = '1px solid #ccc';
-                block.style.borderRadius = '4px';
-                block.style.fontSize = '0.9em';
-                cell.appendChild(block);
-            }
+    function populateCourseBlock(sectionCode, courseCode, day, startTime, endTime, location) {
+        const startHour = parseInt(startTime.split(':')[0], 10);
+        // Assuming start_time and end_time are in full-hour format
+        // e.g., "13:00", "15:00"
+
+        const cellClass = `${day}-${startHour}`;
+        const cell = document.querySelector(`.${cellClass}`);
+        if (cell) {
+            const courseBlockContainer = cell.querySelector('.course-block-container');
+
+            // Create the course block div
+            const courseBlock = document.createElement('div');
+            courseBlock.classList.add('course-block');
+            courseBlock.setAttribute('data-section-code', sectionCode);
+            courseBlock.style.position = 'relative';
+            courseBlock.style.backgroundColor = '#d1ecf1'; // Light blue background
+            courseBlock.style.border = '1px solid #bee5eb'; // Border color
+            courseBlock.style.borderRadius = '5px';
+            courseBlock.style.padding = '5px 10px';
+            courseBlock.style.marginBottom = '5px';
+            courseBlock.style.cursor = 'pointer';
+            courseBlock.style.transition = 'background-color 0.3s';
+            courseBlock.style.height = '100%'; // Fill the cell vertically
+
+            // Create the delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-course-btn');
+            deleteBtn.setAttribute('aria-label', 'Remove Course');
+            deleteBtn.innerHTML = '&times;'; // HTML entity for multiplication sign (×)
+            deleteBtn.style.position = 'absolute';
+            deleteBtn.style.top = '2px';
+            deleteBtn.style.right = '5px';
+            deleteBtn.style.background = 'none';
+            deleteBtn.style.border = 'none';
+            deleteBtn.style.color = '#dc3545'; // Bootstrap danger color
+            deleteBtn.style.fontWeight = 'bold';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.style.fontSize = '1rem';
+            deleteBtn.style.lineHeight = '1';
+
+            // Populate course information
+            const courseInfo = document.createElement('div');
+            courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br><small>${startTime} - ${endTime}</small>`;
+
+            // Assemble the course block
+            courseBlock.appendChild(deleteBtn);
+            courseBlock.appendChild(courseInfo);
+
+            // Append to the container
+            courseBlockContainer.appendChild(courseBlock);
         }
     }
 
@@ -128,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
-            selectedSemester = radio.value.toUpperCase(); // Ensure uppercase
+            selectedSemester = radio.value; // Values are 'Fall', 'Winter', 'Summer'
             loadUserSchedule();
             // Clear any selected course when semester changes
             if (selectedCourse) {
@@ -249,14 +282,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Implement the logic to add the course to the user's schedule
-        // For example, send a POST request to add_course_to_schedule.php
+        // Send a POST request to add_course_to_schedule.php with section_code
         fetch(`../api/add_course_to_schedule.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                course_code: selectedCourse.code, // Only the course code is sent
+                section_code: selectedCourse.section_code, // Ensure section_code is available
                 semester: selectedSemester
             })
         })
@@ -267,7 +300,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     loadUserSchedule();
                     removeSelectedCourseFunction();
                 } else {
-                    showToast(data.error || 'Failed to add course.', 'error');
+                    // Handle specific error when course is already completed
+                    if (data.error.includes('already completed')) {
+                        showToast(data.error, 'error');
+                    } else {
+                        showToast(data.error || 'Failed to add course.', 'error');
+                    }
                 }
             })
             .catch(err => {
@@ -277,149 +315,118 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /**
-     * Function to populate the schedule table with course blocks
-     * (Assuming this function works correctly)
+     * Function to handle course deletion
+     * @param {number} sectionCode - The unique code of the section enrollment
+     * @param {HTMLElement} courseBlock - The DOM element representing the course block
      */
-    function populateCourseBlock(courseCode, day, startTime, endTime, location) {
-        const startHour = parseInt(startTime.split(':')[0]);
-        const endHour = parseInt(endTime.split(':')[0]);
-        for (let h = startHour; h < endHour; h++) {
-            const cellClass = `${day}-${h}`;
-            const cell = document.querySelector(`.${cellClass}`);
-            if (cell) {
-                const block = document.createElement('div');
-                block.className = 'course-block';
-                block.textContent = `${courseCode}\n${location}\n(${startTime}-${endTime})`;
-                block.style.whiteSpace = 'pre-wrap';
-                block.style.backgroundColor = '#B3E5FC';
-                block.style.margin = '2px 0';
-                block.style.padding = '5px';
-                block.style.border = '1px solid #ccc';
-                block.style.borderRadius = '4px';
-                block.style.fontSize = '0.9em';
-                cell.appendChild(block);
-            }
+    function removeCourseFromSchedule(sectionCode, courseBlock) {
+        // Confirmation handled here
+        if (!confirm('Are you sure you want to remove this course from your schedule?')) {
+            return;
         }
-    }
 
-    /**
-     * Function to initialize Google Map
-     * (Assuming this function works correctly and is unrelated to the current issue)
-     */
-    function initMap(locations) {
-        // Default center (e.g., University Main Campus)
-        // Replace with the central point relevant to your institution
-        const defaultCenter = { lat: 40.7128, lng: -74.0060 }; // Example: New York City
-
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 12,
-            center: defaultCenter
-        });
-
-        // Add markers for each location
-        locations.forEach(location => {
-            if (location.latitude && location.longitude) {
-                const marker = new google.maps.Marker({
-                    position: { lat: parseFloat(location.latitude), lng: parseFloat(location.longitude) },
-                    map: map,
-                    title: location.name // Assuming each location has a 'name' property
-                });
-
-                // Add info windows
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<strong>${location.name}</strong><br>${location.address}`
-                });
-
-                marker.addListener('click', function () {
-                    infoWindow.open(map, marker);
-                });
-            }
-        });
-
-        // Adjust map bounds to fit all markers
-        const bounds = new google.maps.LatLngBounds();
-        locations.forEach(location => {
-            if (location.latitude && location.longitude) {
-                bounds.extend({ lat: parseFloat(location.latitude), lng: parseFloat(location.longitude) });
-            }
-        });
-        map.fitBounds(bounds);
-    }
-
-    /**
-     * Event listener for Google Maps Button
-     * (Assuming this works correctly and is unrelated to the current issue)
-     */
-    const mapButton = document.getElementById('mapButton');
-    const mapsModal = new bootstrap.Modal(document.getElementById('mapsModal'), {
-        keyboard: false
-    });
-
-    let mapInitialized = false;
-    let map;
-
-    mapButton.addEventListener('click', function () {
-        // Fetch class locations from the server
-        fetch(`../api/get_class_locations.php?semester=${encodeURIComponent(selectedSemester)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch class locations.');
-                }
-                return response.json();
-            })
-            .then(locations => {
-                if (locations.error) {
-                    showToast(locations.error, 'error');
-                    return;
-                }
-
-                // Initialize map if not already done
-                if (!mapInitialized) {
-                    initMap(locations);
-                    mapInitialized = true;
+        fetch(`../api/delete_course.php`, { // Correct relative path
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ section_code: sectionCode })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add fade-out class for animation
+                    courseBlock.classList.add('fade-out');
+                    // Remove the course block after the animation completes
+                    courseBlock.addEventListener('animationend', function () {
+                        courseBlock.remove();
+                    });
+                    showToast('Course removed successfully.', 'success');
                 } else {
-                    // Re-center and add markers if map is already initialized
-                    initMap(locations);
+                    showToast(data.error || 'Failed to remove the course.', 'error');
                 }
-
-                // Show the modal
-                mapsModal.show();
             })
-            .catch(err => {
-                console.error('Error fetching class locations:', err);
-                showToast('Error fetching class locations. Please try again.', 'error');
+            .catch(error => {
+                console.error('Error deleting course:', error);
+                showToast('An error occurred while removing the course. Please try again.', 'error');
             });
-    });
+    }
 
     /**
-     * Download PDF Functionality
-     * (Assuming this works correctly and is unrelated to the current issue)
+     * Function to attach delete event listeners to all delete buttons
      */
-    const downloadPdfButton = document.getElementById('downloadPdfButton');
+    function attachDeleteListeners() {
+        const deleteButtons = document.querySelectorAll('.delete-course-btn');
+        deleteButtons.forEach(button => {
+            // To prevent attaching multiple listeners to the same button
+            if (!button.dataset.listenerAttached) {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Prevent triggering other click events
+                    const courseBlock = button.closest('.course-block');
+                    const sectionCode = parseInt(courseBlock.getAttribute('data-section-code'), 10);
+                    if (isNaN(sectionCode) || sectionCode <= 0) {
+                        showToast('Invalid section code.', 'error');
+                        return;
+                    }
+                    removeCourseFromSchedule(sectionCode, courseBlock);
+                });
+                // Mark the button as having an attached listener
+                button.dataset.listenerAttached = 'true';
+            }
+        });
+    }
 
-    downloadPdfButton.addEventListener('click', function () {
-        // Use html2canvas to capture the schedule table
+    /**
+     * Function to download the schedule as a PDF
+     */
+    function downloadScheduleAsPDF() {
         const scheduleTable = document.getElementById('scheduleTable');
+        if (!scheduleTable) {
+            showToast('Schedule table not found.', 'error');
+            return;
+        }
 
+        // Use html2canvas to capture the schedule table
         html2canvas(scheduleTable, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('landscape', 'pt', 'a4');
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
 
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            // Calculate width and height to fit A4 size
+            const imgWidth = 210; // A4 width in mm
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // Add extra pages if necessary
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
             pdf.save('my_schedule.pdf');
+            showToast('Schedule downloaded as PDF.', 'success');
         }).catch(err => {
             console.error('Error generating PDF:', err);
-            showToast('Error generating PDF. Please try again.', 'error');
+            showToast('Failed to generate PDF. Please try again.', 'error');
         });
-    });
+    }
 
     /**
-     * Initialize the user's schedule upon page load
+     * Event listener for PDF download button
      */
+    if (downloadPdfButton) {
+        downloadPdfButton.addEventListener('click', downloadScheduleAsPDF);
+    } else {
+        console.error('Download PDF button not found.');
+    }
+
+    // Initial load of user schedule
     loadUserSchedule();
 });

@@ -1,17 +1,14 @@
 <?php
-// public/api/add_course_to_schedule.php
 
 include '../includes/config.php';
 include '../includes/functions.php';
 
 header('Content-Type: application/json');
 
-// Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorized. Please log in.']);
     exit();
@@ -19,23 +16,70 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Retrieve and decode the JSON payload
 $input = json_decode(file_get_contents('php://input'), true);
 
-$course_code = isset($input['course_code']) ? trim($input['course_code']) : '';
+$section_code = isset($input['section_code']) ? intval($input['section_code']) : 0;
 $semester = isset($input['semester']) ? strtoupper(trim($input['semester'])) : '';
 
-// Validate inputs
-if (empty($course_code) || empty($semester)) {
+if ($section_code <= 0 || empty($semester)) {
     echo json_encode(['error' => 'Invalid parameters.']);
     exit();
 }
 
-// Check if the course exists for the specified semester
+$sql_section = "
+    SELECT course_code
+    FROM sections
+    WHERE section_code = ? AND LOWER(semester) = LOWER(?)
+    LIMIT 1
+";
+
+$stmt_section = $conn->prepare($sql_section);
+if (!$stmt_section) {
+    echo json_encode(['error' => 'Database query preparation failed: ' . $conn->error]);
+    exit();
+}
+
+$stmt_section->bind_param("is", $section_code, $semester);
+$stmt_section->execute();
+$result_section = $stmt_section->get_result();
+
+if ($result_section->num_rows === 0) {
+    echo json_encode(['error' => 'Course not found for the specified semester.']);
+    $stmt_section->close();
+    exit();
+}
+
+$section_data = $result_section->fetch_assoc();
+$course_code = $section_data['course_code'];
+$stmt_section->close();
+
+$sql_completed = "
+    SELECT COUNT(*) AS count
+    FROM coursescompleted
+    WHERE student_id = ? AND course_code = ?
+";
+
+$stmt_completed = $conn->prepare($sql_completed);
+if (!$stmt_completed) {
+    echo json_encode(['error' => 'Database query preparation failed: ' . $conn->error]);
+    exit();
+}
+
+$stmt_completed->bind_param("is", $user_id, $course_code);
+$stmt_completed->execute();
+$result_completed = $stmt_completed->get_result();
+$row_completed = $result_completed->fetch_assoc();
+$stmt_completed->close();
+
+if ($row_completed['count'] > 0) {
+    echo json_encode(['error' => 'You have already completed this course and cannot add it to your schedule.']);
+    exit();
+}
+
 $sql = "
     SELECT s.section_code
     FROM sections s
-    WHERE s.course_code = ? AND s.semester = ?
+    WHERE s.section_code = ? AND s.semester = ?
     LIMIT 1
 ";
 
@@ -45,24 +89,21 @@ if (!$stmt) {
     exit();
 }
 
-$stmt->bind_param("ss", $course_code, $semester);
+$stmt->bind_param("is", $section_code, $semester);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    echo json_encode(['error' => 'Course not found for the specified semester.']);
+    echo json_encode(['error' => 'Course section not found for the specified semester.']);
     $stmt->close();
     exit();
 }
 
-$row = $result->fetch_assoc();
-$section_code = $row['section_code'];
 $stmt->close();
 
-// Check if the course is already added to the user's schedule
 $sql_check = "
-    SELECT *
-    FROM coursesenrolled
+    SELECT COUNT(*) as count 
+    FROM coursesenrolled 
     WHERE student_id = ? AND section_code = ?
 ";
 
@@ -74,17 +115,15 @@ if (!$stmt_check) {
 
 $stmt_check->bind_param("ii", $user_id, $section_code);
 $stmt_check->execute();
-$stmt_check->store_result();
+$result_check = $stmt_check->get_result();
+$row_check = $result_check->fetch_assoc();
+$stmt_check->close();
 
-if ($stmt_check->num_rows > 0) {
+if ($row_check['count'] > 0) {
     echo json_encode(['error' => 'You have already added this course to your schedule.']);
-    $stmt_check->close();
     exit();
 }
 
-$stmt_check->close();
-
-// Add the course to the user's schedule
 $sql_insert = "
     INSERT INTO coursesenrolled (student_id, section_code)
     VALUES (?, ?)

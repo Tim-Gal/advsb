@@ -9,7 +9,6 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorized. Please log in.']);
     exit();
@@ -17,7 +16,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch accepted friends
 $sql = "
     SELECT u.student_id, u.fname, u.lname, u.email
     FROM friendswith fw
@@ -45,7 +43,6 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Fetch pending friend requests received by the user
 $sql = "
     SELECT u.student_id, u.fname, u.lname, u.email
     FROM friendrequests fr
@@ -72,7 +69,6 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Fetch pending friend requests sent by the user
 $sql = "
     SELECT u.student_id, u.fname, u.lname, u.email
     FROM friendrequests fr
@@ -99,7 +95,6 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Return the friends and pending requests
 echo json_encode([
     'success' => true,
     'friends' => $friends,

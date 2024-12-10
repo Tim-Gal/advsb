@@ -99,6 +99,70 @@
     overflow-y: auto;
 }
 
+
+/* assets/css/global.css */
+
+/* Style for the course block */
+.course-block {
+    position: relative;
+    background-color: #d1ecf1; /* Light blue background */
+    border: 1px solid #bee5eb; /* Border color */
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.course-block:hover {
+    background-color: #ccebea; /* Darker blue on hover */
+}
+
+/* Style for the delete (x) button */
+.course-block .delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: #dc3545; /* Bootstrap danger color */
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.course-block .delete-btn:hover {
+    color: #a71d2a;
+}
+
+
+/* assets/css/global.css */
+
+/* Fade-out animation for course blocks */
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Ensure course block containers have relative positioning */
+.course-block-container {
+    position: relative;
+    height: 60px; /* 30 minutes = 60px height */
+}
+
+/* Style for course blocks */
+.course-block {
+    box-sizing: border-box;
+}
+
+
 /* Ensuring the suggestions dropdown appears above other elements */
 .suggestions-dropdown {
     position: absolute;
@@ -119,3 +183,63 @@
         right: 10px;
     }
 }
+
+
+ /* Additional styles for the schedule table */
+        #scheduleTable {
+            position: relative;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #scheduleTable th, #scheduleTable td {
+            border: 1px solid #dee2e6;
+            position: relative;
+            height: 60px; /* 30 minutes = 60px */
+            vertical-align: top;
+        }
+
+        .time-cell {
+            width: 80px;
+            background-color: #f8f9fa;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .day-cell {
+            height: 60px; /* 30 minutes = 60px */
+            padding: 0;
+            position: relative;
+        }
+
+        .course-block-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Fade-out animation for course blocks */
+        .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Ensuring course blocks are properly layered */
+        .course-block {
+            box-sizing: border-box;
+            pointer-events: auto;
+        }
+
+        /* Optional: Scrollbar for overflow if multiple courses overlap */
+        .course-block-container {
+            overflow: hidden;
+        }
+
+

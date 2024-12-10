@@ -1,10 +1,11 @@
 <?php
+// public/network.php
+
 include '../includes/header.php'; 
 ?>
 <div class="container my-4">
     <h1 class="text-center mb-4">My Network</h1>
 
-    <!-- Friends List Section -->
     <!-- Friends List Section -->
     <div class="card mb-4">
         <div class="card-header">
@@ -16,7 +17,6 @@ include '../includes/header.php';
             </ul>
         </div>
     </div>
-
 
     <!-- Pending Friend Requests Received -->
     <div class="card mb-4">
@@ -76,41 +76,23 @@ include '../includes/header.php';
                 <option value="SUMMER">Summer</option>
             </select>
         </div>
-        <!-- Schedule Table -->
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="friendScheduleTable">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Time</th>
-                        <th>Monday</th>
-                        <th>Tuesday</th>
-                        <th>Wednesday</th>
-                        <th>Thursday</th>
-                        <th>Friday</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php 
-                    $hours = range(8, 18);
-                    foreach ($hours as $h) {
-                        $timeLabel = sprintf("%02d:00", $h);
-                        echo "<tr>";
-                        echo "<td class='time-cell'>$timeLabel</td>";
-                        echo "<td class='Mon-$h day-cell'></td>";
-                        echo "<td class='Tue-$h day-cell'></td>";
-                        echo "<td class='Wed-$h day-cell'></td>";
-                        echo "<td class='Thu-$h day-cell'></td>";
-                        echo "<td class='Fri-$h day-cell'></td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
+        
+        <!-- Loading Indicator -->
+        <div id="scheduleLoading" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        
+        <!-- Schedule List -->
+        <div id="friendScheduleList" class="list-group">
+            <!-- Courses will be dynamically loaded here -->
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <!-- Confirmation Modal -->
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -130,14 +112,13 @@ include '../includes/header.php';
   </div>
 </div>
 
-
 <!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 <!-- External Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAc_2sgP5U-SRL68dw2XrUVq2ptSBl-3JI"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
 
 <!-- Custom JavaScript -->
 <script src="../assets/js/network.js"></script>

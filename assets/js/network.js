@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
         keyboard: false
     });
     const friendSemesterSelect = document.getElementById('friendSemesterSelect');
-    const friendScheduleTableBody = document.querySelector('#friendScheduleTable tbody');
+    const friendScheduleList = document.getElementById('friendScheduleList');
 
     // Confirmation Modal Elements
     const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'), {
@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let selectedAction = null; // To store the action to be confirmed
     let selectedFriendData = {}; // To store data related to the action
+    let selectedFriendId = null; // To store the ID of the friend whose schedule is being viewed
 
     /**
      * Function to display toast notifications
@@ -67,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Function to fetch and display friends and pending requests
      */
     function fetchFriends() {
-        fetch('../api/get_friends.php')
+        fetch('../api/get_friends.php') // Ensure this path is correct
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -200,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sendFriendButton.disabled = true;
         sendFriendFeedback.innerHTML = '';
 
-        fetch('../api/send_friend_request.php', {
+        fetch('../api/send_friend_request.php', { // Ensure this path is correct
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -227,26 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Function to accept a friend request
-     * @param {number} requesterId 
-     * @param {string} requesterName 
-     */
-    function acceptFriendRequest(requesterId, requesterName) {
-        // This function is no longer directly called; confirmation is handled via the modal
-        // The actual logic is handled in the confirmActionButton event listener
-    }
-
-    /**
-     * Function to remove a friend
-     * @param {number} friendId 
-     * @param {string} friendName 
-     */
-    function removeFriend(friendId, friendName) {
-        // This function is no longer directly called; confirmation is handled via the modal
-        // The actual logic is handled in the confirmActionButton event listener
-    }
-
-    /**
      * Function to view a friend's schedule
      * @param {number} friendId 
      * @param {string} friendName 
@@ -255,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectedFriendId = friendId;
         document.getElementById('viewScheduleModalLabel').textContent = `${friendName}'s Schedule`;
         friendSemesterSelect.value = '';
-        friendScheduleTableBody.innerHTML = '';
+        friendScheduleList.innerHTML = '';
         viewScheduleModal.show();
     }
 
@@ -264,89 +245,82 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function fetchFriendSchedule() {
         const semester = friendSemesterSelect.value;
+        console.log(`Selected Semester: ${semester}`);
         if (semester === '') {
             showToast('Please select a semester to view the schedule.', 'warning');
             return;
         }
 
+        // Show loading spinner
+        document.getElementById('scheduleLoading').style.display = 'block';
         // Clear existing schedule
-        friendScheduleTableBody.innerHTML = '';
+        friendScheduleList.innerHTML = '';
+
+        console.log(`Fetching schedule for Friend ID: ${selectedFriendId}, Semester: ${semester}`);
 
         fetch(`../api/view_friend_schedule.php?friend_id=${encodeURIComponent(selectedFriendId)}&semester=${encodeURIComponent(semester)}`)
             .then(res => res.json())
             .then(data => {
+                console.log('API Response:', data);
                 if (data.success) {
                     populateFriendSchedule(data.schedule);
                 } else {
                     showToast(data.error || 'Failed to fetch friend\'s schedule.', 'error');
+                    friendScheduleList.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to fetch schedule.'}</div>`;
                 }
             })
             .catch(err => {
                 console.error('Error fetching friend\'s schedule:', err);
                 showToast('Error fetching friend\'s schedule. Please try again.', 'error');
+                friendScheduleList.innerHTML = '<div class="alert alert-danger">An error occurred while fetching the schedule.</div>';
+            })
+            .finally(() => {
+                // Hide loading spinner
+                document.getElementById('scheduleLoading').style.display = 'none';
             });
     }
 
     /**
-     * Function to populate the friend's schedule table
+     * Function to populate the friend's schedule list
      * @param {Array} schedule 
      */
     function populateFriendSchedule(schedule) {
+        console.log('Populating Schedule:', schedule);
+        const friendScheduleList = document.getElementById('friendScheduleList');
+        friendScheduleList.innerHTML = ''; // Clear any existing content
+
         if (schedule.length === 0) {
-            friendScheduleTableBody.innerHTML = '<tr><td colspan="6" class="text-center">No courses scheduled for this semester.</td></tr>';
+            friendScheduleList.innerHTML = '<div class="alert alert-info">No courses scheduled for this semester.</div>';
             return;
         }
 
-        // Initialize a map to track schedule blocks
-        const scheduleMap = {};
-
+        // Iterate through each course and create a card
         schedule.forEach(course => {
-            const day = course.day_of_week;
-            const startHour = parseInt(course.start_time.split(':')[0]);
-            const endHour = parseInt(course.end_time.split(':')[0]);
-
-            for (let h = startHour; h < endHour; h++) {
-                const cellClass = `${day}-${h}`;
-                if (!scheduleMap[cellClass]) {
-                    scheduleMap[cellClass] = [];
-                }
-                scheduleMap[cellClass].push({
-                    course_code: course.course_code,
-                    course_name: course.course_name,
-                    start_time: course.start_time,
-                    end_time: course.end_time,
-                    location: course.location
-                });
-            }
+            // Create a Bootstrap Card for each course
+            const courseCard = document.createElement('div');
+            courseCard.className = 'list-group-item list-group-item-action flex-column align-items-start mb-2';
+            
+            const courseHeader = document.createElement('div');
+            courseHeader.className = 'd-flex w-100 justify-content-between';
+            
+            const courseTitle = document.createElement('h5');
+            courseTitle.textContent = `${course.course_code} - ${course.course_name}`;
+            
+            const courseTime = document.createElement('small');
+            courseTime.textContent = `${course.day_of_week} | ${course.start_time} - ${course.end_time}`;
+            
+            courseHeader.appendChild(courseTitle);
+            courseHeader.appendChild(courseTime);
+            
+            const courseLocation = document.createElement('p');
+            courseLocation.className = 'mb-1';
+            courseLocation.textContent = `Location: ${course.location}`;
+            
+            courseCard.appendChild(courseHeader);
+            courseCard.appendChild(courseLocation);
+            
+            friendScheduleList.appendChild(courseCard);
         });
-
-        // Populate the table
-        for (let row of friendScheduleTableBody.parentElement.children) {
-            if (row.tagName.toLowerCase() !== 'tr') continue;
-            const timeCell = row.querySelector('.time-cell');
-            const time = timeCell.textContent.trim();
-            const hour = parseInt(time.split(':')[0]);
-
-            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].forEach(day => {
-                const cellClass = `${day}-${hour}`;
-                const cell = row.querySelector(`.${cellClass}`);
-                if (scheduleMap[cellClass]) {
-                    scheduleMap[cellClass].forEach(course => {
-                        const block = document.createElement('div');
-                        block.className = 'course-block';
-                        block.textContent = `${course.course_code} - ${course.course_name}\n${course.location}\n(${course.start_time}-${course.end_time})`;
-                        block.style.whiteSpace = 'pre-wrap';
-                        block.style.backgroundColor = '#FFC107';
-                        block.style.margin = '2px 0';
-                        block.style.padding = '5px';
-                        block.style.border = '1px solid #ccc';
-                        block.style.borderRadius = '4px';
-                        block.style.fontSize = '0.9em';
-                        cell.appendChild(block);
-                    });
-                }
-            });
-        }
     }
 
     /**
@@ -383,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const friendId = selectedFriendData.id;
             const friendName = selectedFriendData.name;
 
-            fetch('../api/remove_friend.php', {
+            fetch('../api/remove_friend.php', { // Ensure this path is correct
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -415,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const requesterId = selectedFriendData.id;
             const requesterName = selectedFriendData.name;
 
-            fetch('../api/accept_friend_request.php', {
+            fetch('../api/accept_friend_request.php', { // Ensure this path is correct
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
