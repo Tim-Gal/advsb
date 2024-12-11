@@ -19,6 +19,7 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 <!DOCTYPE html>
 <head>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
 </head>
 <div class="container my-4">
     <h1 class="text-center mb-4">My Schedule Builder</h1>
