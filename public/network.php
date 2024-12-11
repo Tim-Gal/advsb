@@ -2,6 +2,12 @@
 // public/network.php
 
 include '../includes/header.php'; 
+
+if (!isset($_SESSION['user_id'])) {
+  // Redirect to login page if not authenticated
+  header('Location: login.php');
+  exit();
+}
 ?>
 <div class="container my-4">
     <h1 class="text-center mb-4">My Network</h1>

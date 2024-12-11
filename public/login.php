@@ -33,11 +33,11 @@ if (isset($_SESSION['user_id'])) {
 
     <form action="../api/authenticate.php" method="POST" class="login-form mb-5">
         <div class="mb-3">
-            <label for="student_id" class="form-label">Student ID</label>
-            <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter your Student ID" required>
+            <label for="identifier" class="form-label">Username or Email <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="Enter your Username or Email" required>
         </div>
         <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
         </div>
         <div class="mb-3 form-check">

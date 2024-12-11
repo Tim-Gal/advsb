@@ -10,20 +10,20 @@ $pageJS = [
 
 include '../includes/header.php';
 ?>
-
+    
 <div class="main-content">
   <div class="container mt-5">
     <h2 class="text-center mb-4">Register</h2>
 
     <?php
     if (isset($_SESSION['success'])) {
-      echo '<script type="text/javascript">',
-          'document.addEventListener("DOMContentLoaded", function() {',
-            'var myModal = new bootstrap.Modal(document.getElementById("verificationModal"), {});',
-            'myModal.show();',
-            '});',
-            '</script>';
       echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success']) . '</div>';
+      echo '<script type="text/javascript">
+              document.addEventListener("DOMContentLoaded", function() {
+                  var myModal = new bootstrap.Modal(document.getElementById("verificationModal"), {});
+                  myModal.show();
+              });
+            </script>';
       unset($_SESSION['success']);
     }
 
@@ -35,12 +35,12 @@ include '../includes/header.php';
 
     <form action="../api/process_register.php" method="POST" class="register-form mb-5">
       <div class="mb-3">
-        <label for="student_id" class="form-label">Student ID</label>
-        <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter your Student ID" required>
+        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="Create a unique username" required>
       </div>
       <div class="mb-3">
-        <label for="email" class="form-label">School Email</label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your school email" required>
+        <label for="email" class="form-label">School Email <span class="text-danger">*</span></label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your @mail.mcgill.ca email" required>
       </div>
       <div class="mb-3">
         <label for="major" class="form-label">Select Major <span class="text-danger">*</span></label>
@@ -71,12 +71,12 @@ include '../includes/header.php';
         </select>
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Create a strong password" required>
       </div>
       <div class="mb-3">
-        <label for="confirm_password" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+        <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
       </div>
       <button type="submit" class="btn btn-primary">Register</button>
       <div class="text-center mt-3">
@@ -85,11 +85,10 @@ include '../includes/header.php';
     </form>
   </div>
 
-  <!-- Verification Modal -->
   <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="../api/verify_code.php" method="POST" class="verify-form">
+        <form action="verify_code.php" method="POST" class="verify-form">
           <div class="modal-header">
             <h5 class="modal-title" id="verificationModalLabel">Verify Your Account</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

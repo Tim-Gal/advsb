@@ -9,10 +9,8 @@ $pageCSS = [
 
 include '../includes/header.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo "<div class='container my-5'><div class='alert alert-danger'>You must be logged in to view this page.</div></div>";
-    include '../includes/footer.php';
+    header('Location: login.php');
     exit();
 }
 

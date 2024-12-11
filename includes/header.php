@@ -1,56 +1,43 @@
 <?php
-// includes/header.php
 session_start();
 
-// Use include_once to prevent multiple inclusions
 include_once 'config.php';
 include_once 'functions.php';
 
-// Handle "Remember Me" functionality
-if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_me'])) {
-    $remember_token = $_COOKIE['remember_me'];
-    
-    $stmt = $conn->prepare("SELECT student_id FROM students WHERE remember_token = ?");
-    if ($stmt) {
-        $stmt->bind_param("s", $remember_token);
-        $stmt->execute();
-        $stmt->store_result();
-        
-        if ($stmt->num_rows > 0) {
+function initializeSession($conn) {
+    if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_me'])) {
+        $stmt = $conn->prepare("SELECT student_id FROM students WHERE remember_token = ?");
+        if ($stmt) {
+            $stmt->bind_param("s", $_COOKIE['remember_me']);
+            $stmt->execute();
             $stmt->bind_result($student_id);
-            $stmt->fetch();
-            $_SESSION['user_id'] = $student_id;
+            if ($stmt->fetch()) {
+                $_SESSION['user_id'] = $student_id;
+                // Regenerate remember_me cookie for security
+                setcookie('remember_me', $_COOKIE['remember_me'], time() + (86400 * 30), "/", "", isset($_SERVER['HTTPS']), true);
+            }
+            $stmt->close();
         }
-        
-        $stmt->close();
     }
-    
-    // Do not close the connection here if you need it later in the script
-    // $conn->close();
 }
 
-// Initialize user details
-$fname = "";
-$lname = "";
-
-// Fetch user details if logged in
-if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    
-    $stmt = $conn->prepare("SELECT fname, lname FROM students WHERE student_id = ? LIMIT 1");
+function getUserDetails($conn, $user_id) {
+    $stmt = $conn->prepare("SELECT username FROM students WHERE student_id = ? LIMIT 1");
+    $details = ['username' => ''];
     if ($stmt) {
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        $stmt->bind_result($fname, $lname);
+        $stmt->bind_result($details['username']);
         $stmt->fetch();
         $stmt->close();
     }
+    return $details;
 }
 
-// Determine the current page
+initializeSession($conn);
+$user_details = isset($_SESSION['user_id']) ? getUserDetails($conn, $_SESSION['user_id']) : null;
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// If the current page is index.php and the user is logged in, redirect to dashboard.php
 if ($current_page === 'index.php' && isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit();
@@ -102,7 +89,7 @@ if ($current_page === 'index.php' && isset($_SESSION['user_id'])) {
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle px-4 text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?php echo htmlspecialchars($fname . ' ' . $lname); ?>
+                            <?php echo htmlspecialchars($user_details['username']); ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="dashboard.php">Dashboard</a></li>

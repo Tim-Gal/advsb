@@ -4,35 +4,41 @@ include '../includes/config.php';
 include '../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $student_id = strtoupper(sanitizeInput($_POST['student_id']));
+    $identifier = strtolower(sanitizeInput($_POST['identifier'])); // Can be username or email
     $password = $_POST['password'];
     $remember_me = isset($_POST['remember_me']) ? true : false;
 
-    if (empty($student_id) || empty($password)) {
-        $_SESSION['error'] = "Please enter both Student ID and Password.";
+    if (empty($identifier) || empty($password)) {
+        $_SESSION['error'] = "Please enter both Username/Email and Password.";
         header("Location: ../public/login.php");
         exit();
     }
 
-    $stmt = $conn->prepare("SELECT password_hash, is_verified FROM students WHERE student_id=? LIMIT 1");
+    // Determine if the identifier is an email or username
+    if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+        $stmt = $conn->prepare("SELECT student_id, password_hash, is_verified FROM students WHERE email = ? LIMIT 1");
+    } else {
+        $stmt = $conn->prepare("SELECT student_id, password_hash, is_verified FROM students WHERE username = ? LIMIT 1");
+    }
+
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
         header("Location: ../public/login.php");
         exit();
     }
-    $stmt->bind_param("i", $student_id);
+    $stmt->bind_param("s", $identifier);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows === 0) {
-        $_SESSION['error'] = "No account found with that Student ID.";
+        $_SESSION['error'] = "No account found with that Username/Email.";
         $stmt->close();
         $conn->close();
         header("Location: ../public/login.php");
         exit();
     }
 
-    $stmt->bind_result($password_hash, $is_verified);
+    $stmt->bind_result($student_id, $password_hash, $is_verified);
     $stmt->fetch();
 
     if (!password_verify($password, $password_hash)) {
@@ -58,12 +64,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $remember_token = bin2hex(random_bytes(16));
         $stmt->close();
         
-        $upd = $conn->prepare("UPDATE students SET remember_token=? WHERE student_id=?");
+        $upd = $conn->prepare("UPDATE students SET remember_token = ? WHERE student_id = ?");
         if ($upd) {
             $upd->bind_param("si", $remember_token, $student_id);
             $upd->execute();
             $upd->close();
-            setcookie("remember_me", $remember_token, time() + (86400 * 30), "/"); 
+            // Set cookie with HttpOnly and Secure flags
+            setcookie("remember_me", $remember_token, time() + (86400 * 30), "/", "", isset($_SERVER['HTTPS']), true);
         }
     } else {
         setcookie("remember_me", "", time() - 3600, "/");
