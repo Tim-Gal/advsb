@@ -1,4 +1,5 @@
 <?php
+// public/api/get_course_offerings.php
 
 include '../includes/config.php';
 include '../includes/functions.php';
@@ -9,6 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 header('Content-Type: application/json');
 
+// Retrieve and sanitize input parameters
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $semester = isset($_GET['semester']) ? trim($_GET['semester']) : '';
 
@@ -19,8 +21,10 @@ if (empty($query) || empty($semester)) {
 
 $semester = strtoupper($semester);
 
+// Get the user ID from the session
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
+// Fetch completed courses to exclude them from search results
 $completed_courses = [];
 if ($user_id > 0) {
     $sql_completed = "
@@ -40,30 +44,31 @@ if ($user_id > 0) {
     }
 }
 
-
+// Prepare the SQL query to search for courses
 $sql = "
     SELECT DISTINCT c.course_code AS code, c.course_name AS name, s.section_code
     FROM courses c
     JOIN sections s ON c.course_code = s.course_code
     WHERE (c.course_code LIKE ? OR c.course_name LIKE ?) 
-      AND s.semester = ?
+      AND UPPER(s.semester) = ?
 ";
 
+// Add exclusion for completed courses if any
 if (!empty($completed_courses)) {
     $placeholders = implode(',', array_fill(0, count($completed_courses), '?'));
     $sql .= " AND c.course_code NOT IN ($placeholders)";
-} else {
-    $placeholders = '';
 }
 
 $sql .= " LIMIT 20";
 
+// Prepare the statement
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     echo json_encode(['error' => 'Database query preparation failed: ' . $conn->error]);
     exit();
 }
 
+// Bind parameters
 $searchTerm = '%' . $query . '%';
 $types = "sss" . str_repeat('s', count($completed_courses));
 $params = [$searchTerm, $searchTerm, $semester];
@@ -72,8 +77,9 @@ if (!empty($completed_courses)) {
         $params[] = $cc;
     }
 }
-
 $stmt->bind_param($types, ...$params);
+
+// Execute and fetch results
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -84,6 +90,7 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 
+// Return the results
 if (empty($courses)) {
     echo json_encode(['error' => 'No courses found matching your query for the specified semester.']);
     exit();

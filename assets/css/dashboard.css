@@ -1,12 +1,84 @@
+/* assets/css/dashboard.css */
+
+/* Container Styling */
 .dashboard-container {
     padding: 20px;
     font-family: Arial, sans-serif;
 }
 
-.semester-selection {
-    margin-bottom: 20px;
+/* Flex Layout for Sidebar and Main Content */
+.dashboard-layout {
+    display: flex;
+    gap: 20px;
 }
 
+/* Sidebar Styling */
+.sidebar {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        width: 250px;
+    }
+}
+
+/* Enrolled Courses List */
+.enrolled-courses-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.enrolled-courses-list .enrolled-course {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e2e3e5;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.enrolled-courses-list .enrolled-course:hover {
+    background-color: #d6d8db;
+}
+
+.enrolled-courses-list .enrolled-course .course-info {
+    flex-grow: 1;
+    font-size: 0.95em;
+}
+
+/* Delete Button Styling */
+.enrolled-courses-list .enrolled-course .delete-enrolled-course-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.enrolled-courses-list .enrolled-course .delete-enrolled-course-btn:hover {
+    color: #a71d2a;
+}
+
+/* Semester Selection in Sidebar */
+.semester-selection-sidebar {
+    margin-bottom: 15px;
+}
+
+.semester-selection-sidebar label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Main Content Styling */
+.main-content {
+    flex-grow: 1;
+}
+
+/* Course Search Styling */
 .course-search {
     margin-bottom: 20px;
     position: relative;
@@ -14,7 +86,8 @@
 
 .course-search input {
     padding: 5px;
-    width: 250px;
+    width: 100%;
+    max-width: 400px;
 }
 
 .course-search button {
@@ -22,23 +95,25 @@
     margin-left: 5px;
 }
 
+/* Suggestions Dropdown Styling */
 .suggestions-dropdown {
     position: absolute;
-    top: 30px;
+    top: 100%;
     left: 0;
-    width: 250px;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
     background: #fff;
     border: 1px solid #ccc;
-    display: none;
     z-index: 1000;
-    max-height: 200px;
-    overflow: auto;
+    display: none;
 }
 
 .suggestions-dropdown .suggestion-item:hover {
     background: #eee;
 }
 
+/* Schedule Table Styling */
 .schedule-container {
     overflow-x: auto;
 }
@@ -52,74 +127,68 @@
 .schedule-table th {
     background: #f0f0f0;
     width: 80px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .schedule-table td {
     vertical-align: top;
     border: 1px solid #ccc;
     padding: 5px;
+    position: relative;
+    height: 60px; /* Adjust as needed */
 }
 
+/* Time Cell Styling */
 .time-cell {
     background: #f9f9f9;
     font-weight: bold;
+    width: 80px;
+    text-align: center;
 }
 
-.course-block {
-    white-space: pre-wrap;
-    background-color: #B3E5FC;
-    margin: 2px 0;
-    padding: 5px;
-    border: 1px solid #ccc;
-    font-size: 0.9em;
-}
-
-.suggestion-item {
-    padding: 5px;
-    cursor: pointer;
-}
-
-
-/* dashboard.css */
-
-/* Style for course blocks in the schedule table */
-.course-block {
-    white-space: pre-wrap;
-    background-color: #B3E5FC;
-    margin: 2px 0;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.9em;
-}
-
-/* Suggestions Dropdown Styling */
-#searchSuggestions {
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-
-/* assets/css/global.css */
-
-/* Style for the course block */
-.course-block {
+/* Day Cell Styling */
+.day-cell {
+    height: 60px; /* Adjust as needed */
+    padding: 0;
     position: relative;
+}
+
+/* Course Block Container */
+.course-block-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Consolidated .course-block Styling */
+.course-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    white-space: pre-wrap;
     background-color: #d1ecf1; /* Light blue background */
     border: 1px solid #bee5eb; /* Border color */
     border-radius: 5px;
     padding: 5px 10px;
-    margin-bottom: 5px;
+    margin: 2px 0 5px 0;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, opacity 0.5s, transform 0.5s;
+    font-size: 0.9em;
+    overflow: hidden;
 }
 
 .course-block:hover {
     background-color: #ccebea; /* Darker blue on hover */
 }
 
-/* Style for the delete (x) button */
-.course-block .delete-btn {
+/* Delete Button Styling */
+.course-block .delete-course-btn {
     position: absolute;
     top: 2px;
     right: 5px;
@@ -132,14 +201,11 @@
     line-height: 1;
 }
 
-.course-block .delete-btn:hover {
+.course-block .delete-course-btn:hover {
     color: #a71d2a;
 }
 
-
-/* assets/css/global.css */
-
-/* Fade-out animation for course blocks */
+/* Fade-out Animation */
 .fade-out {
     animation: fadeOut 0.5s forwards;
 }
@@ -151,23 +217,16 @@
     }
 }
 
-/* Ensure course block containers have relative positioning */
-.course-block-container {
-    position: relative;
-    height: 60px; /* 30 minutes = 60px height */
+/* Selected Course Container */
+.selected-course-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* Style for course blocks */
-.course-block {
-    box-sizing: border-box;
-}
-
-
-/* Ensuring the suggestions dropdown appears above other elements */
-.suggestions-dropdown {
-    position: absolute;
-    z-index: 1000;
-    width: 100%;
+.selected-course-container #selectedCourseText {
+    flex-grow: 1;
 }
 
 /* Toast Styling */
@@ -176,70 +235,46 @@
 }
 
 /* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+}
+
 @media (max-width: 576px) {
     #mapButton, #downloadPdfButton {
         bottom: 100px;
         left: 10px;
         right: 10px;
     }
+
+    .course-search input {
+        max-width: 100%;
+    }
 }
 
+/* Additional Styles for the Schedule Table */
+#scheduleTable {
+    position: relative;
+    width: 100%;
+    border-collapse: collapse;
+}
 
- /* Additional styles for the schedule table */
-        #scheduleTable {
-            position: relative;
-            width: 100%;
-            border-collapse: collapse;
-        }
+#scheduleTable th, #scheduleTable td {
+    border: 1px solid #dee2e6;
+    position: relative;
+    height: 60px; /* Adjust as needed */
+    vertical-align: top;
+}
 
-        #scheduleTable th, #scheduleTable td {
-            border: 1px solid #dee2e6;
-            position: relative;
-            height: 60px; /* 30 minutes = 60px */
-            vertical-align: top;
-        }
+#scheduleTable td {
+    padding: 0;
+}
 
-        .time-cell {
-            width: 80px;
-            background-color: #f8f9fa;
-            text-align: center;
-            font-weight: bold;
-        }
+.course-block-container {
+    overflow: hidden;
+}
 
-        .day-cell {
-            height: 60px; /* 30 minutes = 60px */
-            padding: 0;
-            position: relative;
-        }
-
-        .course-block-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        /* Fade-out animation for course blocks */
-        .fade-out {
-            animation: fadeOut 0.5s forwards;
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Ensuring course blocks are properly layered */
-        .course-block {
-            box-sizing: border-box;
-            pointer-events: auto;
-        }
-
-        /* Optional: Scrollbar for overflow if multiple courses overlap */
-        .course-block-container {
-            overflow: hidden;
-        }
-
-
+.course-block {
+    pointer-events: auto;
+}

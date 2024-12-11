@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const removeSelectedCourse = document.getElementById('removeSelectedCourse');
     const confirmAddCourseButton = document.getElementById('confirmAddCourse');
     const downloadPdfButton = document.getElementById('downloadPdfButton'); // PDF Download Button
+    const sidebarSemesterSelect = document.getElementById('sidebarSemesterSelect');
+    const enrolledCoursesList = document.getElementById('enrolledCoursesList');
+    const enrolledCoursesLoading = document.getElementById('enrolledCoursesLoading');
+    const csrfToken = document.getElementById('csrfToken').value;
 
     let selectedSemester = 'Fall'; // Default semester
     let searchTimeout = null;
@@ -105,59 +109,50 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function populateCourseBlock(sectionCode, courseCode, day, startTime, endTime, location) {
         const startHour = parseInt(startTime.split(':')[0], 10);
-        // Assuming start_time and end_time are in full-hour format
-        // e.g., "13:00", "15:00"
+        const startMinute = parseInt(startTime.split(':')[1], 10);
+        const endHour = parseInt(endTime.split(':')[0], 10);
+        const endMinute = parseInt(endTime.split(':')[1], 10);
 
-        const cellClass = `${day}-${startHour}`;
-        const cell = document.querySelector(`.${cellClass}`);
-        if (cell) {
-            const courseBlockContainer = cell.querySelector('.course-block-container');
+        // Calculate duration in hours (assuming 1 hour per course)
+        // Since we're reverting to 1-hour courses, duration is always 1
+        const duration = 1; 
 
-            // Create the course block div
-            const courseBlock = document.createElement('div');
-            courseBlock.classList.add('course-block');
-            courseBlock.setAttribute('data-section-code', sectionCode);
-            courseBlock.style.position = 'relative';
-            courseBlock.style.backgroundColor = '#d1ecf1'; // Light blue background
-            courseBlock.style.border = '1px solid #bee5eb'; // Border color
-            courseBlock.style.borderRadius = '5px';
-            courseBlock.style.padding = '5px 10px';
-            courseBlock.style.marginBottom = '5px';
-            courseBlock.style.cursor = 'pointer';
-            courseBlock.style.transition = 'background-color 0.3s';
-            courseBlock.style.height = '100%'; // Fill the cell vertically
+        // Loop through the duration (1 hour)
+        for (let i = 0; i < duration; i++) {
+            const currentHour = startHour + i;
+            const cellClass = `${day}-${currentHour}`;
+            const cell = document.querySelector(`.${cellClass}`);
+            if (cell) {
+                const courseBlockContainer = cell.querySelector('.course-block-container');
 
-            // Create the delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.classList.add('delete-course-btn');
-            deleteBtn.setAttribute('aria-label', 'Remove Course');
-            deleteBtn.innerHTML = '&times;'; // HTML entity for multiplication sign (×)
-            deleteBtn.style.position = 'absolute';
-            deleteBtn.style.top = '2px';
-            deleteBtn.style.right = '5px';
-            deleteBtn.style.background = 'none';
-            deleteBtn.style.border = 'none';
-            deleteBtn.style.color = '#dc3545'; // Bootstrap danger color
-            deleteBtn.style.fontWeight = 'bold';
-            deleteBtn.style.cursor = 'pointer';
-            deleteBtn.style.fontSize = '1rem';
-            deleteBtn.style.lineHeight = '1';
+                // Create the course block div
+                const courseBlock = document.createElement('div');
+                courseBlock.classList.add('course-block');
+                courseBlock.setAttribute('data-section-code', sectionCode);
+                courseBlock.setAttribute('data-course-code', courseCode); // Store course_code for reference
 
-            // Populate course information
-            const courseInfo = document.createElement('div');
-            courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br><small>${startTime} - ${endTime}</small>`;
+                // Populate course information
+                const courseInfo = document.createElement('div');
+                courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br><small>${startTime} - ${endTime}</small>`;
 
-            // Assemble the course block
-            courseBlock.appendChild(deleteBtn);
-            courseBlock.appendChild(courseInfo);
+                // Create the delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('delete-course-btn'); // Consistent class name
+                deleteBtn.setAttribute('aria-label', 'Remove Course');
+                deleteBtn.innerHTML = '&times;'; // HTML entity for multiplication sign (×)
 
-            // Append to the container
-            courseBlockContainer.appendChild(courseBlock);
+                // Assemble the course block
+                courseBlock.appendChild(deleteBtn);
+                courseBlock.appendChild(courseInfo);
+
+                // Append to the container
+                courseBlockContainer.appendChild(courseBlock);
+            }
         }
     }
 
     /**
-     * Event listener for semester selection changes
+     * Event listener for semester selection changes in main content
      */
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
@@ -166,6 +161,24 @@ document.addEventListener('DOMContentLoaded', function () {
             // Clear any selected course when semester changes
             if (selectedCourse) {
                 removeSelectedCourseFunction();
+            }
+            // Also update the sidebar to match the main semester selection
+            sidebarSemesterSelect.value = selectedSemester;
+            loadEnrolledCourses();
+        });
+    });
+
+    /**
+     * Event listener for semester selection changes in sidebar
+     */
+    sidebarSemesterSelect.addEventListener('change', function () {
+        selectedSemester = this.value;
+        loadEnrolledCourses();
+        loadUserSchedule();
+        // Also update the main semester selection to match the sidebar
+        semesterRadios.forEach(radio => {
+            if (radio.value === selectedSemester) {
+                radio.checked = true;
             }
         });
     });
@@ -188,8 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             displayNoSuggestions(data.error || 'No courses found.');
                         }
                     })
-                    .catch(err => {
-                        console.error('Error fetching courses:', err);
+                    .catch(error => {
+                        console.error('Error fetching courses:', error);
                         displayNoSuggestions('Error fetching courses. Please try again.');
                     });
             }, 300);
@@ -208,8 +221,9 @@ document.addEventListener('DOMContentLoaded', function () {
         courses.forEach(course => {
             const suggestionItem = document.createElement('button');
             suggestionItem.type = 'button';
-            suggestionItem.className = 'list-group-item list-group-item-action';
+            suggestionItem.className = 'list-group-item list-group-item-action suggestion-item';
             suggestionItem.textContent = `${course.code} - ${course.name}`;
+            suggestionItem.setAttribute('data-section-code', course.section_code); // Store section_code
             suggestionItem.addEventListener('click', () => {
                 selectCourse(course);
             });
@@ -232,12 +246,15 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param {Object} course 
      */
     function selectCourse(course) {
-        selectedCourse = course;
-        selectedCourseText.textContent = `${course.code} - ${course.name}`;
+        selectedCourse = {
+            code: course.code,
+            section_code: course.section_code
+        };
+        selectedCourseText.textContent = `${course.code}`;
         selectedCourseContainer.style.display = 'block';
 
         // Disable the input and semester select
-        courseSearchInput.value = `${course.code} - ${course.name}`;
+        courseSearchInput.value = `${course.code}`;
         courseSearchInput.disabled = true;
         semesterRadios.forEach(radio => {
             radio.disabled = true;
@@ -273,49 +290,104 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /**
+     * Function to highlight conflicting lectures
+     * @param {Array} conflicts - Array of conflicting courses
+     */
+    function highlightConflicts(conflicts) {
+        conflicts.forEach(conflict => {
+            const courseCode = conflict.course_code;
+            const courseName = conflict.course_name;
+
+            // Select all lecture blocks for the conflicting course
+            // Assuming lecture blocks have a data attribute like data-course-code
+            const lectureBlocks = document.querySelectorAll(`[data-course-code="${courseCode}"]`);
+
+            lectureBlocks.forEach(block => {
+                // Add a CSS class to highlight the block (e.g., red background)
+                block.classList.add('conflict-lecture');
+
+                // Add a tooltip with the conflict message
+                block.setAttribute('title', `This lecture conflicts with ${courseName}.`);
+                block.classList.add('has-tooltip');
+
+                // Initialize Bootstrap tooltip
+                new bootstrap.Tooltip(block);
+            });
+        });
+    }
+
+    /**
      * Event listener for confirming the addition of a course
      */
     confirmAddCourseButton.addEventListener('click', function () {
-        if (!selectedCourse) {
+        if (!selectedCourse || !selectedCourse.section_code) {
             showToast('No course selected to add.', 'warning');
             return;
         }
 
-        // Implement the logic to add the course to the user's schedule
-        // Send a POST request to add_course_to_schedule.php with section_code
+        // Disable the button and show loading spinner
+        confirmAddCourseButton.disabled = true;
+        const enrollmentLoading = document.getElementById('enrollmentLoading');
+        if (enrollmentLoading) {
+            enrollmentLoading.style.display = 'inline-block';
+        }
+
+        // Send the enrollment request
         fetch(`../api/add_course_to_schedule.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                section_code: selectedCourse.section_code, // Ensure section_code is available
-                semester: selectedSemester
+                section_code: selectedCourse.section_code, // Use section_code
+                semester: selectedSemester,
+                csrf_token: csrfToken
             })
         })
             .then(res => res.json())
             .then(data => {
+                // Re-enable the button and hide loading spinner
+                confirmAddCourseButton.disabled = false;
+                if (enrollmentLoading) {
+                    enrollmentLoading.style.display = 'none';
+                }
+
                 if (data.success) {
-                    showToast(`Course ${selectedCourse.code} - ${selectedCourse.name} added successfully!`, 'success');
+                    showToast(`Course ${selectedCourse.code} added successfully!`, 'success');
                     loadUserSchedule();
+                    loadEnrolledCourses(); // Refresh enrolled courses in sidebar
                     removeSelectedCourseFunction();
-                } else {
-                    // Handle specific error when course is already completed
-                    if (data.error.includes('already completed')) {
-                        showToast(data.error, 'error');
-                    } else {
-                        showToast(data.error || 'Failed to add course.', 'error');
+
+                    // Check for warnings about missing prerequisites
+                    if (data.warning) {
+                        // Display the warning message to the user
+                        showToast(data.warning, 'warning');
                     }
+
+                    // Check for schedule conflicts
+                    if (data.conflicts && Array.isArray(data.conflicts)) {
+                        highlightConflicts(data.conflicts);
+                    }
+                } else {
+                    // Handle specific error cases
+                    showToast(data.error || 'Failed to add course.', 'error');
                 }
             })
             .catch(err => {
+                // Re-enable the button and hide loading spinner in case of error
+                confirmAddCourseButton.disabled = false;
+                const enrollmentLoading = document.getElementById('enrollmentLoading');
+                if (enrollmentLoading) {
+                    enrollmentLoading.style.display = 'none';
+                }
+
                 console.error('Error adding course:', err);
                 showToast('Error adding course. Please try again.', 'error');
             });
     });
 
     /**
-     * Function to handle course deletion
+     * Function to handle course deletion from the main schedule
      * @param {number} sectionCode - The unique code of the section enrollment
      * @param {HTMLElement} courseBlock - The DOM element representing the course block
      */
@@ -325,12 +397,15 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch(`../api/delete_course.php`, { // Correct relative path
+        fetch(`../api/delete_course.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ section_code: sectionCode })
+            body: JSON.stringify({ 
+                section_code: sectionCode,
+                csrf_token: csrfToken 
+            })
         })
             .then(response => response.json())
             .then(data => {
@@ -342,6 +417,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         courseBlock.remove();
                     });
                     showToast('Course removed successfully.', 'success');
+                    loadUserSchedule();
+                    loadEnrolledCourses(); // Refresh enrolled courses in sidebar
                 } else {
                     showToast(data.error || 'Failed to remove the course.', 'error');
                 }
@@ -353,7 +430,50 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Function to attach delete event listeners to all delete buttons
+     * Function to handle course deletion from the sidebar
+     * @param {string} courseCode - The course code to delete
+     * @param {HTMLElement} enrolledCourseElement - The DOM element representing the enrolled course
+     */
+    function removeEnrolledCourse(courseCode, enrolledCourseElement) {
+        // Confirmation handled here
+        if (!confirm('Are you sure you want to remove this course from your enrolled list?')) {
+            return;
+        }
+
+        fetch(`../api/delete_course_by_code.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                course_code: courseCode,
+                csrf_token: csrfToken 
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add fade-out class for animation
+                    enrolledCourseElement.classList.add('fade-out');
+                    // Remove the enrolled course element after the animation completes
+                    enrolledCourseElement.addEventListener('animationend', function () {
+                        enrolledCourseElement.remove();
+                    });
+                    showToast('Course removed successfully.', 'success');
+                    loadUserSchedule();
+                    loadEnrolledCourses(); // Refresh enrolled courses in sidebar
+                } else {
+                    showToast(data.error || 'Failed to remove the course.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting course:', error);
+                showToast('An error occurred while removing the course. Please try again.', 'error');
+            });
+    }
+
+    /**
+     * Function to attach delete event listeners to all delete buttons in the main schedule
      */
     function attachDeleteListeners() {
         const deleteButtons = document.querySelectorAll('.delete-course-btn');
@@ -389,7 +509,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Use html2canvas to capture the schedule table
         html2canvas(scheduleTable, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const { jsPDF } = window.jspdf; // Correct namespace
+            const pdf = new jsPDF('p', 'mm', 'a4');
 
             // Calculate width and height to fit A4 size
             const imgWidth = 210; // A4 width in mm
@@ -419,6 +540,92 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
+     * Function to load enrolled courses from the server
+     */
+    function loadEnrolledCourses() {
+        enrolledCoursesList.innerHTML = '';
+        enrolledCoursesLoading.style.display = 'block';
+
+        fetch(`../api/get_enrolled_courses.php?semester=${encodeURIComponent(selectedSemester)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(courses => {
+                enrolledCoursesLoading.style.display = 'none';
+                displayEnrolledCourses(courses);
+            })
+            .catch(err => {
+                enrolledCoursesLoading.style.display = 'none';
+                console.error('Error fetching enrolled courses:', err);
+                showToast('Error fetching enrolled courses. Please try again.', 'error');
+            });
+    }
+
+    /**
+     * Function to display enrolled courses in the sidebar
+     * @param {Array} courses 
+     */
+    function displayEnrolledCourses(courses) {
+        enrolledCoursesList.innerHTML = '';
+        if (courses.length === 0) {
+            enrolledCoursesList.innerHTML = '<p>No enrolled courses for this semester.</p>';
+            return;
+        }
+
+        courses.forEach(course => {
+            const enrolledCourseDiv = document.createElement('div');
+            enrolledCourseDiv.classList.add('enrolled-course');
+
+            const courseInfoDiv = document.createElement('div');
+            courseInfoDiv.classList.add('course-info');
+            courseInfoDiv.textContent = `${course.code}`; // Display only course code
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-enrolled-course-btn');
+            deleteBtn.setAttribute('aria-label', 'Remove Enrolled Course');
+            deleteBtn.innerHTML = '&times;';
+
+            // Attach delete event
+            deleteBtn.addEventListener('click', function () {
+                removeEnrolledCourse(course.code, enrolledCourseDiv);
+            });
+
+            enrolledCourseDiv.appendChild(courseInfoDiv);
+            enrolledCourseDiv.appendChild(deleteBtn);
+
+            enrolledCoursesList.appendChild(enrolledCourseDiv);
+        });
+    }
+
+    /**
+     * Initial function calls
+     */
+    loadUserSchedule();
+    loadEnrolledCourses();
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .conflict-lecture {
+            background-color: rgba(255, 0, 0, 0.3) !important; /* Red background */
+            border: 2px solid red !important;
+            cursor: pointer; /* Change cursor to pointer to indicate tooltip */
+        }
+
+        /* Tooltip Styling (Optional) */
+        .has-tooltip {
+            position: relative;
+        }
+
+        /* Ensure tooltips appear above other elements */
+        .tooltip {
+            z-index: 2000;
+        }
+    `;
+    document.head.appendChild(style);
+
+    /**
      * Event listener for PDF download button
      */
     if (downloadPdfButton) {
@@ -426,7 +633,4 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         console.error('Download PDF button not found.');
     }
-
-    // Initial load of user schedule
-    loadUserSchedule();
 });

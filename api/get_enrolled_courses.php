@@ -1,5 +1,5 @@
 <?php
-// public/api/get_user_schedule.php
+// public/api/get_unique_enrolled_courses.php
 
 include '../includes/config.php';
 include '../includes/functions.php';
@@ -24,20 +24,13 @@ if (empty($semesterName)) {
     exit();
 }
 
-// Prepare the SQL query to fetch enrolled courses and their lectures
+// Prepare the SQL query to fetch unique enrolled courses by course code
 $sql = "
-SELECT 
-    ce.section_code,
-    l.day_of_week, 
-    l.start_time, 
-    l.end_time, 
-    l.location, 
-    c.course_code AS code,
-    c.course_name AS course_name
+SELECT DISTINCT 
+    c.course_code AS code
 FROM coursesenrolled ce
 JOIN sections s ON ce.section_code = s.section_code
 JOIN courses c ON s.course_code = c.course_code
-JOIN lectures l ON l.section_code = s.section_code
 WHERE ce.student_id = ?
   AND LOWER(s.semester) = LOWER(?)
 ";
@@ -45,7 +38,7 @@ WHERE ce.student_id = ?
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     error_log("Query preparation failed: " . $conn->error);
-    echo json_encode(["error" => "Database error while fetching schedule."]);
+    echo json_encode(["error" => "Database error while fetching enrolled courses."]);
     exit();
 }
 
@@ -53,14 +46,14 @@ $stmt->bind_param("is", $user_id, $semesterName);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Fetch the course offerings
-$offerings = [];
+// Fetch the enrolled courses
+$enrolledCourses = [];
 while ($row = $result->fetch_assoc()) {
-    $offerings[] = $row;
+    $enrolledCourses[] = $row;
 }
 
 $stmt->close();
 
-// Return the offerings as JSON
-echo json_encode($offerings);
+// Return the enrolled courses as JSON
+echo json_encode($enrolledCourses);
 ?>

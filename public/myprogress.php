@@ -78,12 +78,6 @@ $stmt_degree_names->close();
 
 // Fetch required courses for each degree
 $sql_degree_courses = "SELECT degree_id, course_code FROM degree_courses WHERE degree_id IN ($placeholders) AND course_type = 'required'";
-if ($major_id == 9) {
-    echo "<div class='container my-5'><div class='alert alert-warning'>You haven't declared your degree yet. You can do it from settings.</div></div>";
-    include '../includes/footer.php';
-    exit();
-}
-
 $stmt_degree_courses = $conn->prepare($sql_degree_courses);
 if (!$stmt_degree_courses) {
     error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
@@ -203,8 +197,36 @@ foreach ($degrees as $index => $degree_id) {
             <?php endforeach; ?>
         </div>
         
-        <!-- Right Column: Courses List -->
+        <!-- Right Column: Courses List and Add/Remove Completed Course Form -->
         <div class="col-md-8">
+            <!-- Add Completed Course Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Add Completed Course</h3>
+                </div>
+                <div class="card-body">
+                    <?php
+                        if (isset($_SESSION['add_course_error'])) {
+                            echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['add_course_error']) . '</div>';
+                            unset($_SESSION['add_course_error']);
+                        }
+
+                        if (isset($_SESSION['add_course_success'])) {
+                            echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['add_course_success']) . '</div>';
+                            unset($_SESSION['add_course_success']);
+                        }
+                    ?>
+                    <form action="../api/add_completed_course.php" method="POST" class="add-course-form" autocomplete="off">
+                        <div class="mb-3 position-relative">
+                            <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., CS101" required>
+                            <div id="autocomplete-list" class="autocomplete-items"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Completed Course</button>
+                    </form>
+                </div>
+            </div>
+
             <!-- Completed Courses -->
             <h3>Completed Courses</h3>
             <?php if (!empty($completed_course_details)): ?>
@@ -217,11 +239,17 @@ foreach ($degrees as $index => $degree_id) {
                                 </button>
                             </h2>
                             <div id="collapseCompleted<?php echo $index; ?>" class="accordion-collapse collapse" aria-labelledby="headingCompleted<?php echo $index; ?>" data-bs-parent="#completedCoursesAccordion">
-                                <div class="accordion-body">
-                                    <?php 
-                                        // Display course description if available
-                                        echo htmlspecialchars($course['course_description'] ?? 'No description available.');
-                                    ?>
+                                <div class="accordion-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <?php 
+                                            // Display course description if available
+                                            echo htmlspecialchars($course['course_description'] ?? 'No description available.');
+                                        ?>
+                                    </div>
+                                    <form action="../api/remove_completed_course.php" method="POST" class="mb-0">
+                                        <input type="hidden" name="course_code" value="<?php echo htmlspecialchars($course['course_code']); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -230,7 +258,7 @@ foreach ($degrees as $index => $degree_id) {
             <?php else: ?>
                 <p>You haven't completed any required courses yet.</p>
             <?php endif; ?>
-    
+
             <!-- To Be Completed Courses -->
             <h3>To Be Completed</h3>
             <?php if (!empty($to_be_completed_course_details)): ?>
@@ -259,6 +287,40 @@ foreach ($degrees as $index => $degree_id) {
         </div>
     </div>
 </div>
+
+<!-- Autocomplete Styles -->
+<style>
+    /* Autocomplete items */
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /* Position the autocomplete items to be the same width as the container: */
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff; 
+        border-bottom: 1px solid #d4d4d4; 
+    }
+
+    /* When hovering an item: */
+    .autocomplete-items div:hover {
+        background-color: #e9e9e9; 
+    }
+
+    /* When navigating through the items using the arrow keys: */
+    .autocomplete-active {
+        background-color: DodgerBlue !important; 
+        color: #ffffff; 
+    }
+</style>
 
 <!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
@@ -301,11 +363,11 @@ foreach ($degrees as $index => $degree_id) {
                         const fontSize = (height / 114).toFixed(2);
                         ctx.font = fontSize + "em sans-serif";
                         ctx.textBaseline = "middle";
-        
+    
                         const text = "<?php echo $degree_progress[$degree_id]['progress']; ?>%",
                               textX = Math.round((width - ctx.measureText(text).width) / 2),
                               textY = height / 1.5;
-        
+    
                         ctx.fillText(text, textX, textY);
                         ctx.save();
                     }
@@ -319,6 +381,107 @@ foreach ($degrees as $index => $degree_id) {
             });
         <?php endforeach; ?>
     });
+</script>
+
+<!-- Autocomplete JavaScript -->
+<script>
+    // Autocomplete function
+    function autocomplete(inp, fetchURL) {
+        let currentFocus;
+
+        inp.addEventListener("input", function(e) {
+            let a, b, i, val = this.value;
+            closeAllLists();
+            if (!val) { return false;}
+            currentFocus = -1;
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            this.parentNode.appendChild(a);
+
+            // Fetch matching courses from the server
+            fetch(fetchURL + "?query=" + encodeURIComponent(val))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        // No matches found
+                        const noMatchDiv = document.createElement("DIV");
+                        noMatchDiv.innerHTML = "<strong>No matches found</strong>";
+                        a.appendChild(noMatchDiv);
+                        return;
+                    }
+                    // Create DIV elements for each matching course
+                    data.forEach(course => {
+                        b = document.createElement("DIV");
+                        // Highlight the matching part
+                        const regex = new RegExp("(" + val + ")", "gi");
+                        const courseCode = course.course_code.replace(regex, "<strong>$1</strong>");
+                        const courseName = course.course_name.replace(regex, "<strong>$1</strong>");
+                        b.innerHTML = courseCode + " - " + courseName;
+                        // Hidden input to store the actual course code
+                        b.innerHTML += "<input type='hidden' value='" + course.course_code + "'>";
+                        b.addEventListener("click", function(e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching course data:', error);
+                });
+        });
+
+        inp.addEventListener("keydown", function(e) {
+            let x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                // Down key
+                currentFocus++;
+                addActive(x);
+            } else if (e.keyCode == 38) { //up
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                // Enter key
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+
+        function removeActive(x) {
+            for (let i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+
+        function closeAllLists(elmnt) {
+            const x = document.getElementsByClassName("autocomplete-items");
+            for (let i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+
+        // Close all autocomplete lists when clicking outside
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+    // Initialize autocomplete on the course_code input
+    autocomplete(document.getElementById("course_code"), "../api/search_courses.php");
 </script>
 
 <?php

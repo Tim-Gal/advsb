@@ -1,44 +1,79 @@
 /* my_progress.css */
 
-/* Container for the progress page */
 .myprogress-container {
     padding: 20px;
-    font-family: Arial, sans-serif;
 }
 
-/* Card styling for the circular progress chart */
-.myprogress-container .card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px; /* Added margin to prevent overlapping */
+.myprogress-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-/* Centering the canvas within the card */
-.myprogress-container .card-body {
+.add-course-form {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
-/* Styling the percentage text */
-.myprogress-container h3 {
-    margin-top: 10px;
-    font-size: 2rem;
-    color: #007EA7;
+.add-course-form .form-control {
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-/* Completed courses list */
+.add-course-form button {
+    width: 200px;
+    align-self: center;
+    margin-top: 15px;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
 .accordion-button {
-    font-weight: bold;
+    cursor: pointer;
 }
 
-.accordion-body {
-    background-color: #f9f9f9;
+.card-header h3 {
+    margin: 0;
 }
 
-/* Responsive adjustments */
-@media (max-width: 767.98px) {
-    .myprogress-container .row {
-        flex-direction: column;
+.autocomplete-items {
+    border: 1px solid #d4d4d4;
+    border-top: none;
+    z-index: 99;
+    /* Position the autocomplete items to be the same width as the container: */
+    position: absolute;
+    background-color: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div:hover {
+    background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+.accordion-body form {
+    margin: 0;
+}
+
+.accordion-body .btn-danger {
+    margin-left: 15px;
+}
+
+@media (max-width: 767px) {
+    .add-course-form .form-control, .add-course-form button {
+        width: 100%;
     }
 }

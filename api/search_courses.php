@@ -11,9 +11,10 @@ if (strlen($query) < 2) {
 }
 
 $sql = "SELECT course_code, course_name 
+
         FROM courses
         WHERE course_code LIKE ? OR course_name LIKE ?
-        LIMIT 10";
+        LIMIT 5";
 $stmt = $conn->prepare($sql);
 $like = "%$query%";
 $stmt->bind_param("ss", $like, $like);

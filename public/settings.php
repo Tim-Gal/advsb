@@ -1,13 +1,6 @@
 <?php
 
-include '../includes/header.php';
 
-
-if (!isset($_SESSION['user_id'])) {
-    // Redirect to login page if not authenticated
-    header('Location: login.php');
-    exit();
-}
 $pageTitle = "Settings";
 $pageCSS = [
     '../assets/css/global.css',
@@ -16,6 +9,15 @@ $pageCSS = [
 $pageJS = [
     '../assets/js/settings.js'
 ];
+
+include '../includes/header.php';
+
+
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page if not authenticated
+    header('Location: login.php');
+    exit();
+}
 
 
 // Fetch current user's data
