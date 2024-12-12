@@ -320,8 +320,11 @@ if ($stmt_insert->execute()) {
             }
             $stmtCourseNames->close();
 
-            $response["warning"] = "You have not completed the following prerequisite(s): " . implode(', ', $missingCourseNames) . ".";
-        } else {
+            $response["warning"] = "You have not completed the following prerequisite(s): " . 
+            implode(', ', array_map(function($code, $name) {
+                return "$code - $name";
+            }, $missingPrereqs, $missingCourseNames)) . ".";
+                } else {
             // If fetching course names fails, return the codes
             $response["warning"] = "You have not completed the following prerequisite(s): " . implode(', ', $missingPrereqs) . ".";
         }

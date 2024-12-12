@@ -97,12 +97,12 @@ while ($row = $res_degree_courses->fetch_assoc()) {
 }
 $stmt_degree_courses->close();
 
-// Fetch student's completed courses
 $sql_completed = "
-    SELECT c.course_code
+    SELECT c.course_code, c.course_name, c.course_description 
     FROM coursescompleted cc
     JOIN courses c ON cc.course_code = c.course_code
     WHERE cc.student_id = ?
+    ORDER BY c.course_code
 ";
 $stmt_completed = $conn->prepare($sql_completed);
 if (!$stmt_completed) {
@@ -115,8 +115,10 @@ $stmt_completed->bind_param("i", $user_id);
 $stmt_completed->execute();
 $res_completed = $stmt_completed->get_result();
 $completedCourses = array();
+$all_completed_course_details = array();
 while ($row = $res_completed->fetch_assoc()) {
     $completedCourses[] = $row['course_code'];
+    $all_completed_course_details[$row['course_code']] = $row;
 }
 $stmt_completed->close();
 
@@ -219,7 +221,7 @@ foreach ($degrees as $index => $degree_id) {
                     <form action="../api/add_completed_course.php" method="POST" class="add-course-form" autocomplete="off">
                         <div class="mb-3 position-relative">
                             <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., CS101" required>
+                            <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP 101" required>
                             <div id="autocomplete-list" class="autocomplete-items"></div>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Completed Course</button>
@@ -229,9 +231,9 @@ foreach ($degrees as $index => $degree_id) {
 
             <!-- Completed Courses -->
             <h3>Completed Courses</h3>
-            <?php if (!empty($completed_course_details)): ?>
+            <?php if (!empty($all_completed_course_details)): ?>
                 <div class="accordion mb-4" id="completedCoursesAccordion">
-                    <?php foreach ($completed_course_details as $index => $course): ?>
+                    <?php foreach ($all_completed_course_details as $index => $course): ?>
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingCompleted<?php echo $index; ?>">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCompleted<?php echo $index; ?>" aria-expanded="false" aria-controls="collapseCompleted<?php echo $index; ?>">
