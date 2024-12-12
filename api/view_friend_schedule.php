@@ -1,7 +1,5 @@
 <?php
-// public/api/view_friend_schedule.php
 
-// Start output buffering to prevent accidental output
 ob_start();
 
 include '../includes/config.php';
@@ -57,7 +55,7 @@ if ($friendship['count'] == 0) {
     exit();
 }
 
-// Fetch the friend's schedule for the specified semester
+// Fetch the friend's schedule for the specified semester get only unique courses cause there might be muktiple lectures for single course, and also we want to display only course name and code
 $sql = "
     SELECT c.course_code, c.course_name, l.day_of_week, l.start_time, l.end_time, l.location
     FROM coursesenrolled ce
@@ -78,6 +76,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $schedule = [];
+
 while ($row = $result->fetch_assoc()) {
     $schedule[] = [
         'course_code' => $row['course_code'],
@@ -87,7 +86,11 @@ while ($row = $result->fetch_assoc()) {
         'end_time' => $row['end_time'],
         'location' => $row['location']
     ];
+    
+
 }
+    
+
 $stmt->close();
 
 // Clean the output buffer and send the JSON response

@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Populate course information
                 const courseInfo = document.createElement('div');
-                courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br><small>${startTime} - ${endTime}</small>`;
+                courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br>`;
 
                 // Create the delete button
                 const deleteBtn = document.createElement('button');
