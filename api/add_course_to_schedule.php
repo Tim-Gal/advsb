@@ -16,7 +16,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
-// Get the POST data
 $input = json_decode(file_get_contents('php://input'), true);
 $section_code = isset($input['section_code']) ? intval($input['section_code']) : 0;
 $semesterName = trim($input['semester'] ?? 'Fall');
@@ -27,8 +26,6 @@ if ($section_code <= 0 || empty($semesterName)) {
     exit();
 }
 
-// **Start of Section Availability Check**
-// Check if the section exists and is available
 $sqlCheck = "SELECT course_code FROM sections WHERE section_code = ? AND LOWER(semester) = LOWER(?)";
 $stmtCheck = $conn->prepare($sqlCheck);
 if (!$stmtCheck) {
@@ -127,78 +124,55 @@ $stmtEnrolled->close();
 function normalizeCourseCode($code) {
     return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', trim($code)));
 }
-
 // **Start of Prerequisite Check**
+
 // Fetch prerequisites for the course
-$sqlPrereq = "SELECT prerequisite_course_code FROM prerequisiteof WHERE course_code = ?";
+$sqlPrereq = "SELECT UPPER(TRIM(prerequisite_course_code)) AS prerequisite_course_code FROM prerequisiteof WHERE course_code = ?";
 $stmtPrereq = $conn->prepare($sqlPrereq);
 if (!$stmtPrereq) {
-    error_log("Query preparation failed for prerequisites: " . $conn->error);
+    error_log("Query preparation failed: " . $conn->error);
     echo json_encode(["success" => false, "error" => "Database error while fetching prerequisites."]);
     exit();
 }
 
 $stmtPrereq->bind_param("s", $course_code);
 $stmtPrereq->execute();
-$resultPrereq = $stmtPrereq->get_result();
-
-$prerequisites = [];
-while ($row = $resultPrereq->fetch_assoc()) {
-    $prereq = normalizeCourseCode($row['prerequisite_course_code']);
-    $prerequisites[] = $prereq;
-}
-
+$prerequisites = $stmtPrereq->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmtPrereq->close();
 
-error_log("Fetched Prerequisites for Course {$course_code}: " . implode(', ', $prerequisites));
+$prerequisites = array_column($prerequisites, 'prerequisite_course_code');
+error_log("Prerequisites for course {$course_code}: " . implode(', ', $prerequisites));
 
 // Check which prerequisites are missing
 $missingPrereqs = [];
 if (!empty($prerequisites)) {
-    // Prepare placeholders for IN clause
-    $placeholders = implode(',', array_fill(0, count($prerequisites), '?'));
-    $types = str_repeat('s', count($prerequisites));
-
-    $sqlCompleted = "SELECT course_code FROM coursescompleted WHERE student_id = ? AND course_code IN ($placeholders)";
+    // Fetch completed courses for the student
+    $sqlCompleted = "SELECT UPPER(TRIM(course_code)) AS course_code FROM coursescompleted WHERE student_id = ? AND course_code IN ('" . implode("','", $prerequisites) . "')";
     $stmtCompleted = $conn->prepare($sqlCompleted);
     if (!$stmtCompleted) {
-        error_log("Query preparation failed for completed courses: " . $conn->error);
+        error_log("Query preparation failed: " . $conn->error);
         echo json_encode(["success" => false, "error" => "Database error while checking completed prerequisites."]);
         exit();
     }
 
-    // Normalize all prerequisites before binding
-    $normalizedPrereqs = array_map('normalizeCourseCode', $prerequisites);
-
-    // Dynamically bind parameters using call_user_func_array
-    $types_bind = 'i' . $types;
-    $params = array_merge([$user_id], $normalizedPrereqs);
-    $bind_params = [$types_bind];
-
-    foreach ($params as $param) {
-        $bind_params[] = &$param; // Pass by reference
-    }
-
-    // Bind parameters
-    call_user_func_array([$stmtCompleted, 'bind_param'], $bind_params);
-
+    $stmtCompleted->bind_param("i", $user_id);
     $stmtCompleted->execute();
-    $resultCompleted = $stmtCompleted->get_result();
-
-    $completedCourses = [];
-    while ($row = $resultCompleted->fetch_assoc()) {
-        $completedCourse = normalizeCourseCode($row['course_code']);
-        $completedCourses[] = $completedCourse;
-    }
-
+    $completedCourses = $stmtCompleted->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmtCompleted->close();
 
-    error_log("Fetched Completed Courses for User {$user_id}: " . implode(', ', $completedCourses));
+    $completedCourses = array_column($completedCourses, 'course_code');
+    error_log("Completed courses for user {$user_id}: " . implode(', ', $completedCourses));
 
     // Determine missing prerequisites
     $missingPrereqs = array_diff($prerequisites, $completedCourses);
-    error_log("Missing Prerequisites after normalization: " . implode(', ', $missingPrereqs));
+    if (!empty($missingPrereqs)) {
+        error_log("Missing prerequisites for course {$course_code}: " . implode(', ', $missingPrereqs));
+    } else {
+        error_log("All prerequisites completed for course {$course_code}.");
+    }
 }
+
+// **End of Prerequisite Check**
 // **Start of Conflict Check**
 /**
  * Function to check if two time intervals overlap
