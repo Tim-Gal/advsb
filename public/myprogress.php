@@ -9,12 +9,163 @@ $pageCSS = [
 
 include '../includes/header.php';
 
+// Start the session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
+
+// Handle form submission for adding a completed course
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course_code'])) {
+    // Retrieve and sanitize the course code
+    $course_code = strtoupper(trim($_POST['course_code']));
+
+    // Validate input
+    if (empty($course_code)) {
+        $_SESSION['add_course_error'] = "Course code cannot be empty.";
+    } else {
+        // Begin Transaction
+        $conn->begin_transaction();
+
+        try {
+            /**
+             * Step 1: Check if the course exists
+             */
+            $sqlCheckCourse = "SELECT course_code FROM courses WHERE course_code = ?";
+            $stmtCheckCourse = $conn->prepare($sqlCheckCourse);
+            if (!$stmtCheckCourse) {
+                throw new Exception("Database error while checking course existence: " . $conn->error);
+            }
+            $stmtCheckCourse->bind_param("s", $course_code);
+            $stmtCheckCourse->execute();
+            $resultCheckCourse = $stmtCheckCourse->get_result();
+            if ($resultCheckCourse->num_rows === 0) {
+                $stmtCheckCourse->close();
+                throw new Exception("The course code '{$course_code}' does not exist.");
+            }
+            $stmtCheckCourse->close();
+
+            /**
+             * Step 2: Insert into coursescompleted
+             * Prevent duplicate entries
+             */
+            $sqlInsertCompleted = "INSERT INTO coursescompleted (student_id, course_code) VALUES (?, ?)";
+            $stmtInsertCompleted = $conn->prepare($sqlInsertCompleted);
+            if (!$stmtInsertCompleted) {
+                throw new Exception("Database error while inserting completed course: " . $conn->error);
+            }
+            $stmtInsertCompleted->bind_param("is", $user_id, $course_code);
+
+            if (!$stmtInsertCompleted->execute()) {
+                // Check for duplicate entry error (assuming UNIQUE constraint on (student_id, course_code))
+                if ($conn->errno === 1062) { // MySQL error code for duplicate entry
+                    $stmtInsertCompleted->close();
+                    throw new Exception("You have already marked '{$course_code}' as completed.");
+                } else {
+                    throw new Exception("Database error while inserting completed course: " . $stmtInsertCompleted->error);
+                }
+            }
+            $stmtInsertCompleted->close();
+
+            /**
+             * Step 3: Check for existing enrollments in the same course across all semesters
+             */
+            $sqlCheckEnrollment = "
+                SELECT ce.section_code, s.semester, c.course_name
+                FROM coursesenrolled ce
+                JOIN sections s ON ce.section_code = s.section_code
+                JOIN courses c ON s.course_code = c.course_code
+                WHERE ce.student_id = ? AND c.course_code = ?
+            ";
+            $stmtCheckEnrollment = $conn->prepare($sqlCheckEnrollment);
+            if (!$stmtCheckEnrollment) {
+                throw new Exception("Database error while checking existing enrollments: " . $conn->error);
+            }
+            $stmtCheckEnrollment->bind_param("is", $user_id, $course_code);
+            $stmtCheckEnrollment->execute();
+            $resultEnrollment = $stmtCheckEnrollment->get_result();
+
+            $existingEnrollments = [];
+            while ($row = $resultEnrollment->fetch_assoc()) {
+                $existingEnrollments[] = [
+                    'section_code' => $row['section_code'],
+                    'semester' => ucfirst(strtolower($row['semester'])),
+                    'course_name' => $row['course_name']
+                ];
+            }
+            $stmtCheckEnrollment->close();
+
+            /**
+             * Step 4: Remove existing enrollments if any
+             */
+            if (!empty($existingEnrollments)) {
+                $section_codes = array_column($existingEnrollments, 'section_code');
+                // Prepare placeholders for IN clause
+                $placeholders = implode(',', array_fill(0, count($section_codes), '?'));
+                $types = str_repeat('i', count($section_codes));
+                $sqlDeleteEnrollments = "DELETE FROM coursesenrolled WHERE student_id = ? AND section_code IN ($placeholders)";
+                $stmtDeleteEnrollments = $conn->prepare($sqlDeleteEnrollments);
+                if (!$stmtDeleteEnrollments) {
+                    throw new Exception("Database error while deleting enrollments: " . $conn->error);
+                }
+
+                // Bind parameters dynamically
+                $params = array_merge([$user_id], $section_codes);
+                $types_bind = 'i' . $types;
+
+                // Create a reference array
+                $refs = [];
+                foreach ($params as $key => $value) {
+                    $refs[$key] = &$params[$key];
+                }
+
+                // Bind parameters
+                array_unshift($refs, $types_bind);
+                call_user_func_array([$stmtDeleteEnrollments, 'bind_param'], $refs);
+
+                if (!$stmtDeleteEnrollments->execute()) {
+                    throw new Exception("Database error while deleting enrollments: " . $stmtDeleteEnrollments->error);
+                }
+                $stmtDeleteEnrollments->close();
+
+                // Optionally, log the removal
+                foreach ($existingEnrollments as $enrollment) {
+                    error_log("Auto-removed enrollment: User ID {$user_id} removed from course '{$course_code}' ({$enrollment['course_name']}) in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']}).");
+                }
+
+                // Prepare a success message including removal info
+                $removedCourses = array_map(function($enrollment) use ($course_code) {
+                    return "{$course_code} ({$enrollment['course_name']}) in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']})";
+                }, $existingEnrollments);
+
+                $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully. Existing enrollments for this course have been removed from your schedule: " . implode(', ', $removedCourses) . ".";
+            } else {
+                // No existing enrollments to remove
+                $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully.";
+            }
+
+            // Commit Transaction
+            $conn->commit();
+        } catch (Exception $e) {
+            // Rollback Transaction on Error
+            $conn->rollback();
+
+            // Log the error
+            error_log("Error in myprogress.php: " . $e->getMessage());
+
+            // Set error message
+            $_SESSION['add_course_error'] = $e->getMessage();
+        }
+    }
+
+    // Continue with fetching data after handling form submission
+}
 
 // Fetch student's major and minor IDs
 $sql_degrees = "SELECT major_id, minor_id FROM students WHERE student_id = ?";
@@ -97,6 +248,7 @@ while ($row = $res_degree_courses->fetch_assoc()) {
 }
 $stmt_degree_courses->close();
 
+// Fetch completed courses
 $sql_completed = "
     SELECT c.course_code, c.course_name, c.course_description 
     FROM coursescompleted cc
@@ -121,6 +273,9 @@ while ($row = $res_completed->fetch_assoc()) {
     $all_completed_course_details[$row['course_code']] = $row;
 }
 $stmt_completed->close();
+
+// Encode completed courses as JSON for JavaScript
+$completedCoursesJSON = json_encode(array_map('strtoupper', $completedCourses));
 
 // Fetch course details for required courses
 $course_details = array();
@@ -208,17 +363,19 @@ foreach ($degrees as $index => $degree_id) {
                 </div>
                 <div class="card-body">
                     <?php
+                        // Display error message from backend
                         if (isset($_SESSION['add_course_error'])) {
                             echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['add_course_error']) . '</div>';
                             unset($_SESSION['add_course_error']);
                         }
 
+                        // Display success message from backend
                         if (isset($_SESSION['add_course_success'])) {
                             echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['add_course_success']) . '</div>';
                             unset($_SESSION['add_course_success']);
                         }
                     ?>
-                    <form action="../api/add_completed_course.php" method="POST" class="add-course-form" autocomplete="off">
+                    <form action="myprogress.php" method="POST" class="add-course-form" autocomplete="off">
                         <div class="mb-3 position-relative">
                             <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP-101" required>
@@ -322,7 +479,29 @@ foreach ($degrees as $index => $degree_id) {
         background-color: DodgerBlue !important; 
         color: #ffffff; 
     }
+
+    /* Style for the Completed badge within suggestions */
+    .suggestion-item .badge {
+        font-size: 0.8em;
+        vertical-align: middle;
+    }
+
+    /* Optional: Gray out completed courses */
+    .suggestion-item.completed {
+        background-color: #f8f9fa; /* Light gray background */
+        color: #6c757d; /* Gray text */
+        cursor: not-allowed;
+    }
+
+    .suggestion-item.completed:hover {
+        background-color: #f8f9fa;
+    }
 </style>
+
+<!-- Completed Courses JSON for JavaScript -->
+<script>
+    const completedCourses = <?php echo $completedCoursesJSON; ?>;
+</script>
 
 <!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
@@ -335,7 +514,7 @@ foreach ($degrees as $index => $degree_id) {
             const completed_<?php echo $degree_id; ?> = <?php echo $degree_progress[$degree_id]['completed_count']; ?>;
             const total_<?php echo $degree_id; ?> = <?php echo $degree_progress[$degree_id]['total_required']; ?>;
             const progress_<?php echo $degree_id; ?> = <?php echo $degree_progress[$degree_id]['progress']; ?>;
-    
+
             const data_<?php echo $degree_id; ?> = {
                 labels: ['Completed', 'Remaining'],
                 datasets: [{
@@ -344,7 +523,7 @@ foreach ($degrees as $index => $degree_id) {
                     borderWidth: 0
                 }]
             };
-    
+
             const options_<?php echo $degree_id; ?> = {
                 cutout: '70%',
                 rotation: -90,
@@ -365,17 +544,17 @@ foreach ($degrees as $index => $degree_id) {
                         const fontSize = (height / 114).toFixed(2);
                         ctx.font = fontSize + "em sans-serif";
                         ctx.textBaseline = "middle";
-    
+
                         const text = "<?php echo $degree_progress[$degree_id]['progress']; ?>%",
                               textX = Math.round((width - ctx.measureText(text).width) / 2),
                               textY = height / 1.5;
-    
+
                         ctx.fillText(text, textX, textY);
                         ctx.save();
                     }
                 }
             };
-    
+
             const progressChart_<?php echo $degree_id; ?> = new Chart(ctx_<?php echo $degree_id; ?>, {
                 type: 'doughnut',
                 data: data_<?php echo $degree_id; ?>,
@@ -420,12 +599,27 @@ foreach ($degrees as $index => $degree_id) {
                         const courseCode = course.course_code.replace(regex, "<strong>$1</strong>");
                         const courseName = course.course_name.replace(regex, "<strong>$1</strong>");
                         b.innerHTML = courseCode + " - " + courseName;
+
+                        // Check if the course is already completed
+                        const isCompleted = completedCourses.includes(course.course_code.toUpperCase());
+
+                        if (isCompleted) {
+                            // Append a "Completed" badge
+                            b.innerHTML += ' <span class="badge bg-success ms-2">Completed</span>';
+                            // Add a class to style completed courses
+                            b.classList.add('completed');
+                        }
+
                         // Hidden input to store the actual course code
                         b.innerHTML += "<input type='hidden' value='" + course.course_code + "'>";
-                        b.addEventListener("click", function(e) {
-                            inp.value = this.getElementsByTagName("input")[0].value;
-                            closeAllLists();
-                        });
+                        b.setAttribute('data-section-code', course.section_code); // Store section_code
+
+                        if (!isCompleted) {
+                            b.addEventListener("click", function(e) {
+                                inp.value = this.getElementsByTagName("input")[0].value;
+                                closeAllLists();
+                            });
+                        }
                         a.appendChild(b);
                     });
                 })
