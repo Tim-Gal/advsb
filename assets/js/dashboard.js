@@ -109,12 +109,11 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function populateCourseBlock(sectionCode, courseCode, day, startTime, endTime, location) {
         const startHour = parseInt(startTime.split(':')[0], 10);
-        const startMinute = parseInt(startTime.split(':')[1], 10);
+        const currentMinute = parseInt(startTime.split(':')[1], 10);
         const endHour = parseInt(endTime.split(':')[0], 10);
         const endMinute = parseInt(endTime.split(':')[1], 10);
 
-        // Calculate duration in hours (assuming 1 hour per course)
-        // Since we're reverting to 1-hour courses, duration is always 1
+        // Since every course is 1 hour
         const duration = 1; 
 
         // Loop through the duration (1 hour)
@@ -290,33 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /**
-     * Function to highlight conflicting lectures
-     * @param {Array} conflicts - Array of conflicting courses
-     */
-    function highlightConflicts(conflicts) {
-        conflicts.forEach(conflict => {
-            const courseCode = conflict.course_code;
-            const courseName = conflict.course_name;
-
-            // Select all lecture blocks for the conflicting course
-            // Assuming lecture blocks have a data attribute like data-course-code
-            const lectureBlocks = document.querySelectorAll(`[data-course-code="${courseCode}"]`);
-
-            lectureBlocks.forEach(block => {
-                // Add a CSS class to highlight the block (e.g., red background)
-                block.classList.add('conflict-lecture');
-
-                // Add a tooltip with the conflict message
-                block.setAttribute('title', `This lecture conflicts with ${courseName}.`);
-                block.classList.add('has-tooltip');
-
-                // Initialize Bootstrap tooltip
-                new bootstrap.Tooltip(block);
-            });
-        });
-    }
-
-    /**
      * Event listener for confirming the addition of a course
      */
     confirmAddCourseButton.addEventListener('click', function () {
@@ -344,6 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 csrf_token: csrfToken
             })
         })
+
             .then(res => res.json())
             .then(data => {
                 // Re-enable the button and hide loading spinner
@@ -357,22 +330,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     loadUserSchedule();
                     loadEnrolledCourses(); // Refresh enrolled courses in sidebar
                     removeSelectedCourseFunction();
-
+            
                     // Check for warnings about missing prerequisites
                     if (data.warning) {
-                        // Display the warning message to the user
                         showToast(data.warning, 'warning');
                     }
-
-                    // Check for schedule conflicts
-                    if (data.conflicts && Array.isArray(data.conflicts)) {
-                        highlightConflicts(data.conflicts);
-                    }
+            
+                
                 } else {
-                    // Handle specific error cases
                     showToast(data.error || 'Failed to add course.', 'error');
                 }
             })
+            
             .catch(err => {
                 // Re-enable the button and hide loading spinner in case of error
                 confirmAddCourseButton.disabled = false;
@@ -607,10 +576,12 @@ document.addEventListener('DOMContentLoaded', function () {
     loadEnrolledCourses();
     const style = document.createElement('style');
     style.innerHTML = `
+        /* Conflict Lecture Styling (Unused since conflicts prevent addition) */
         .conflict-lecture {
             background-color: rgba(255, 0, 0, 0.3) !important; /* Red background */
             border: 2px solid red !important;
             cursor: pointer; /* Change cursor to pointer to indicate tooltip */
+            z-index: 1000; /* Ensure it appears above other elements */
         }
 
         /* Tooltip Styling (Optional) */

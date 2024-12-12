@@ -10,7 +10,6 @@ if (session_status() == PHP_SESSION_NONE) {
 
 header('Content-Type: application/json');
 
-// Retrieve and sanitize input parameters
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $semester = isset($_GET['semester']) ? trim($_GET['semester']) : '';
 
