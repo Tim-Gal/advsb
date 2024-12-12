@@ -1,10 +1,10 @@
 <?php
 // api/request_password_reset.php
 
-include '../includes/config.php';
-include '../includes/functions.php';
+session_start(); // Start the session
 
-header('Content-Type: application/json');
+include_once '../includes/config.php';
+include_once '../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $_SESSION['fp_error'] = "Invalid request method.";
@@ -96,8 +96,9 @@ $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 $mail_sent = mail($user_email, $subject, $message, $headers);
 
 if ($mail_sent) {
+    $_SESSION['reset_code_sent'] = true; // Flag to show verification form
     $_SESSION['fp_success'] = "A password reset code has been sent to your email.";
-    header("Location: ../public/reset_password.php");
+    header("Location: ../public/forgot_password.php");
     exit();
 } else {
     $_SESSION['fp_error'] = "Failed to send reset email. Please try again.";
