@@ -53,40 +53,47 @@ CREATE TABLE `courses` (
 
 
 INSERT INTO `courses` (`course_code`, `course_name`, `course_description`) VALUES
-('COMP101', 'Introduction to Programming', 'Learn the basics of programming and algorithms.'),
-('COMP102', 'Foundations of Computing', 'Introduction to computer systems and logic.'),
-('COMP201', 'Data Structures', 'Study structures for efficient data management.'),
-('COMP202', 'Web Development Basics', 'Build interactive websites with modern tools.'),
-('COMP301', 'Artificial Intelligence Fundamentals', 'Explore the basics of AI and machine learning.'),
-('COMP302', 'Operating Systems', 'Understand OS concepts like memory and processes.'),
+('COMP-101', 'Introduction to Programming', 'Learn foundational programming concepts, develop algorithms, and create simple computer applications.'),
+('COMP-102', 'Foundations of Computing', 'Understand computer systems, digital logic, and their role in modern technologies.'),
+('COMP-201', 'Data Structures', 'Examine efficient data storage and retrieval structures essential for effective programming.'),
+('COMP-202', 'Web Development Basics', 'Discover how to create interactive websites using HTML, CSS, and JavaScript.'),
+('COMP-301', 'Artificial Intelligence Fundamentals', 'Explore AI concepts, algorithms, and their applications in real-world scenarios.'),
+('COMP-302', 'Operating Systems', 'Study operating systems principles, including memory management, process scheduling, and file systems.'),
 
-('BIOL101', 'Introduction to Biology', 'Explore foundational biology principles and systems.'),
-('BIOL102', 'Cellular Biology', 'Study cells, organelles, and basic mechanisms.'),
-('BIOL201', 'Genetics', 'Learn principles of heredity and DNA science.'),
-('BIOL202', 'Ecology Basics', 'Understand ecosystems and species interactions.'),
-('BIOL301', 'Human Physiology', 'Study the systems of the human body.'),
-('BIOL302', 'Microbiology', 'Learn about microorganisms and their environments.'),
+('BIOL-101', 'Introduction to Biology', 'Explore fundamental biological concepts, including cell theory, genetics, and evolution.'),
+('BIOL-102', 'Cellular Biology', 'Dive into the structure and function of cells, organelles, and molecular mechanisms.'),
+('BIOL-201', 'Genetics', 'Study the principles of inheritance, DNA structure, and genetic disorders.'),
+('BIOL-202', 'Ecology Basics', 'Understand the interactions between organisms and their environments, focusing on ecosystems and biodiversity.'),
+('BIOL-301', 'Human Physiology', 'Examine the functioning of human body systems and their roles in maintaining health.'),
+('BIOL-302', 'Microbiology', 'Study the characteristics, behaviors, and ecological roles of microorganisms.'),
 
-('POLI101', 'Introduction to Politics', 'Understand political systems and their foundations.'),
-('POLI102', 'Global Governance', 'Explore how international organizations function.'),
-('POLI201', 'Public Policy', 'Analyze the creation and impact of policies.'),
-('POLI202', 'Political Theory', 'Study influential thinkers and political ideas.'),
-('POLI301', 'Comparative Politics', 'Compare political systems across nations.'),
-('POLI302', 'International Relations', 'Learn the dynamics of global political interactions.'),
+('POLI-101', 'Introduction to Politics', 'Understand political systems, ideologies, and their impacts on society and governance.'),
+('POLI-102', 'Global Governance', 'Examine the functions and challenges of international organizations and global political frameworks.'),
+('POLI-201', 'Public Policy', 'Analyze how policies are formulated, implemented, and evaluated in various political contexts.'),
+('POLI-202', 'Political Theory', 'Explore key political thinkers, their ideas, and their influence on modern governance.'),
+('POLI-301', 'Comparative Politics', 'Compare and contrast political systems, processes, and institutions across different nations.'),
+('POLI-302', 'International Relations', 'Study the dynamics of global politics, diplomacy, and international cooperation.'),
 
-('ECON101', 'Principles of Microeconomics', 'Study decision-making in households and firms.'),
-('ECON102', 'Principles of Macroeconomics', 'Explore national economies and global trends.'),
-('ECON201', 'Intermediate Microeconomics', 'Analyze market behaviors with advanced models.'),
-('ECON202', 'Econometrics', 'Apply statistics to analyze economic data.'),
-('ECON301', 'Development Economics', 'Understand economic growth in developing nations.'),
-('ECON302', 'Behavioral Economics', 'Study psychological factors in economic decisions.'),
+('ECON-101', 'Principles of Microeconomics', 'Study decision-making processes within households, firms, and resource allocation systems.'),
+('ECON-102', 'Principles of Macroeconomics', 'Understand national economies, global trends, and their effects on societies.'),
+('ECON-201', 'Intermediate Microeconomics', 'Analyze advanced models of market behavior and their practical applications.'),
+('ECON-202', 'Econometrics', 'Apply statistical methods to interpret and analyze economic data for policy decisions.'),
+('ECON-301', 'Development Economics', 'Explore economic growth, poverty, and challenges in developing nations.'),
+('ECON-302', 'Behavioral Economics', 'Study psychological factors influencing economic decisions and behaviors.'),
 
-('PHIL101', 'Introduction to Philosophy', 'Explore fundamental philosophical questions and ideas.'),
-('PHIL102', 'Critical Thinking', 'Develop reasoning and argument analysis skills.'),
-('PHIL201', 'Ethics', 'Study moral theories and their applications.'),
-('PHIL202', 'Philosophy of Science', 'Analyze scientific methods and their implications.'),
-('PHIL301', 'Metaphysics', 'Explore reality, existence, and the nature of being.'),
-('PHIL302', 'Philosophy of Mind', 'Study consciousness, cognition, and the self.');
+('PHIL-101', 'Introduction to Philosophy', 'Explore fundamental philosophical questions about existence, reality, and human understanding.'),
+('PHIL-102', 'Critical Thinking', 'Develop skills in logical reasoning, argument analysis, and evidence evaluation.'),
+('PHIL-201', 'Ethics', 'Study moral theories, ethical dilemmas, and their application in real-world situations.'),
+('PHIL-202', 'Philosophy of Science', 'Analyze the principles and implications of scientific methods and discoveries.'),
+('PHIL-301', 'Metaphysics', 'Examine the nature of reality, existence, and fundamental aspects of being.'),
+('PHIL-302', 'Philosophy of Mind', 'Study consciousness, cognition, and their relationship to the physical world.'),
+
+('ENGL-101', 'Introduction to Literature', 'Discover literary genres, techniques, and their cultural and historical significance.'),
+('ENGL-102', 'Creative Writing Basics', 'Learn storytelling, poetic expression, and dramatic techniques for creative writing.'),
+('ENGL-201', 'Shakespeare and His World', "Explore Shakespeare's works and their impact on literature and culture."),
+('ENGL-202', 'Modernist Literature', 'Analyze key texts and themes from the modernist literary movement.'),
+('ENGL-301', 'American Literature', 'Survey major works and movements in American literature from colonial times to the present.'),
+('ENGL-302', 'Postcolonial Studies', 'Examine literature from nations shaped by colonial history and their cultural narratives.');
 
 
 CREATE TABLE `degree_courses` (
@@ -98,26 +105,77 @@ CREATE TABLE `degree_courses` (
 
 
 INSERT INTO `degree_courses` (`id`, `degree_id`, `course_code`, `course_type`) VALUES
-(1,  1, 'COMP101', 'required'),
-(2,  1, 'COMP102', 'required'),
-(3,  1, 'COMP201', 'required'),
-(4,  1, 'COMP202', 'required'),
-(5,  1, 'COMP301', 'required'),
-(6,  1, 'COMP302', 'required'),
+(1,  1, 'COMP-101', 'required'),
+(2,  1, 'COMP-102', 'required'),
+(3,  1, 'COMP-201', 'required'),
+(4,  1, 'COMP-202', 'required'),
+(5,  1, 'COMP-301', 'required'),
+(6,  1, 'COMP-302', 'required'),
 
-(7,  3, 'BIOL101', 'required'),
-(8,  3, 'BIOL102', 'required'),
-(9,  3, 'BIOL201', 'required'),
-(10, 3, 'BIOL202', 'required'),
-(11, 3, 'BIOL301', 'required'),
-(12, 3, 'BIOL302', 'required'),
+(7,  2, 'COMP-101', 'required'),
+(8,  2, 'COMP-102', 'required'),
+(9,  2, 'COMP-201', 'required'),
+(10, 2, 'COMP-202', 'required'),
 
-(13, 5, 'POLI101', 'required'),
-(14, 5, 'POLI102', 'required'),
-(15, 5, 'POLI101', 'required'),
-(16, 5, 'POLI102', 'required'),
-(17, 5, 'POLI101', 'required'),
-(18, 5, 'POLI102', 'required');
+(11, 3, 'BIOL-101', 'required'),
+(12, 3, 'BIOL-102', 'required'),
+(13, 3, 'BIOL-201', 'required'),
+(14, 3, 'BIOL-202', 'required'),
+(15, 3, 'BIOL-301', 'required'),
+(16, 3, 'BIOL-302', 'required'),
+
+(17, 4, 'BIOL-101', 'required'),
+(18, 4, 'BIOL-102', 'required'),
+(19, 4, 'BIOL-201', 'required'),
+(20, 4, 'BIOL-202', 'required'),
+
+(21, 5, 'POLI-101', 'required'),
+(22, 5, 'POLI-102', 'required'),
+(23, 5, 'POLI-101', 'required'),
+(24, 5, 'POLI-102', 'required'),
+(25, 5, 'POLI-101', 'required'),
+(26, 5, 'POLI-102', 'required'),
+
+(27, 6, 'POLI-101', 'required'),
+(28, 6, 'POLI-102', 'required'),
+(29, 6, 'POLI-101', 'required'),
+(30, 6, 'POLI-102', 'required'),
+
+(31, 7, 'ECON-101', 'required'),
+(32, 7, 'ECON-102', 'required'),
+(33, 7, 'ECON-101', 'required'),
+(34, 7, 'ECON-102', 'required'),
+(35, 7, 'ECON-101', 'required'),
+(36, 7, 'ECON-102', 'required'),
+
+(37, 8, 'ECON-101', 'required'),
+(38, 8, 'ECON-102', 'required'),
+(39, 8, 'ECON-101', 'required'),
+(40, 8, 'ECON-102', 'required'),
+
+(41, 9, 'PHIL-101', 'required'),
+(42, 9, 'PHIL-102', 'required'),
+(43, 9, 'PHIL-101', 'required'),
+(44, 9, 'PHIL-102', 'required'),
+(45, 9, 'PHIL-101', 'required'),
+(46, 9, 'PHIL-102', 'required'),
+
+(47, 10, 'PHIL-101', 'required'),
+(48, 10, 'PHIL-102', 'required'),
+(49, 10, 'PHIL-101', 'required'),
+(50, 10, 'PHIL-102', 'required'),
+
+(51, 11, 'ENGL-101', 'required'),
+(52, 11, 'ENGL-102', 'required'),
+(53, 11, 'ENGL-101', 'required'),
+(54, 11, 'ENGL-102', 'required'),
+(55, 11, 'ENGL-101', 'required'),
+(56, 11, 'ENGL-102', 'required'),
+
+(57, 12, 'ENGL-101', 'required'),
+(58, 12, 'ENGL-102', 'required'),
+(59, 12, 'ENGL-101', 'required'),
+(60, 12, 'ENGL-102', 'required');
 
 
 CREATE TABLE `sections` (
@@ -129,15 +187,71 @@ CREATE TABLE `sections` (
 
 
 INSERT INTO `sections` (`section_code`, `semester`, `professor`, `course_code`) VALUES
-(1, 'FALL',   'Don Miller', 'COMP101'),
-(2, 'FALL',   'Don Miller', 'COMP102'),
-(3, 'WINTER', 'Don Miller', 'COMP201'),
-(4, 'WINTER', 'Don Miller', 'COMP202'),
+(1,  'FALL',   'Don Miller', 'COMP-101'),
+(2,  'FALL',   'Don Miller', 'COMP-102'),
+(3,  'FALL',   'Don Miller', 'COMP-201'),
+(4,  'FALL',   'Don Miller', 'COMP-202'),
+(5,  'WINTER', 'Don Miller', 'COMP-101'),
+(6,  'WINTER', 'Don Miller', 'COMP-102'),
+(7,  'WINTER', 'Don Miller', 'COMP-301'),
+(8,  'WINTER', 'Don Miller', 'COMP-302'),
+(9,  'SUMMER', 'Don Miller', 'COMP-101'),
+(10, 'SUMMER', 'Don Miller', 'COMP-102'),
 
-(5, 'FALL',   'John Green', 'BIOL101'),
-(6, 'FALL',   'John Green', 'BIOL102'),
-(7, 'WINTER', 'John Green', 'BIOL201'),
-(8, 'WINTER', 'John Green', 'BIOL202');
+(11, 'FALL',   'John Green', 'BIOL-101'),
+(12, 'FALL',   'John Green', 'BIOL-102'),
+(13, 'FALL',   'John Green', 'BIOL-201'),
+(14, 'FALL',   'John Green', 'BIOL-202'),
+(15, 'WINTER', 'John Green', 'BIOL-101'),
+(16, 'WINTER', 'John Green', 'BIOL-102'),
+(17, 'WINTER', 'John Green', 'BIOL-301'),
+(18, 'WINTER', 'John Green', 'BIOL-302'),
+(19, 'SUMMER', 'John Green', 'BIOL-101'),
+(20, 'SUMMER', 'John Green', 'BIOL-102'),
+
+(21, 'FALL',   'Mike Doe', 'POLI-101'),
+(22, 'FALL',   'Mike Doe', 'POLI-102'),
+(23, 'FALL',   'Mike Doe', 'POLI-201'),
+(24, 'FALL',   'Mike Doe', 'POLI-202'),
+(25, 'WINTER', 'Mike Doe', 'POLI-101'),
+(26, 'WINTER', 'Mike Doe', 'POLI-102'),
+(27, 'WINTER', 'Mike Doe', 'POLI-301'),
+(28, 'WINTER', 'Mike Doe', 'POLI-302'),
+(29, 'SUMMER', 'Mike Doe', 'POLI-101'),
+(30, 'SUMMER', 'Mike Doe', 'POLI-102'),
+
+(31, 'FALL',   'Anna Lopez', 'ECON-101'),
+(32, 'FALL',   'Anna Lopez', 'ECON-102'),
+(33, 'FALL',   'Anna Lopez', 'ECON-201'),
+(34, 'FALL',   'Anna Lopez', 'ECON-202'),
+(35, 'WINTER', 'Anna Lopez', 'ECON-101'),
+(36, 'WINTER', 'Anna Lopez', 'ECON-102'),
+(37, 'WINTER', 'Anna Lopez', 'ECON-301'),
+(38, 'WINTER', 'Anna Lopez', 'ECON-302'),
+(39, 'SUMMER', 'Anna Lopez', 'ECON-101'),
+(40, 'SUMMER', 'Anna Lopez', 'ECON-102'),
+
+(41, 'FALL',   'Ivy Collins', 'PHIL-101'),
+(42, 'FALL',   'Ivy Collins', 'PHIL-102'),
+(43, 'FALL',   'Ivy Collins', 'PHIL-201'),
+(44, 'FALL',   'Ivy Collins', 'PHIL-202'),
+(45, 'WINTER', 'Ivy Collins', 'PHIL-101'),
+(46, 'WINTER', 'Ivy Collins', 'PHIL-102'),
+(47, 'WINTER', 'Ivy Collins', 'PHIL-301'),
+(48, 'WINTER', 'Ivy Collins', 'PHIL-302'),
+(49, 'SUMMER', 'Ivy Collins', 'PHIL-101'),
+(50, 'SUMMER', 'Ivy Collins', 'PHIL-102'),
+
+(51, 'FALL',   'Cara White', 'ENGL-101'),
+(52, 'FALL',   'Cara White', 'ENGL-102'),
+(53, 'FALL',   'Cara White', 'ENGL-201'),
+(54, 'FALL',   'Cara White', 'ENGL-202'),
+(55, 'WINTER', 'Cara White', 'ENGL-101'),
+(56, 'WINTER', 'Cara White', 'ENGL-102'),
+(57, 'WINTER', 'Cara White', 'ENGL-301'),
+(58, 'WINTER', 'Cara White', 'ENGL-302'),
+(59, 'SUMMER', 'Cara White', 'ENGL-101'),
+(60, 'SUMMER', 'Cara White', 'ENGL-102');
 
 
 CREATE TABLE `lectures` (
@@ -151,29 +265,119 @@ CREATE TABLE `lectures` (
 
 
 INSERT INTO `lectures` (`lecture_id`, `location`, `day_of_week`, `start_time`, `end_time`, `section_code`) VALUES
-(11, 'Room A', 'Mon', '10:00:00', '11:00:00', 1), /* COMP101 - Fall */
-(12, 'Room A', 'Wed', '10:00:00', '11:00:00', 1), /* COMP101 - Fall */
+(1,  'Room A', 'Mon', '9:00:00',  '10:00:00', 1),  /* COMP101 - Fall */
+(2,  'Room A', 'Wed', '9:00:00',  '10:00:00', 1),  /* COMP101 - Fall */
+(3,  'Room A', 'Tue', '9:00:00',  '10:00:00', 2),  /* COMP102 - Fall */
+(4,  'Room A', 'Thu', '9:00:00',  '10:00:00', 2),  /* COMP102 - Fall */
+(5,  'Room A', 'Tue', '12:00:00', '13:00:00', 3),  /* COMP201 - Fall */
+(6,  'Room A', 'Thu', '12:00:00', '13:00:00', 3),  /* COMP201 - Fall */
+(7,  'Room A', 'Wed', '12:00:00', '13:00:00', 4),  /* COMP202 - Fall */
+(8,  'Room A', 'Fri', '12:00:00', '13:00:00', 4),  /* COMP202 - Fall */
+(9,  'Room A', 'Mon', '9:00:00',  '10:00:00', 5),  /* COMP101 - Winter */
+(10, 'Room A', 'Wed', '9:00:00',  '10:00:00', 5),  /* COMP101 - Winter */
+(11, 'Room A', 'Tue', '9:00:00',  '10:00:00', 6),  /* COMP102 - Winter */
+(12, 'Room A', 'Thu', '9:00:00',  '10:00:00', 6),  /* COMP102 - Winter */
+(13, 'Room A', 'Tue', '12:00:00', '13:00:00', 7),  /* COMP201 - Winter */
+(14, 'Room A', 'Thu', '12:00:00', '13:00:00', 7),  /* COMP201 - Winter */
+(15, 'Room A', 'Wed', '12:00:00', '13:00:00', 8),  /* COMP202 - Winter */
+(16, 'Room A', 'Fri', '12:00:00', '13:00:00', 8),  /* COMP202 - Winter */
+(17, 'Room A', 'Mon', '12:00:00', '14:00:00', 9),  /* COMP101 - Summer */
+(18, 'Room A', 'Tue', '12:00:00', '14:00:00', 10), /* COMP102 - Summer */
 
-(21, 'Room A', 'Tue', '12:00:00', '13:00:00', 2), /* COMP102 - Fall */
-(22, 'Room A', 'Thu', '12:00:00', '13:00:00', 2), /* COMP102 - Fall */
+(21, 'Room A', 'Mon', '10:00:00', '11:00:00', 11), /* BIOL101 - Fall */
+(22, 'Room A', 'Wed', '10:00:00', '11:00:00', 11), /* BIOL101 - Fall */
+(23, 'Room A', 'Tue', '10:00:00', '11:00:00', 12), /* BIOL102 - Fall */
+(24, 'Room A', 'Thu', '10:00:00', '11:00:00', 12), /* BIOL102 - Fall */
+(25, 'Room A', 'Tue', '13:00:00', '14:00:00', 13), /* BIOL201 - Fall */
+(26, 'Room A', 'Thu', '13:00:00', '14:00:00', 13), /* BIOL201 - Fall */
+(27, 'Room A', 'Wed', '13:00:00', '14:00:00', 14), /* BIOL202 - Fall */
+(28, 'Room A', 'Fri', '13:00:00', '14:00:00', 14), /* BIOL202 - Fall */
+(29, 'Room A', 'Mon', '10:00:00', '11:00:00', 15), /* BIOL101 - Winter */
+(30, 'Room A', 'Wed', '10:00:00', '11:00:00', 15), /* BIOL101 - Winter */
+(31, 'Room A', 'Tue', '10:00:00', '11:00:00', 16), /* BIOL102 - Winter */
+(32, 'Room A', 'Thu', '10:00:00', '11:00:00', 16), /* BIOL102 - Winter */
+(33, 'Room A', 'Tue', '13:00:00', '14:00:00', 17), /* BIOL201 - Winter */
+(34, 'Room A', 'Thu', '13:00:00', '14:00:00', 17), /* BIOL201 - Winter */
+(35, 'Room A', 'Wed', '13:00:00', '14:00:00', 18), /* BIOL202 - Winter */
+(36, 'Room A', 'Fri', '13:00:00', '14:00:00', 18), /* BIOL202 - Winter */
+(37, 'Room A', 'Mon', '13:00:00', '15:00:00', 19), /* BIOL101 - Summer */
+(38, 'Room A', 'Tue', '13:00:00', '15:00:00', 20), /* BIOL102 - Summer */
 
-(31, 'Room A', 'Mon', '14:00:00', '15:00:00', 3), /* COMP201 - Winter */
-(32, 'Room A', 'Wed', '14:00:00', '15:00:00', 3), /* COMP201 - Winter */
+(41, 'Room A', 'Mon', '11:00:00', '12:00:00', 21), /* POLI101 - Fall */
+(42, 'Room A', 'Wed', '11:00:00', '12:00:00', 21), /* POLI101 - Fall */
+(43, 'Room A', 'Tue', '11:00:00', '12:00:00', 22), /* POLI102 - Fall */
+(44, 'Room A', 'Thu', '11:00:00', '12:00:00', 22), /* POLI102 - Fall */
+(45, 'Room A', 'Tue', '14:00:00', '15:00:00', 23), /* POLI201 - Fall */
+(46, 'Room A', 'Thu', '14:00:00', '15:00:00', 23), /* POLI201 - Fall */
+(47, 'Room A', 'Wed', '14:00:00', '15:00:00', 24), /* POLI202 - Fall */
+(48, 'Room A', 'Fri', '14:00:00', '15:00:00', 24), /* POLI202 - Fall */
+(49, 'Room A', 'Mon', '11:00:00', '12:00:00', 25), /* POLI101 - Winter */
+(40, 'Room A', 'Wed', '11:00:00', '12:00:00', 25), /* POLI101 - Winter */
+(51, 'Room A', 'Tue', '11:00:00', '12:00:00', 26), /* POLI102 - Winter */
+(52, 'Room A', 'Thu', '11:00:00', '12:00:00', 26), /* POLI102 - Winter */
+(53, 'Room A', 'Tue', '14:00:00', '15:00:00', 27), /* POLI201 - Winter */
+(54, 'Room A', 'Thu', '14:00:00', '15:00:00', 27), /* POLI201 - Winter */
+(55, 'Room A', 'Wed', '14:00:00', '15:00:00', 28), /* POLI202 - Winter */
+(56, 'Room A', 'Fri', '14:00:00', '15:00:00', 28), /* POLI202 - Winter */
+(57, 'Room A', 'Mon', '14:00:00', '16:00:00', 29), /* POLI101 - Summer */
+(58, 'Room A', 'Tue', '14:00:00', '16:00:00', 30), /* POLI102 - Summer */
 
-(41, 'Room A', 'Tue', '12:00:00', '13:00:00', 4), /* COMP202 - Winter */
-(42, 'Room A', 'Thu', '12:00:00', '13:00:00', 4), /* COMP202 - Winter */
+(61, 'Room A', 'Mon', '13:00:00', '14:00:00', 31), /* ECON101 - Fall */
+(62, 'Room A', 'Wed', '13:00:00', '14:00:00', 31), /* ECON101 - Fall */
+(63, 'Room A', 'Tue', '13:00:00', '14:00:00', 32), /* ECON102 - Fall */
+(64, 'Room A', 'Thu', '13:00:00', '14:00:00', 32), /* ECON102 - Fall */
+(65, 'Room A', 'Tue', '16:00:00', '17:00:00', 33), /* ECON201 - Fall */
+(66, 'Room A', 'Thu', '16:00:00', '17:00:00', 33), /* ECON201 - Fall */
+(67, 'Room A', 'Wed', '16:00:00', '17:00:00', 34), /* ECON202 - Fall */
+(68, 'Room A', 'Fri', '16:00:00', '17:00:00', 34), /* ECON202 - Fall */
+(69, 'Room A', 'Mon', '13:00:00', '14:00:00', 35), /* ECON101 - Winter */
+(70, 'Room A', 'Wed', '13:00:00', '14:00:00', 35), /* ECON101 - Winter */
+(71, 'Room A', 'Tue', '13:00:00', '14:00:00', 36), /* ECON102 - Winter */
+(72, 'Room A', 'Thu', '13:00:00', '14:00:00', 36), /* ECON102 - Winter */
+(73, 'Room A', 'Tue', '16:00:00', '17:00:00', 37), /* ECON201 - Winter */
+(74, 'Room A', 'Thu', '16:00:00', '17:00:00', 37), /* ECON201 - Winter */
+(75, 'Room A', 'Wed', '16:00:00', '17:00:00', 38), /* ECON202 - Winter */
+(76, 'Room A', 'Fri', '16:00:00', '17:00:00', 38), /* ECON202 - Winter */
+(77, 'Room A', 'Mon', '16:00:00', '18:00:00', 39), /* ECON101 - Summer */
+(78, 'Room A', 'Tue', '16:00:00', '18:00:00', 40), /* ECON102 - Summer */
 
-(51, 'Room A', 'Mon', '11:00:00', '12:00:00', 5), /* BIOL101 - Fall */
-(52, 'Room A', 'Wed', '11:00:00', '12:00:00', 5), /* BIOL101 - Fall */
+(81, 'Room A', 'Mon', '14:00:00', '15:00:00', 41), /* PHIL101 - Fall */
+(82, 'Room A', 'Wed', '14:00:00', '15:00:00', 41), /* PHIL101 - Fall */
+(83, 'Room A', 'Tue', '14:00:00', '15:00:00', 42), /* PHIL102 - Fall */
+(84, 'Room A', 'Thu', '14:00:00', '15:00:00', 42), /* PHIL102 - Fall */
+(85, 'Room A', 'Tue', '17:00:00', '18:00:00', 43), /* PHIL201 - Fall */
+(86, 'Room A', 'Thu', '17:00:00', '18:00:00', 43), /* PHIL201 - Fall */
+(87, 'Room A', 'Wed', '17:00:00', '18:00:00', 44), /* PHIL202 - Fall */
+(88, 'Room A', 'Fri', '17:00:00', '18:00:00', 44), /* PHIL202 - Fall */
+(89, 'Room A', 'Mon', '14:00:00', '15:00:00', 45), /* PHIL101 - Winter */
+(90, 'Room A', 'Wed', '14:00:00', '15:00:00', 45), /* PHIL101 - Winter */
+(91, 'Room A', 'Tue', '14:00:00', '15:00:00', 46), /* PHIL102 - Winter */
+(92, 'Room A', 'Thu', '14:00:00', '15:00:00', 46), /* PHIL102 - Winter */
+(93, 'Room A', 'Tue', '17:00:00', '18:00:00', 47), /* PHIL201 - Winter */
+(94, 'Room A', 'Thu', '17:00:00', '18:00:00', 47), /* PHIL201 - Winter */
+(95, 'Room A', 'Wed', '17:00:00', '18:00:00', 48), /* PHIL202 - Winter */
+(96, 'Room A', 'Fri', '17:00:00', '18:00:00', 48), /* PHIL202 - Winter */
+(97, 'Room A', 'Mon', '17:00:00', '19:00:00', 49), /* PHIL101 - Summer */
+(98, 'Room A', 'Tue', '17:00:00', '19:00:00', 50), /* PHIL102 - Summer */
 
-(61, 'Room A', 'Tue', '13:00:00', '14:00:00', 6), /* BIOL102 - Fall */
-(62, 'Room A', 'Thu', '13:00:00', '14:00:00', 6), /* BIOL102 - Fall */
-
-(71, 'Room A', 'Mon', '15:00:00', '16:00:00', 7), /* BIOL201 - Winter */
-(72, 'Room A', 'Wed', '15:00:00', '16:00:00', 7), /* BIOL201 - Winter */
-
-(81, 'Room A', 'Tue', '13:00:00', '14:00:00', 8), /* BIOL202 - Winter */
-(82, 'Room A', 'Thu', '13:00:00', '14:00:00', 8); /* BIOL202 - Winter */
+(101, 'Room A', 'Mon', '14:00:00', '15:00:00', 51), /* ENGL101 - Fall */
+(102, 'Room A', 'Wed', '14:00:00', '15:00:00', 51), /* ENGL101 - Fall */
+(103, 'Room A', 'Tue', '14:00:00', '15:00:00', 52), /* ENGL102 - Fall */
+(104, 'Room A', 'Thu', '14:00:00', '15:00:00', 52), /* ENGL102 - Fall */
+(105, 'Room A', 'Tue', '17:00:00', '18:00:00', 53), /* ENGL201 - Fall */
+(106, 'Room A', 'Thu', '17:00:00', '18:00:00', 53), /* ENGL201 - Fall */
+(107, 'Room A', 'Wed', '17:00:00', '18:00:00', 54), /* ENGL202 - Fall */
+(108, 'Room A', 'Fri', '17:00:00', '18:00:00', 54), /* ENGL202 - Fall */
+(109, 'Room A', 'Mon', '14:00:00', '15:00:00', 55), /* ENGL101 - Winter */
+(110, 'Room A', 'Wed', '14:00:00', '15:00:00', 55), /* ENGL101 - Winter */
+(111, 'Room A', 'Tue', '14:00:00', '15:00:00', 56), /* ENGL102 - Winter */
+(112, 'Room A', 'Thu', '14:00:00', '15:00:00', 56), /* ENGL102 - Winter */
+(113, 'Room A', 'Tue', '17:00:00', '18:00:00', 57), /* ENGL201 - Winter */
+(114, 'Room A', 'Thu', '17:00:00', '18:00:00', 57), /* ENGL201 - Winter */
+(115, 'Room A', 'Wed', '17:00:00', '18:00:00', 58), /* ENGL202 - Winter */
+(116, 'Room A', 'Fri', '17:00:00', '18:00:00', 58), /* ENGL202 - Winter */
+(117, 'Room A', 'Mon', '17:00:00', '19:00:00', 59), /* ENGL101 - Summer */
+(118, 'Room A', 'Tue', '17:00:00', '19:00:00', 60); /* ENGL102 - Summer */
 
 
 CREATE TABLE `prerequisiteof` (
@@ -183,15 +387,35 @@ CREATE TABLE `prerequisiteof` (
 
 
 INSERT INTO `prerequisiteof` (`course_code`, `prerequisite_course_code`) VALUES
-('COMP201', 'COMP101'),
-('COMP202', 'COMP102'),
-('COMP301', 'COMP201'),
-('COMP302', 'COMP202'),
+('COMP-201', 'COMP-101'),
+('COMP-202', 'COMP-102'),
+('COMP-301', 'COMP-201'),
+('COMP-302', 'COMP-202'),
 
-('BIOL201', 'BIOL101'),
-('BIOL202', 'BIOL102'),
-('BIOL301', 'BIOL201'),
-('BIOL302', 'BIOL202');
+('BIOL-201', 'BIOL-101'),
+('BIOL-202', 'BIOL-102'),
+('BIOL-301', 'BIOL-201'),
+('BIOL-302', 'BIOL-202'),
+
+('POLI-201', 'POLI-101'),
+('POLI-202', 'POLI-102'),
+('POLI-301', 'POLI-201'),
+('POLI-302', 'POLI-202'),
+
+('ECON-201', 'ECON-101'),
+('ECON-202', 'ECON-102'),
+('ECON-301', 'ECON-201'),
+('ECON-302', 'ECON-202'),
+
+('PHIL-201', 'PHIL-101'),
+('PHIL-202', 'PHIL-102'),
+('PHIL-301', 'PHIL-201'),
+('PHIL-302', 'PHIL-202'),
+
+('ENGL-201', 'ENGL-101'),
+('ENGL-202', 'ENGL-102'),
+('ENGL-301', 'ENGL-201'),
+('ENGL-302', 'ENGL-202');
 
 
 CREATE TABLE `students` (
@@ -215,7 +439,7 @@ INSERT INTO `students` (`student_id`, `username`, `fname`, `lname`, `email`, `pa
 (2,  'eertugrul2', 'Efe', 'Ertugrul', 'efertugrul6@gmail.com', '$2y$10$gv9ASeGqmEmrDPF5omkJwOOpkPsMBY4Gmmr4k8IfWb64S.GhZn6xO', NULL, 1, NULL, '651008', 1, NULL),
 (3,  'mreed3', 'Mike', 'Reed', 'diana.prince@university.edu', NULL, NULL, 0, NULL, NULL, 1, NULL),
 (4,  'dwest4', 'David', 'West', 'edward.norton@university.edu', NULL, NULL, 0, NULL, NULL, 1, NULL),
-(5,  'tpage5', 'Tim', 'Page', 'timoxa.gal@gmail.com', '$2y$10$MS0jyLdIHDcy.U3PDi3kOuqXjKwxgKUArBfBa2t3dswC2GopSdo4G', NULL, 1, NULL, NULL, 1, NULL),
+(5,  'tpage5', 'Tim', 'Page', 'timoxa.gal@gmail.com', '$2y$10$MS0jyLdIHDcy.U3PDi3kOuqXjKwxgKUArBfBa2t3dswC2GopSdo4G', NULL, 1, NULL, NULL, 1, 4),
 (6,  'fsnow6', 'Frank', 'Snow', 'george.clooney@university.edu', NULL, NULL, 0, NULL, NULL, 1, NULL),
 (7,  'bgray7', 'Ben', 'Gray', 'hannah.montana@university.edu', NULL, NULL, 0, NULL, NULL, 1, NULL),
 (8,  'mlane8', 'Mark', 'Lane', 'ian.mckellen@university.edu', NULL, NULL, 0, NULL, NULL, 1, NULL),
@@ -230,16 +454,27 @@ CREATE TABLE `coursescompleted` (
 
 
 INSERT INTO `coursescompleted` (`student_id`, `course_code`) VALUES
-(1,  'COMP101'),
-(2,  'COMP101'),
-(3,  'COMP101'),
-(4,  'COMP101'),
-(5,  'COMP101'),
-(6,  'COMP101'),
-(7,  'COMP101'),
-(8,  'COMP101'),
-(9,  'COMP101'),
-(10, 'COMP101');
+(1,  'COMP-101'),
+(2,  'COMP-101'),
+(3,  'COMP-101'),
+(4,  'COMP-101'),
+(5,  'COMP-101'),
+(6,  'COMP-101'),
+(7,  'COMP-101'),
+(8,  'COMP-101'),
+(9,  'COMP-101'),
+(10, 'COMP-101'),
+
+(1,  'COMP-102'),
+(2,  'COMP-102'),
+(3,  'COMP-102'),
+(4,  'COMP-102'),
+(5,  'COMP-102'),
+(6,  'COMP-102'),
+(7,  'COMP-102'),
+(8,  'COMP-102'),
+(9,  'COMP-102'),
+(10, 'COMP-102');
 
 
 CREATE TABLE `coursesenrolled` (
@@ -247,20 +482,16 @@ CREATE TABLE `coursesenrolled` (
   `section_code` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
 INSERT INTO `coursesenrolled` (`student_id`, `section_code`) VALUES
-(1,  5),
-(3,  5),
-(4,  5),
-(5,  5),
-(6,  5),
-(7,  5),
-(8,  5),
-(9,  5),
-(10, 5);
-
-
-
+(1,  3),
+(3,  3),
+(4,  3),
+(5,  3),
+(6,  3),
+(7,  3),
+(8,  3),
+(9,  3),
+(10, 3);
 
 CREATE TABLE `friendrequests` (
   `id` int(11) NOT NULL,
@@ -277,8 +508,6 @@ CREATE TABLE `friendswith` (
   `student_id2` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
 
 
 ALTER TABLE `courses`

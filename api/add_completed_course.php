@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $course_code = strtoupper(sanitizeInput($_POST['course_code']));
 
     // Validate course code format (e.g., CS101)
-    if (!preg_match('/^[A-Z]{2,4}\d{3}$/', $course_code)) {
-        $_SESSION['add_course_error'] = "Invalid course code format. Please enter a valid course code (e.g., CS101).";
+    if (!preg_match('/^[A-Z]{2,4}-\d{3}$/', $course_code)) {
+        $_SESSION['add_course_error'] = "Invalid course code format. Please enter a valid course code (e.g., COMP-101).";
         header("Location: ../public/myprogress.php");
         exit();
     }

@@ -253,7 +253,7 @@ if (!empty($conflictingCourses)) {
     echo json_encode([
         "success" => false,
         "error" => "Schedule conflict detected with course(s): " . implode(', ', array_map(function($c) {
-            return "{$c['course_code']} ({$c['course_name']})";
+            return "{$c['course_code']} - {$c['course_name']}";
         }, $conflictingCourses)) . ".",
         
     ]);

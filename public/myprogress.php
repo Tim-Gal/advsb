@@ -221,7 +221,7 @@ foreach ($degrees as $index => $degree_id) {
                     <form action="../api/add_completed_course.php" method="POST" class="add-course-form" autocomplete="off">
                         <div class="mb-3 position-relative">
                             <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP 101" required>
+                            <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP-101" required>
                             <div id="autocomplete-list" class="autocomplete-items"></div>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Completed Course</button>

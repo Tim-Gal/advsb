@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const endMinute = parseInt(endTime.split(':')[1], 10);
 
         // Since every course is 1 hour
-        const duration = 1; 
+        const duration = endHour - startHour;
 
         // Loop through the duration (1 hour)
         for (let i = 0; i < duration; i++) {
@@ -123,27 +123,32 @@ document.addEventListener('DOMContentLoaded', function () {
             const cell = document.querySelector(`.${cellClass}`);
             if (cell) {
                 const courseBlockContainer = cell.querySelector('.course-block-container');
-
+    
                 // Create the course block div
                 const courseBlock = document.createElement('div');
                 courseBlock.classList.add('course-block');
                 courseBlock.setAttribute('data-section-code', sectionCode);
-                courseBlock.setAttribute('data-course-code', courseCode); // Store course_code for reference
-
+                courseBlock.setAttribute('data-course-code', courseCode);
+    
                 // Populate course information
                 const courseInfo = document.createElement('div');
                 courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br>`;
-
+    
                 // Create the delete button
                 const deleteBtn = document.createElement('button');
-                deleteBtn.classList.add('delete-course-btn'); // Consistent class name
+                deleteBtn.classList.add('delete-course-btn');
                 deleteBtn.setAttribute('aria-label', 'Remove Course');
-                deleteBtn.innerHTML = '&times;'; // HTML entity for multiplication sign (×)
-
+                deleteBtn.innerHTML = '&times;';
+    
                 // Assemble the course block
                 courseBlock.appendChild(deleteBtn);
                 courseBlock.appendChild(courseInfo);
-
+    
+                // For first block in multi-hour lecture, add the time
+                if (i === 0) {
+                    courseInfo.innerHTML += `${startTime}-${endTime}`;
+                }
+    
                 // Append to the container
                 courseBlockContainer.appendChild(courseBlock);
             }
