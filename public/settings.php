@@ -1,6 +1,5 @@
 <?php
 
-
 $pageTitle = "Settings";
 $pageCSS = [
     '../assets/css/global.css',
@@ -12,19 +11,17 @@ $pageJS = [
 
 include '../includes/header.php';
 
-
 if (!isset($_SESSION['user_id'])) {
     // Redirect to login page if not authenticated
     header('Location: login.php');
     exit();
 }
 
-
-// Fetch current user's data
+// Fetch current user's data including username
 $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
-    SELECT s.major_id, s.minor_id, d_major.name AS major_name, d_minor.name AS minor_name
+    SELECT s.major_id, s.minor_id, d_major.name AS major_name, d_minor.name AS minor_name, s.username
     FROM students s
     LEFT JOIN degrees d_major ON s.major_id = d_major.degree_id
     LEFT JOIN degrees d_minor ON s.minor_id = d_minor.degree_id
@@ -54,6 +51,21 @@ $stmt->close();
         ?>
 
         <form action="../api/update_settings.php" method="POST" class="settings-form">
+            <!-- Username Update Section -->
+            <div class="mb-4">
+                <h4>Update Username</h4>
+                <div class="mb-3">
+                    <label for="current_username" class="form-label">Current Username:</label>
+                    <input type="text" class="form-control" id="current_username" value="<?php echo htmlspecialchars($user_data['username']); ?>" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="new_username" class="form-label">New Username</label>
+                    <input type="text" class="form-control" id="new_username" name="new_username" placeholder="Enter new username (optional)">
+                    <div id="usernameHelp" class="form-text">Leave blank to keep your current username. Username must be 3-20 characters long and can include letters, numbers, underscores, and periods.</div>
+                </div>
+            </div>
+
+            <!-- Major Selection -->
             <div class="mb-3">
                 <label for="major" class="form-label">Update Major <span class="text-danger">*</span></label>
                 <select class="form-select" id="major" name="major_id" required>
@@ -69,6 +81,8 @@ $stmt->close();
                     ?>
                 </select>
             </div>
+
+            <!-- Minor Selection -->
             <div class="mb-3">
                 <label for="minor" class="form-label">Update Minor</label>
                 <select class="form-select" id="minor" name="minor_id">
@@ -84,6 +98,7 @@ $stmt->close();
                     ?>
                 </select>
             </div>
+
             <button type="submit" class="btn btn-primary">Update Settings</button>
         </form>
     </div>

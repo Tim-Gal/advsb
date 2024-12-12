@@ -129,9 +129,10 @@ if (!isset($_SESSION['user_id'])) {
                 <!-- Action Buttons -->
                 
 
-                <button type="button" class="btn btn-outline-success position-absolute" id="downloadPdfButton" style="top: 80px; right: 20px;">
+                <button type="button" class="btn btn-outline-success" id="downloadPdfButton">
                     <i class="bi bi-file-earmark-pdf-fill"></i> Download Schedule
                 </button>
+
             </div>
         </div>
     </div>

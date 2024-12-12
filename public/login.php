@@ -1,4 +1,6 @@
 <?php
+// login.php
+
 $pageTitle = "Login";
 $pageCSS = [
     '../assets/css/global.css',
@@ -47,6 +49,9 @@ if (isset($_SESSION['user_id'])) {
         <button type="submit" class="btn btn-primary">Login</button>
         <div class="text-center mt-3">
             <a href="register.php" class="link">Don't have an account? Register here</a>
+        </div>
+        <div class="text-center mt-2">
+            <a href="forgot_password.php" class="link">Forgot Password?</a>
         </div>
     </form>
 </div>

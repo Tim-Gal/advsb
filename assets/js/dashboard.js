@@ -145,9 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 courseBlock.appendChild(courseInfo);
     
                 // For first block in multi-hour lecture, add the time
-                if (i === 0) {
-                    courseInfo.innerHTML += `${startTime}-${endTime}`;
-                }
+               
     
                 // Append to the container
                 courseBlockContainer.appendChild(courseBlock);
@@ -321,9 +319,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 csrf_token: csrfToken
             })
         })
+        
 
             .then(res => res.json())
             .then(data => {
+                
                 // Re-enable the button and hide loading spinner
                 confirmAddCourseButton.disabled = false;
                 if (enrollmentLoading) {
@@ -340,6 +340,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.warning) {
                         showToast(data.warning, 'warning');
                     }
+
+
             
                 
                 } else {

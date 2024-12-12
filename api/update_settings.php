@@ -14,9 +14,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_SESSION['user_id'];
     $major_id = isset($_POST['major_id']) ? intval($_POST['major_id']) : 0;
     $minor_id = isset($_POST['minor_id']) ? $_POST['minor_id'] : NULL;
+    $new_username = isset($_POST['new_username']) ? trim($_POST['new_username']) : '';
 
     // Initialize error array
     $errors = [];
+
+    // Validate New Username if provided
+    $username_to_update = false; // Flag to check if username needs to be updated
+    if (!empty($new_username)) {
+        $username_to_update = true;
+
+        // Check username length
+        if (strlen($new_username) < 3 || strlen($new_username) > 20) {
+            $errors[] = "Username must be between 3 and 20 characters long.";
+        }
+
+        // Check allowed characters (letters, numbers, underscores, periods)
+        if (!preg_match('/^[A-Za-z0-9_.]+$/', $new_username)) {
+            $errors[] = "Username can only contain letters, numbers, underscores, and periods.";
+        }
+
+        // Check if username is already taken by another user
+        if (empty($errors)) { // Proceed only if no previous errors
+            $stmt_username = $conn->prepare("SELECT student_id FROM students WHERE username = ? AND student_id != ?");
+            if (!$stmt_username) {
+                $errors[] = "Database error: " . $conn->error;
+            } else {
+                $stmt_username->bind_param("si", $new_username, $user_id);
+                $stmt_username->execute();
+                $stmt_username->store_result();
+                if ($stmt_username->num_rows > 0) {
+                    $errors[] = "The username '{$new_username}' is already taken. Please choose another.";
+                }
+                $stmt_username->close();
+            }
+        }
+    }
 
     // Validate Major
     if (empty($major_id)) {
@@ -65,16 +98,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->begin_transaction();
 
     try {
-        // Update the student's major and minor
-        $stmt_update = $conn->prepare("UPDATE students SET major_id = ?, minor_id = ? WHERE student_id = ?");
-        if (!$stmt_update) {
-            throw new Exception("Database error: " . $conn->error);
-        }
+        // Update the student's major, minor, and username if applicable
+        if ($username_to_update) {
+            $stmt_update = $conn->prepare("UPDATE students SET major_id = ?, minor_id = ?, username = ? WHERE student_id = ?");
+            if (!$stmt_update) {
+                throw new Exception("Database error: " . $conn->error);
+            }
 
-        // Bind parameters, using NULL for minor_id if it's NULL
-        if ($minor_id === NULL) {
-            $stmt_update->bind_param("iii", $major_id, $minor_id, $user_id);
+            $stmt_update->bind_param("iisi", $major_id, $minor_id, $new_username, $user_id);
         } else {
+            $stmt_update = $conn->prepare("UPDATE students SET major_id = ?, minor_id = ? WHERE student_id = ?");
+            if (!$stmt_update) {
+                throw new Exception("Database error: " . $conn->error);
+            }
+
             $stmt_update->bind_param("iii", $major_id, $minor_id, $user_id);
         }
 
@@ -84,47 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $stmt_update->close();
 
-        // Optional: Notify user about missing required courses
-        // Fetch required courses for the new major
-        $stmt_required = $conn->prepare("SELECT dc.course_code FROM degree_courses dc WHERE dc.degree_id = ? AND dc.course_type = 'required'");
-        if ($stmt_required) {
-            $stmt_required->bind_param("i", $major_id);
-            $stmt_required->execute();
-            $res_required = $stmt_required->get_result();
-            $required_courses = [];
-            while ($row = $res_required->fetch_assoc()) {
-                $required_courses[] = $row['course_code'];
-            }
-            $stmt_required->close();
-
-            // Fetch student's completed courses
-            $stmt_completed = $conn->prepare("SELECT course_code FROM coursescompleted WHERE student_id = ?");
-            if ($stmt_completed) {
-                $stmt_completed->bind_param("i", $user_id);
-                $stmt_completed->execute();
-                $res_completed = $stmt_completed->get_result();
-                $completed_courses = [];
-                while ($row = $res_completed->fetch_assoc()) {
-                    $completed_courses[] = $row['course_code'];
-                }
-                $stmt_completed->close();
-
-                $missing_courses = array_diff($required_courses, $completed_courses);
-
-                if (!empty($missing_courses)) {
-                    $missing_list = implode(', ', $missing_courses);
-                    $_SESSION['settings_success'] = "Settings updated successfully.";
-                } else {
-                    $_SESSION['settings_success'] = "Settings updated successfully.";
-                }
-            } else {
-                $_SESSION['settings_success'] = "Settings updated successfully.";
-            }
-        } else {
-            $_SESSION['settings_success'] = "Settings updated successfully.";
-        }
-
+        // Commit Transaction
         $conn->commit();
+
+        // Set Success Message
+        $_SESSION['settings_success'] = "Settings successfully updated.";
+
         header("Location: ../public/settings.php");
         exit();
     } catch (Exception $e) {
