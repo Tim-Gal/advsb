@@ -324,57 +324,6 @@ unset($_SESSION['add_course_error'], $_SESSION['add_course_success'], $_SESSION[
     </div>
 </div>
 
-<!-- Autocomplete Styles -->
-<style>
-    /* Autocomplete items */
-    .autocomplete-items {
-        position: absolute;
-        border: 1px solid #d4d4d4;
-        border-bottom: none;
-        border-top: none;
-        z-index: 99;
-        /* Position the autocomplete items to be the same width as the container: */
-        top: 100%;
-        left: 0;
-        right: 0;
-    }
-
-    .autocomplete-items div {
-        padding: 10px;
-        cursor: pointer;
-        background-color: #fff; 
-        border-bottom: 1px solid #d4d4d4; 
-    }
-
-    /* When hovering an item: */
-    .autocomplete-items div:hover {
-        background-color: #e9e9e9; 
-    }
-
-    /* When navigating through the items using the arrow keys: */
-    .autocomplete-active {
-        background-color: DodgerBlue !important; 
-        color: #ffffff; 
-    }
-
-    /* Style for the Completed badge within suggestions */
-    .suggestion-item .badge {
-        font-size: 0.8em;
-        vertical-align: middle;
-    }
-
-    /* Optional: Gray out completed courses */
-    .suggestion-item.completed {
-        background-color: #f8f9fa; /* Light gray background */
-        color: #6c757d; /* Gray text */
-        cursor: not-allowed;
-    }
-
-    .suggestion-item.completed:hover {
-        background-color: #f8f9fa;
-    }
-</style>
-
 <!-- Completed Courses JSON for JavaScript -->
 <script>
     const completedCourses = <?php echo $completedCoursesJSON; ?>;
