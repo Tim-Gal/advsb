@@ -11,36 +11,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $major_id = isset($_POST['major_id']) ? intval($_POST['major_id']) : 0;
     $minor_id = isset($_POST['minor_id']) ? intval($_POST['minor_id']) : null;
 
-    // Define the required email domain
-    $required_domain = '@mail.mcgill.ca';
+    $req_ext = '@mail.mcgill.ca';
 
-    // Validate required fields
+
+
     if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($major_id)) {
         $_SESSION['error'] = "All required fields must be filled out.";
         header("Location: ../public/register.php");
         exit();
     }
 
-    // Validate email format and domain
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Invalid email format.";
         header("Location: ../public/register.php");
         exit();
     }
 
-    if (substr($email, -strlen($required_domain)) !== $required_domain) {
-        $_SESSION['error'] = "Email must end with " . htmlspecialchars($required_domain);
+    if (substr($email, -strlen($req_ext)) !== $req_ext) {
+        $_SESSION['error'] = "Email must end with " . htmlspecialchars($req_ext);
         header("Location: ../public/register.php");
         exit();
     }
 
-    // Check if username already exists
+
+
+
     $stmt = $conn->prepare("SELECT username FROM students WHERE username = ? LIMIT 1");
-    if (!$stmt) {
-        $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/register.php");
-        exit();
-    }
+   
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $stmt->store_result();
@@ -54,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $stmt->close();
 
-    // Check if email already exists
+
     $stmt_email = $conn->prepare("SELECT email FROM students WHERE email = ? LIMIT 1");
     if (!$stmt_email) {
         $_SESSION['error'] = "Database error: " . $conn->error;
@@ -74,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $stmt_email->close();
 
-    // Validate password strength (optional but recommended)
+
     if (strlen($password) < 8) {
         $_SESSION['error'] = "Password must be at least 8 characters long.";
         header("Location: ../public/register.php");
@@ -87,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Validate Major
     $stmt_major = $conn->prepare("SELECT degree_id FROM degrees WHERE degree_id = ? AND type = 'Major'");
     if ($stmt_major) {
         $stmt_major->bind_param("i", $major_id);
@@ -106,7 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Validate Minor (if selected)
+
+
     if (!empty($minor_id)) {
         $stmt_minor = $conn->prepare("SELECT degree_id FROM degrees WHERE degree_id = ? AND type = 'Minor'");
         if ($stmt_minor) {
@@ -127,7 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Hash the password
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     // Generate a 6-digit verification code

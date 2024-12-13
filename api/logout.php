@@ -17,6 +17,9 @@ session_destroy();
 
 setcookie("remember_me", "", time() - 3600, "/");
 
+
+
+
 session_start();
 $_SESSION['logout_success'] = "You have been logged out successfully.";
 header("Location: ../public/index.php");
