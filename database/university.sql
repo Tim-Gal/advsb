@@ -58,7 +58,7 @@ INSERT INTO `courses` (`course_code`, `course_name`, `course_description`) VALUE
 ('ECON-302', 'Behavioral Economics', 'Study psychological factors influencing economic decisions and behaviors.'),
 ('ENGL-101', 'Introduction to Literature', 'Discover literary genres, techniques, and their cultural and historical significance.'),
 ('ENGL-102', 'Creative Writing Basics', 'Learn storytelling, poetic expression, and dramatic techniques for creative writing.'),
-('ENGL-201', 'Shakespeare and His World', 'Explore Shakespeare\'s works and their impact on literature and culture.'),
+('ENGL-201', 'Shakespeare and His World', 'Explore Shakespeares works and their impact on literature and culture.'),
 ('ENGL-202', 'Modernist Literature', 'Analyze key texts and themes from the modernist literary movement.'),
 ('ENGL-301', 'American Literature', 'Survey major works and movements in American literature from colonial times to the present.'),
 ('ENGL-302', 'Postcolonial Studies', 'Examine literature from nations shaped by colonial history and their cultural narratives.'),
