@@ -17,7 +17,6 @@ if (empty($courseCode)) {
     echo json_encode(["error" => "Course code is required."]);
     exit();
 }
-
 $conn->begin_transaction();
 
 try {
@@ -49,19 +48,15 @@ try {
     
     $stmtDelete->bind_param('i' . $types, $user_id, ...$secCode);
     $stmtDelete->execute();
-    
     if ($stmtDelete->affected_rows === 0) {
         throw new Exception("Failed to delete enrolled courses.");
     }
     
     $stmtDelete->close();
-    
-    // Commit transaction
     $conn->commit();
     
     echo json_encode(["success" => "Course deleted successfully."]);
 } catch (Exception $e) {
-    // Rollback transaction on error
     $conn->rollback();
     error_log("Error deleting course: " . $e->getMessage());
     echo json_encode(["error" => $e->getMessage()]);

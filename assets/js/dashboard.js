@@ -324,49 +324,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /**
-     * Function to handle course deletion from the main schedule
-     * @param {number} sectionCode - The unique code of the section enrollment
-     * @param {HTMLElement} courseBlock - The DOM element representing the course block
-     */
-    function removeCourseFromSchedule(sectionCode, courseBlock) {
-        // Confirmation handled here
-        if (!confirm('Are you sure you want to remove this course from your schedule?')) {
-            return;
-        }
-
-        fetch(`../api/delete_course.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-                section_code: sectionCode,
-                csrf_token: csrfToken 
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Add fade-out class for animation
-                    courseBlock.classList.add('fade-out');
-                    // Remove the course block after the animation completes
-                    courseBlock.addEventListener('animationend', function () {
-                        courseBlock.remove();
-                    });
-                    showToast('Course removed successfully.', 'success');
-                    loadUserSchedule();
-                    loadEnrolledCourses(); // Refresh enrolled courses in sidebar
-                } else {
-                    showToast(data.error || 'Failed to remove the course.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting course:', error);
-                showToast('An error occurred while removing the course. Please try again.', 'error');
-            });
-    }
-
-    /**
      * Function to handle course deletion from the sidebar
      * @param {string} courseCode - The course code to delete
      * @param {HTMLElement} enrolledCourseElement - The DOM element representing the enrolled course
