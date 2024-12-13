@@ -211,13 +211,13 @@ unset($_SESSION['add_course_error'], $_SESSION['add_course_success'], $_SESSION[
     <h1 class="mb-4">My Progress</h1>
     <div class="row">
         <!-- Left Column: Progress Charts -->
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3 mb-3">  <!-- Changed from col-md-4 to col-md-3 -->
             <?php foreach ($degrees as $index => $degree_id): ?>
-                <div class="card text-center mb-4">
+                <div class="card text-center mb-3">  <!-- Changed mb-4 to mb-3 -->
                     <div class="card-body">
-                        <canvas id="progressChart_<?php echo $degree_id; ?>" width="200" height="200"></canvas>
-                        <h3 class="mt-3"><?php echo htmlspecialchars($degree_progress[$degree_id]['label'] . ": " . $degree_progress[$degree_id]['name']); ?></h3>
-                        <p>Required Courses Completion: <?php echo $degree_progress[$degree_id]['progress']; ?>%</p>
+                        <canvas id="progressChart_<?php echo $degree_id; ?>" width="140" height="140"></canvas>  <!-- Changed from 200x200 to 140x140 -->
+                        <h4 class="mt-2"><?php echo htmlspecialchars($degree_progress[$degree_id]['label'] . ": " . $degree_progress[$degree_id]['name']); ?></h4>  <!-- Changed h3 to h4 -->
+                        <p class="small">Required Courses Completion: <?php echo $degree_progress[$degree_id]['progress']; ?>%</p>  <!-- Added 'small' class -->
                     </div>
                 </div>
             <?php endforeach; ?>
