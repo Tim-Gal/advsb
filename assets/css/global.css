@@ -1,40 +1,38 @@
-/* global.css */
 html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 
 body {
+    font-family: 'Rubik', sans-serif;
+    color: #00171F;
+    min-height: 100vh;
+    background: #ffffff;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    font-family: 'Rubik', sans-serif;
-    background: #ffffff;
-    color: #00171F;
 }
 
-/* Main content wrapper - add this to all your pages */
 .main-content {
     flex: 1 0 auto;
 }
 
 a {
-    text-decoration: none;
     color: inherit;
+    text-decoration: none;
+}
+
+.navbar {
+    background-color: #00171F;
 }
 
 .navbar .navbar-brand img {
     height: 40px;
 }
 
-.navbar {
-    background-color: #00A8E8;
-}
-
 .footer {
-    flex-shrink: 0;
-    font-size: 0.9em;
     background: #00171F;
     color: #ffffff;
+    font-size: 0.9em;
+    flex-shrink: 0;
 }
