@@ -4,7 +4,7 @@ include '../includes/config.php';
 include '../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $identifier = strtolower(sanitizeInput($_POST['identifier'])); // Can be username or email
+    $identifier = strtolower(sanitizeInput($_POST['identifier'])); 
     $password = $_POST['password'];
     $remember_me = isset($_POST['remember_me']) ? true : false;
 
@@ -13,23 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: ../public/login.php");
         exit();
     }
-
-    // Determine if the identifier is an email or username
     if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
         $stmt = $conn->prepare("SELECT student_id, password_hash, is_verified FROM students WHERE email = ? LIMIT 1");
     } else {
         $stmt = $conn->prepare("SELECT student_id, password_hash, is_verified FROM students WHERE username = ? LIMIT 1");
     }
-
-    if (!$stmt) {
-        $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/login.php");
-        exit();
-    }
     $stmt->bind_param("s", $identifier);
     $stmt->execute();
     $stmt->store_result();
-
     if ($stmt->num_rows === 0) {
         $_SESSION['error'] = "No account found with that Username/Email.";
         $stmt->close();
@@ -37,9 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: ../public/login.php");
         exit();
     }
-
     $stmt->bind_result($student_id, $password_hash, $is_verified);
     $stmt->fetch();
+
+
+
 
     if (!password_verify($password, $password_hash)) {
         $_SESSION['error'] = "Incorrect password.";
@@ -56,10 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: ../public/login.php");
         exit();
     }
-
     $_SESSION['user_id'] = $student_id;
     $_SESSION['success'] = "You are now logged in.";
-
     if ($remember_me) {
         $remember_token = bin2hex(random_bytes(16));
         $stmt->close();
@@ -69,13 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $upd->bind_param("si", $remember_token, $student_id);
             $upd->execute();
             $upd->close();
-            // Set cookie with HttpOnly and Secure flags
             setcookie("remember_me", $remember_token, time() + (86400 * 30), "/", "", isset($_SERVER['HTTPS']), true);
         }
     } else {
         setcookie("remember_me", "", time() - 3600, "/");
     }
-
     $conn->close();
     header("Location: ../public/dashboard.php");
     exit();
