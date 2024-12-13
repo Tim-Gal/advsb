@@ -82,7 +82,7 @@ while ($row = $res_degree_names->fetch_assoc()) {
 $stmt_degree_names->close();
 
 // Fetch required courses for each degree
-$sql_degree_courses = "SELECT degree_id, course_code FROM degree_courses WHERE degree_id IN ($placeholders) AND course_type = 'required'";
+$sql_degree_courses = "SELECT degree_id, course_code FROM degree_courses WHERE degree_id IN ($placeholders)";
 $stmt_degree_courses = $conn->prepare($sql_degree_courses);
 if (!$stmt_degree_courses) {
     error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
