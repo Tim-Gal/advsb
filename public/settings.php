@@ -69,7 +69,6 @@ $stmt->close();
             <div class="mb-3">
                 <label for="major" class="form-label">Update Major <span class="text-danger">*</span></label>
                 <select class="form-select" id="major" name="major_id" required>
-                    <option value="">-- Select Major --</option>
                     <?php
                         // Fetch all majors from degrees table
                         $sql_majors = "SELECT degree_id, name FROM degrees WHERE type = 'Major' ORDER BY name ASC";
@@ -86,7 +85,7 @@ $stmt->close();
             <div class="mb-3">
                 <label for="minor" class="form-label">Update Minor</label>
                 <select class="form-select" id="minor" name="minor_id">
-                    <option value="">-- Select Minor (Optional) --</option>
+                    <option value="">-- No Minor --</option>
                     <?php
                         // Fetch all minors from degrees table
                         $sql_minors = "SELECT degree_id, name FROM degrees WHERE type = 'Minor' ORDER BY name ASC";
