@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedCourseText = document.getElementById('selectedCourseText');
     const removeSelectedCourse = document.getElementById('removeSelectedCourse');
     const confirmAddCourseButton = document.getElementById('confirmAddCourse');
-    const downloadPdfButton = document.getElementById('downloadPdfButton'); // PDF Download Button
+    const downloadPdfButton = document.getElementById('downloadPdfButton'); 
     const enrolledCoursesList = document.getElementById('enrolledCoursesList');
     const enrolledCoursesLoading = document.getElementById('enrolledCoursesLoading');
     const csrfToken = document.getElementById('csrfToken').value;

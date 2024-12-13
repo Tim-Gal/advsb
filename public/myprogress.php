@@ -21,151 +21,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Handle form submission for adding a completed course
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course_code'])) {
-    // Retrieve and sanitize the course code
-    $course_code = strtoupper(trim($_POST['course_code']));
-
-    // Validate input
-    if (empty($course_code)) {
-        $_SESSION['add_course_error'] = "Course code cannot be empty.";
-    } else {
-        // Begin Transaction
-        $conn->begin_transaction();
-
-        try {
-            /**
-             * Step 1: Check if the course exists
-             */
-            $sqlCheckCourse = "SELECT course_code FROM courses WHERE course_code = ?";
-            $stmtCheckCourse = $conn->prepare($sqlCheckCourse);
-            if (!$stmtCheckCourse) {
-                throw new Exception("Database error while checking course existence: " . $conn->error);
-            }
-            $stmtCheckCourse->bind_param("s", $course_code);
-            $stmtCheckCourse->execute();
-            $resultCheckCourse = $stmtCheckCourse->get_result();
-            if ($resultCheckCourse->num_rows === 0) {
-                $stmtCheckCourse->close();
-                throw new Exception("The course code '{$course_code}' does not exist.");
-            }
-            $stmtCheckCourse->close();
-
-            /**
-             * Step 2: Insert into coursescompleted
-             * Prevent duplicate entries
-             */
-            $sqlInsertCompleted = "INSERT INTO coursescompleted (student_id, course_code) VALUES (?, ?)";
-            $stmtInsertCompleted = $conn->prepare($sqlInsertCompleted);
-            if (!$stmtInsertCompleted) {
-                throw new Exception("Database error while inserting completed course: " . $conn->error);
-            }
-            $stmtInsertCompleted->bind_param("is", $user_id, $course_code);
-
-            if (!$stmtInsertCompleted->execute()) {
-                // Check for duplicate entry error (assuming UNIQUE constraint on (student_id, course_code))
-                if ($conn->errno === 1062) { // MySQL error code for duplicate entry
-                    $stmtInsertCompleted->close();
-                    throw new Exception("You have already marked '{$course_code}' as completed.");
-                } else {
-                    throw new Exception("Database error while inserting completed course: " . $stmtInsertCompleted->error);
-                }
-            }
-            $stmtInsertCompleted->close();
-
-            /**
-             * Step 3: Check for existing enrollments in the same course across all semesters
-             */
-            $sqlCheckEnrollment = "
-                SELECT ce.section_code, s.semester, c.course_name
-                FROM coursesenrolled ce
-                JOIN sections s ON ce.section_code = s.section_code
-                JOIN courses c ON s.course_code = c.course_code
-                WHERE ce.student_id = ? AND c.course_code = ?
-            ";
-            $stmtCheckEnrollment = $conn->prepare($sqlCheckEnrollment);
-            if (!$stmtCheckEnrollment) {
-                throw new Exception("Database error while checking existing enrollments: " . $conn->error);
-            }
-            $stmtCheckEnrollment->bind_param("is", $user_id, $course_code);
-            $stmtCheckEnrollment->execute();
-            $resultEnrollment = $stmtCheckEnrollment->get_result();
-
-            $existingEnrollments = [];
-            while ($row = $resultEnrollment->fetch_assoc()) {
-                $existingEnrollments[] = [
-                    'section_code' => $row['section_code'],
-                    'semester' => ucfirst(strtolower($row['semester'])),
-                    'course_name' => $row['course_name']
-                ];
-            }
-            $stmtCheckEnrollment->close();
-
-            /**
-             * Step 4: Remove existing enrollments if any
-             */
-            if (!empty($existingEnrollments)) {
-                $section_codes = array_column($existingEnrollments, 'section_code');
-                // Prepare placeholders for IN clause
-                $placeholders = implode(',', array_fill(0, count($section_codes), '?'));
-                $types = str_repeat('i', count($section_codes));
-                $sqlDeleteEnrollments = "DELETE FROM coursesenrolled WHERE student_id = ? AND section_code IN ($placeholders)";
-                $stmtDeleteEnrollments = $conn->prepare($sqlDeleteEnrollments);
-                if (!$stmtDeleteEnrollments) {
-                    throw new Exception("Database error while deleting enrollments: " . $conn->error);
-                }
-
-                // Bind parameters dynamically
-                $params = array_merge([$user_id], $section_codes);
-                $types_bind = 'i' . $types;
-
-                // Create a reference array
-                $refs = [];
-                foreach ($params as $key => $value) {
-                    $refs[$key] = &$params[$key];
-                }
-
-                // Bind parameters
-                array_unshift($refs, $types_bind);
-                call_user_func_array([$stmtDeleteEnrollments, 'bind_param'], $refs);
-
-                if (!$stmtDeleteEnrollments->execute()) {
-                    throw new Exception("Database error while deleting enrollments: " . $stmtDeleteEnrollments->error);
-                }
-                $stmtDeleteEnrollments->close();
-
-                // Optionally, log the removal
-                foreach ($existingEnrollments as $enrollment) {
-                    error_log("Auto-removed enrollment: User ID {$user_id} removed from course '{$course_code}' ({$enrollment['course_name']}) in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']}).");
-                }
-
-                // Prepare a success message including removal info
-                $removedCourses = array_map(function($enrollment) use ($course_code) {
-                    return "{$course_code} ({$enrollment['course_name']}) in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']})";
-                }, $existingEnrollments);
-
-                $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully. Existing enrollments for this course have been removed from your schedule: " . implode(', ', $removedCourses) . ".";
-            } else {
-                // No existing enrollments to remove
-                $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully.";
-            }
-
-            // Commit Transaction
-            $conn->commit();
-        } catch (Exception $e) {
-            // Rollback Transaction on Error
-            $conn->rollback();
-
-            // Log the error
-            error_log("Error in myprogress.php: " . $e->getMessage());
-
-            // Set error message
-            $_SESSION['add_course_error'] = $e->getMessage();
-        }
-    }
-
-    // Continue with fetching data after handling form submission
-}
+// Continue with fetching data after handling form submission
 
 // Fetch student's major and minor IDs
 $sql_degrees = "SELECT major_id, minor_id FROM students WHERE student_id = ?";
@@ -269,13 +125,13 @@ $res_completed = $stmt_completed->get_result();
 $completedCourses = array();
 $all_completed_course_details = array();
 while ($row = $res_completed->fetch_assoc()) {
-    $completedCourses[] = $row['course_code'];
-    $all_completed_course_details[$row['course_code']] = $row;
+    $completedCourses[] = strtoupper($row['course_code']);
+    $all_completed_course_details[strtoupper($row['course_code'])] = $row;
 }
 $stmt_completed->close();
 
 // Encode completed courses as JSON for JavaScript
-$completedCoursesJSON = json_encode(array_map('strtoupper', $completedCourses));
+$completedCoursesJSON = json_encode($completedCourses);
 
 // Fetch course details for required courses
 $course_details = array();
@@ -337,7 +193,15 @@ foreach ($degrees as $index => $degree_id) {
     }
 }
 ?>
-    
+
+<!-- Pass PHP data to JavaScript -->
+<script>
+    const degreeProgressData = <?php echo json_encode($degree_progress); ?>;
+    const completedCourses = <?php echo $completedCoursesJSON; ?>;
+    const completedCourseDetails = <?php echo json_encode($all_completed_course_details); ?>;
+    const toBeCompletedCourseDetails = <?php echo json_encode($to_be_completed_course_details); ?>;
+</script>
+
 <div class="main-content myprogress-container">
     <h1 class="mb-4">My Progress</h1>
     <div class="row">
@@ -375,7 +239,7 @@ foreach ($degrees as $index => $degree_id) {
                             unset($_SESSION['add_course_success']);
                         }
                     ?>
-                    <form action="myprogress.php" method="POST" class="add-course-form" autocomplete="off">
+                    <form action="../api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">
                         <div class="mb-3 position-relative">
                             <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP-101" required>
@@ -405,8 +269,8 @@ foreach ($degrees as $index => $degree_id) {
                                             echo htmlspecialchars($course['course_description'] ?? 'No description available.');
                                         ?>
                                     </div>
-                                    <form action="../api/remove_completed_course.php" method="POST" class="mb-0">
-                                        <input type="hidden" name="course_code" value="<?php echo htmlspecialchars($course['course_code']); ?>">
+                                    <form action="../api/handle_progress.php" method="POST" class="mb-0">
+                                        <input type="hidden" name="remove_course_code" value="<?php echo htmlspecialchars($course['course_code']); ?>">
                                         <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                                     </form>
                                 </div>
@@ -612,7 +476,6 @@ foreach ($degrees as $index => $degree_id) {
 
                         // Hidden input to store the actual course code
                         b.innerHTML += "<input type='hidden' value='" + course.course_code + "'>";
-                        b.setAttribute('data-section-code', course.section_code); // Store section_code
 
                         if (!isCompleted) {
                             b.addEventListener("click", function(e) {
