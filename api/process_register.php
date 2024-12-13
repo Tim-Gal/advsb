@@ -126,19 +126,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // Generate a 6-digit verification code
-    $verification_code = generateVerificationCode(); // Ensure this generates 6 digits
 
-    // Prepare the verification email
+    $verification_code = generateVerificationCode(); 
+
+
     $subject = "Verify Your Advanced Schedule Builder Account";
     $verification_message = "Hello $username,\n\nYour verification code is: $verification_code\n\nPlease enter this 6-digit code on the verification page to activate your account.\n\nIf you did not request this, please ignore this email.";
     $headers = "From: noreply@advsb.com\r\n"; 
 
-    // Send verification email
+
     $mail_sent = mail($email, $subject, $verification_message, $headers);
 
     if ($mail_sent) {
-        // Insert the user into the database **after** successful email sending
         $stmt_insert = null;
         if (empty($minor_id)) {
             $stmt_insert = $conn->prepare("INSERT INTO students (username, email, password_hash, verification_code, major_id, is_verified) VALUES (?, ?, ?, ?, ?, 0)");
@@ -148,6 +147,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt_insert->bind_param("sssiii", $username, $email, $password_hash, $verification_code, $major_id, $minor_id);
         }
 
+
+        
         if ($stmt_insert->execute()) {
             $_SESSION['success'] = "Registration successful! A 6-digit verification code has been sent to your email. Please verify your account.";
         } else {

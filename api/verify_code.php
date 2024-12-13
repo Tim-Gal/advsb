@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Check the verification code against the students table
+
+
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE verification_code = ? AND is_verified = 0 LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
@@ -42,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->fetch();
     $stmt->close();
 
-    // Update the user's account to set is_verified = 1 and remove the verification code
     $stmt_update = $conn->prepare("UPDATE students SET is_verified = 1, verification_code = NULL WHERE student_id = ?");
     if (!$stmt_update) {
         $_SESSION['error'] = "Database error: " . $conn->error;

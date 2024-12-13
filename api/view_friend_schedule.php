@@ -1,18 +1,17 @@
 <?php
 
 ob_start();
-
 include '../includes/config.php';
 include '../includes/functions.php';
 
 header('Content-Type: application/json');
 
-// Start session if not already started
+
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorized. Please log in.']);
     exit();
@@ -20,7 +19,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Retrieve and sanitize GET parameters
 $friend_id = isset($_GET['friend_id']) ? intval($_GET['friend_id']) : 0;
 $semester = isset($_GET['semester']) ? strtoupper(trim($_GET['semester'])) : '';
 
@@ -29,20 +27,18 @@ if (empty($friend_id) || empty($semester)) {
     exit();
 }
 
-// Check if friend_id is a mutual friend
 $sql = "
     SELECT COUNT(*) as count
     FROM friendswith
-    WHERE 
-        (student_id1 = ? AND student_id2 = ?) OR 
-        (student_id1 = ? AND student_id2 = ?)
-";
+    WHERE (student_id1 = ? AND student_id2 = ?) OR 
+    (student_id1 = ? AND student_id2 = ?)";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     error_log("Prepare failed in view_friend_schedule.php: (" . $conn->errno . ") " . $conn->error);
     echo json_encode(['error' => 'An internal server error occurred. Please try again later.']);
     exit();
 }
+
 
 $stmt->bind_param("iiii", $user_id, $friend_id, $friend_id, $user_id);
 $stmt->execute();
@@ -55,15 +51,13 @@ if ($friendship['count'] == 0) {
     exit();
 }
 
-// Fetch the friend's schedule for the specified semester get only unique courses cause there might be muktiple lectures for single course, and also we want to display only course name and code
+
 $sql = "
-    SELECT c.course_code, c.course_name, l.day_of_week, l.start_time, l.end_time, l.location
-    FROM coursesenrolled ce
+    SELECT c.course_code, c.course_name, l.day_of_week, l.start_time, l.end_time, l.location FROM coursesenrolled ce
     JOIN sections s ON ce.section_code = s.section_code
     JOIN courses c ON s.course_code = c.course_code
     JOIN lectures l ON l.section_code = s.section_code
-    WHERE ce.student_id = ? AND s.semester = ?
-";
+    WHERE ce.student_id = ? AND s.semester = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     error_log("Prepare failed in view_friend_schedule.php: (" . $conn->errno . ") " . $conn->error);
@@ -93,7 +87,5 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 
-// Clean the output buffer and send the JSON response
 ob_clean();
 echo json_encode(['success' => true, 'schedule' => $schedule]);
-// No closing PHP tag to prevent accidental whitespace
