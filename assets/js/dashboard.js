@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const removeSelectedCourse = document.getElementById('removeSelectedCourse');
     const confirmAddCourseButton = document.getElementById('confirmAddCourse');
     const downloadPdfButton = document.getElementById('downloadPdfButton'); // PDF Download Button
-    const sidebarSemesterSelect = document.getElementById('sidebarSemesterSelect');
     const enrolledCoursesList = document.getElementById('enrolledCoursesList');
     const enrolledCoursesLoading = document.getElementById('enrolledCoursesLoading');
     const csrfToken = document.getElementById('csrfToken').value;
@@ -158,33 +157,16 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
-            selectedSemester = radio.value; // Values are 'Fall', 'Winter', 'Summer'
+            selectedSemester = radio.value;
             loadUserSchedule();
+            loadEnrolledCourses();
             // Clear any selected course when semester changes
             if (selectedCourse) {
                 removeSelectedCourseFunction();
             }
-            // Also update the sidebar to match the main semester selection
-            sidebarSemesterSelect.value = selectedSemester;
-            loadEnrolledCourses();
         });
     });
-
-    /**
-     * Event listener for semester selection changes in sidebar
-     */
-    sidebarSemesterSelect.addEventListener('change', function () {
-        selectedSemester = this.value;
-        loadEnrolledCourses();
-        loadUserSchedule();
-        // Also update the main semester selection to match the sidebar
-        semesterRadios.forEach(radio => {
-            if (radio.value === selectedSemester) {
-                radio.checked = true;
-            }
-        });
-    });
-
+    
     /**
      * Event listener for course search input
      */

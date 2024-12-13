@@ -1,318 +1,112 @@
-/* assets/css/dashboard.css */
-
 /* Container Styling */
-.dashboard-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
+.container-fluid {
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
-/* Flex Layout for Sidebar and Main Content */
-.dashboard-layout {
-    display: flex;
-    gap: 20px;
+/* Card Styling */
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
 }
 
-/* Sidebar Styling */
-.sidebar {
-    width: 100%;
-}
-
-@media (min-width: 768px) {
-    .sidebar {
-        width: 250px;
-    }
-}
-
-/* Enrolled Courses List */
-.enrolled-courses-list {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.enrolled-courses-list .enrolled-course {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #e2e3e5;
-    padding: 8px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.enrolled-courses-list .enrolled-course:hover {
-    background-color: #d6d8db;
-}
-
-.enrolled-courses-list .enrolled-course .course-info {
-    flex-grow: 1;
-    font-size: 0.95em;
-}
-
-/* Delete Button Styling */
-.enrolled-courses-list .enrolled-course .delete-enrolled-course-btn {
-    background: none;
-    border: none;
-    color: #dc3545;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-.enrolled-courses-list .enrolled-course .delete-enrolled-course-btn:hover {
-    color: #a71d2a;
-}
-
-/* Semester Selection in Sidebar */
-.semester-selection-sidebar {
-    margin-bottom: 15px;
-}
-
-.semester-selection-sidebar label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-/* Main Content Styling */
-.main-content {
-    flex-grow: 1;
-}
-
-/* Course Search Styling */
-.course-search {
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.course-search input {
-    padding: 5px;
-    width: 100%;
-    max-width: 400px;
-}
-
-.course-search button {
-    padding: 5px 10px;
-    margin-left: 5px;
-}
-
-/* Suggestions Dropdown Styling */
-.suggestions-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    background: #fff;
-    border: 1px solid #ccc;
-    z-index: 1000;
-    display: none;
-}
-
-.suggestions-dropdown .suggestion-item:hover {
-    background: #eee;
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
 }
 
 /* Schedule Table Styling */
-.schedule-container {
+.table-responsive {
     overflow-x: auto;
+    min-height: 600px;
 }
 
-.schedule-table {
-    border-collapse: collapse;
-    width: 100%;
-    text-align: center;
+#scheduleTable {
+    min-width: 800px;
 }
 
-.schedule-table th {
-    background: #f0f0f0;
-    width: 80px;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-
-.schedule-table td {
-    vertical-align: top;
-    border: 1px solid #ccc;
-    padding: 5px;
-    position: relative;
-    height: 60px; /* Adjust as needed */
-}
-
-/* Time Cell Styling */
 .time-cell {
-    background: #f9f9f9;
-    font-weight: bold;
     width: 80px;
+    background: #f8f9fa;
+    font-weight: bold;
     text-align: center;
 }
 
-/* Day Cell Styling */
 .day-cell {
-    height: 60px; /* Adjust as needed */
+    height: 60px;
     padding: 0;
     position: relative;
 }
 
-/* Course Block Container */
+/* Course Block Styling */
 .course-block-container {
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
-/* Consolidated .course-block Styling */
 .course-block {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    box-sizing: border-box;
-    white-space: pre-wrap;
-    background-color: #d1ecf1; /* Light blue background */
-    border: 1px solid #bee5eb; /* Border color */
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin: 2px 0 5px 0;
-    cursor: pointer;
-    transition: background-color 0.3s, opacity 0.5s, transform 0.5s;
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 2px;
     font-size: 0.9em;
     overflow: hidden;
 }
 
-.course-block:hover {
-    background-color: #ccebea; /* Darker blue on hover */
+/* Enrolled Courses List */
+#enrolledCoursesList {
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-/* Delete Button Styling */
-.course-block .delete-course-btn {
+.enrolled-course {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Search Suggestions Dropdown */
+.suggestions-dropdown {
     position: absolute;
-    top: 2px;
-    right: 5px;
-    background: none;
-    border: none;
-    color: #dc3545; /* Bootstrap danger color */
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    line-height: 1;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.course-block .delete-course-btn:hover {
-    color: #a71d2a;
-}
-
-/* Fade-out Animation */
-.fade-out {
-    animation: fadeOut 0.5s forwards;
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        transform: translateY(-10px);
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .col-md-4 {
+        margin-bottom: 2rem;
+    }
+    
+    #downloadPdfButton {
+        margin-top: 1rem;
+        width: 100%;
     }
 }
 
-/* Selected Course Container */
-.selected-course-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.selected-course-container #selectedCourseText {
-    flex-grow: 1;
+/* Download Button Styling */
+#downloadPdfButton {
+    white-space: nowrap;
 }
 
 /* Toast Styling */
 .toast {
     min-width: 250px;
 }
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .dashboard-layout {
-        flex-direction: column;
-    }
-}
-
-@media (max-width: 576px) {
-    
-
-    .course-search input {
-        max-width: 100%;
-    }
-}
-
-/* Additional Styles for the Schedule Table */
-#scheduleTable {
-    position: relative;
-    width: 100%;
-    border-collapse: collapse;
-}
-
-#scheduleTable th, #scheduleTable td {
-    border: 1px solid #dee2e6;
-    position: relative;
-    height: 60px; /* Adjust as needed */
-    vertical-align: top;
-}
-
-#scheduleTable td {
-    padding: 0;
-}
-
-.course-block-container {
-    overflow: hidden;
-}
-
-.course-block {
-    pointer-events: auto;
-}
-
-#downloadPdfButton {
-    /*top right corner*/
-    position: absolute;
-    top: 100px;
-    right: 10px;
-    padding: 8px 18px;
-
-
-
-}
-
-/* Hover Effect */
-#downloadPdfButton:hover {
-    background-color: #198754; /* Darker green for better contrast */
-    color: #fff; /* White text on hover */
-}
-
-@media (max-width: 730px) {
-    #downloadPdfButton {
-       
-
-        position: relative;
-
-        width: 100%;
-        font-size: 0.9rem;
-        padding: 10px 14px;
-        top: 0;
-    }
-}
-
-
-#downloadPdfButton {
-    transition: all 0.3s ease-in-out;
-}
-
-/* Hover Effect */
-#downloadPdfButton:hover {
-    background-color: #198754; /* Darker green for better contrast */
-    color: #fff; /* White text on hover */
-}
-
