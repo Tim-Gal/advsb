@@ -312,119 +312,119 @@ CREATE TABLE `lectures` (
 
 
 INSERT INTO `lectures` (`lecture_id`, `location`, `day_of_week`, `start_time`, `end_time`, `section_code`) VALUES
-(1,  'Thompson Hall', 'Mon', '9:00:00',  '10:00:00', 1),  /* COMP101 - Fall */
-(2,  'Thompson Hall', 'Wed', '9:00:00',  '10:00:00', 1),  /* COMP101 - Fall */
-(3,  'Ethics Center', 'Tue', '9:00:00',  '10:00:00', 2),  /* COMP102 - Fall */
-(4,  'Ethics Center', 'Thu', '9:00:00',  '10:00:00', 2),  /* COMP102 - Fall */
-(5,  'Darwin Laboratory', 'Tue', '12:00:00', '13:00:00', 3),  /* COMP201 - Fall */
-(6,  'Darwin Laboratory', 'Thu', '12:00:00', '13:00:00', 3),  /* COMP201 - Fall */
-(7,  'Civic Center Building', 'Wed', '12:00:00', '13:00:00', 4),  /* COMP202 - Fall */
-(8,  'Civic Center Building', 'Fri', '12:00:00', '13:00:00', 4),  /* COMP202 - Fall */
-(9,  'Maxwell Science Center', 'Mon', '9:00:00',  '10:00:00', 5),  /* COMP101 - Winter */
-(10, 'Maxwell Science Center', 'Wed', '9:00:00',  '10:00:00', 5),  /* COMP101 - Winter */
-(11, 'Keynes Hall', 'Tue', '9:00:00',  '10:00:00', 6),  /* COMP102 - Winter */
-(12, 'Keynes Hall', 'Thu', '9:00:00',  '10:00:00', 6),  /* COMP102 - Winter */
-(13, 'Literary Arts Center', 'Tue', '12:00:00', '13:00:00', 7),  /* COMP201 - Winter */
-(14, 'Literary Arts Center', 'Thu', '12:00:00', '13:00:00', 7),  /* COMP201 - Winter */
-(15, 'International Affairs Building', 'Wed', '12:00:00', '13:00:00', 8),  /* COMP202 - Winter */
-(16, 'International Affairs Building', 'Fri', '12:00:00', '13:00:00', 8),  /* COMP202 - Winter */
-(17, 'Summer Studies Complex', 'Mon', '12:00:00', '14:00:00', 9),  /* COMP101 - Summer */
-(18, 'Summer Studies Complex', 'Tue', '12:00:00', '14:00:00', 10), /* COMP102 - Summer */
+(1,  'Thompson Hall 205', 'Mon', '9:00:00',  '10:00:00', 1),  /* COMP101 - Fall */
+(2,  'Thompson Hall 205', 'Wed', '9:00:00',  '10:00:00', 1),  /* COMP101 - Fall */
+(3,  'Ethics Center 101', 'Tue', '9:00:00',  '10:00:00', 2),  /* COMP102 - Fall */
+(4,  'Ethics Center 101', 'Thu', '9:00:00',  '10:00:00', 2),  /* COMP102 - Fall */
+(5,  'Darwin Laboratory 201', 'Tue', '12:00:00', '13:00:00', 3),  /* COMP201 - Fall */
+(6,  'Darwin Laboratory 201', 'Thu', '12:00:00', '13:00:00', 3),  /* COMP201 - Fall */
+(7,  'Civic Center Building 301', 'Wed', '12:00:00', '13:00:00', 4),  /* COMP202 - Fall */
+(8,  'Civic Center Building 301', 'Fri', '12:00:00', '13:00:00', 4),  /* COMP202 - Fall */
+(9,  'Maxwell Science Center 101', 'Mon', '9:00:00',  '10:00:00', 5),  /* COMP101 - Winter */
+(10, 'Maxwell Science Center 101', 'Wed', '9:00:00',  '10:00:00', 5),  /* COMP101 - Winter */
+(11, 'Keynes Hall 201', 'Tue', '9:00:00',  '10:00:00', 6),  /* COMP102 - Winter */
+(12, 'Keynes Hall 201', 'Thu', '9:00:00',  '10:00:00', 6),  /* COMP102 - Winter */
+(13, 'Literary Arts Center 301', 'Tue', '12:00:00', '13:00:00', 7),  /* COMP201 - Winter */
+(14, 'Literary Arts Center 301', 'Thu', '12:00:00', '13:00:00', 7),  /* COMP201 - Winter */
+(15, 'International Affairs Building 201', 'Wed', '12:00:00', '13:00:00', 8),  /* COMP202 - Winter */
+(16, 'International Affairs Building 201', 'Fri', '12:00:00', '13:00:00', 8),  /* COMP202 - Winter */
+(17, 'Summer Studies Complex 101', 'Mon', '12:00:00', '14:00:00', 9),  /* COMP101 - Summer */
+(18, 'Summer Studies Complex 102', 'Tue', '12:00:00', '14:00:00', 10), /* COMP102 - Summer */
 
-(21, 'Aristotle Building', 'Mon', '10:00:00', '11:00:00', 11), /* BIOL101 - Fall */
-(22, 'Aristotle Building', 'Wed', '10:00:00', '11:00:00', 11), /* BIOL101 - Fall */
-(23, 'Alan Turing Center', 'Tue', '10:00:00', '11:00:00', 12), /* BIOL102 - Fall */
-(24, 'Alan Turing Center', 'Thu', '10:00:00', '11:00:00', 12), /* BIOL102 - Fall */
-(25, 'Wordsworth Building', 'Tue', '13:00:00', '14:00:00', 13), /* BIOL201 - Fall */
-(26, 'Wordsworth Building', 'Thu', '13:00:00', '14:00:00', 13), /* BIOL201 - Fall */
-(27, 'Thompson Hall', 'Wed', '13:00:00', '14:00:00', 14), /* BIOL202 - Fall */
-(28, 'Thompson Hall', 'Fri', '13:00:00', '14:00:00', 14), /* BIOL202 - Fall */
-(29, 'Ethics Center', 'Mon', '10:00:00', '11:00:00', 15), /* BIOL101 - Winter */
-(30, 'Ethics Center', 'Wed', '10:00:00', '11:00:00', 15), /* BIOL101 - Winter */
-(31, 'Darwin Laboratory', 'Tue', '10:00:00', '11:00:00', 16), /* BIOL102 - Winter */
-(32, 'Darwin Laboratory', 'Thu', '10:00:00', '11:00:00', 16), /* BIOL102 - Winter */
-(33, 'Maxwell Science Center', 'Tue', '13:00:00', '14:00:00', 17), /* BIOL201 - Winter */
-(34, 'Maxwell Science Center', 'Thu', '13:00:00', '14:00:00', 17), /* BIOL201 - Winter */
-(35, 'Keynes Hall', 'Wed', '13:00:00', '14:00:00', 18), /* BIOL202 - Winter */
-(36, 'Keynes Hall', 'Fri', '13:00:00', '14:00:00', 18), /* BIOL202 - Winter */
-(37, 'Summer Studies Complex', 'Mon', '13:00:00', '15:00:00', 19), /* BIOL101 - Summer */
-(38, 'Summer Studies Complex', 'Tue', '13:00:00', '15:00:00', 20), /* BIOL102 - Summer */
+(21, 'Aristotle Building 201', 'Mon', '10:00:00', '11:00:00', 11), /* BIOL101 - Fall */
+(22, 'Aristotle Building 201', 'Wed', '10:00:00', '11:00:00', 11), /* BIOL101 - Fall */
+(23, 'Alan Turing Center 301', 'Tue', '10:00:00', '11:00:00', 12), /* BIOL102 - Fall */
+(24, 'Alan Turing Center 301', 'Thu', '10:00:00', '11:00:00', 12), /* BIOL102 - Fall */
+(25, 'Wordsworth Building 201', 'Tue', '13:00:00', '14:00:00', 13), /* BIOL201 - Fall */
+(26, 'Wordsworth Building 201', 'Thu', '13:00:00', '14:00:00', 13), /* BIOL201 - Fall */
+(27, 'Thompson Hall 301', 'Wed', '13:00:00', '14:00:00', 14), /* BIOL202 - Fall */
+(28, 'Thompson Hall 301', 'Fri', '13:00:00', '14:00:00', 14), /* BIOL202 - Fall */
+(29, 'Ethics Center 305', 'Mon', '10:00:00', '11:00:00', 15), /* BIOL101 - Winter */
+(30, 'Ethics Center 305', 'Wed', '10:00:00', '11:00:00', 15), /* BIOL101 - Winter */
+(31, 'Darwin Laboratory 305', 'Tue', '10:00:00', '11:00:00', 16), /* BIOL102 - Winter */
+(32, 'Darwin Laboratory 305', 'Thu', '10:00:00', '11:00:00', 16), /* BIOL102 - Winter */
+(33, 'Maxwell Science Center 205', 'Tue', '13:00:00', '14:00:00', 17), /* BIOL201 - Winter */
+(34, 'Maxwell Science Center 205', 'Thu', '13:00:00', '14:00:00', 17), /* BIOL201 - Winter */
+(35, 'Keynes Hall 305', 'Wed', '13:00:00', '14:00:00', 18), /* BIOL202 - Winter */
+(36, 'Keynes Hall 305', 'Fri', '13:00:00', '14:00:00', 18), /* BIOL202 - Winter */
+(37, 'Summer Studies Complex 101', 'Mon', '13:00:00', '15:00:00', 19), /* BIOL101 - Summer */
+(38, 'Summer Studies Complex 102', 'Tue', '13:00:00', '15:00:00', 20), /* BIOL102 - Summer */
 
-(41, 'Literary Arts Center', 'Mon', '11:00:00', '12:00:00', 21), /* POLI101 - Fall */
-(42, 'Literary Arts Center', 'Wed', '11:00:00', '12:00:00', 21), /* POLI101 - Fall */
-(43, 'Civic Center Building', 'Tue', '11:00:00', '12:00:00', 22), /* POLI102 - Fall */
-(44, 'Civic Center Building', 'Thu', '11:00:00', '12:00:00', 22), /* POLI102 - Fall */
-(45, 'International Affairs Building', 'Tue', '14:00:00', '15:00:00', 23), /* POLI201 - Fall */
-(46, 'International Affairs Building', 'Thu', '14:00:00', '15:00:00', 23), /* POLI201 - Fall */
-(47, 'Adam Smith Hall', 'Wed', '14:00:00', '15:00:00', 24), /* POLI202 - Fall */
-(48, 'Adam Smith Hall', 'Fri', '14:00:00', '15:00:00', 24), /* POLI202 - Fall */
-(49, 'Aristotle Building', 'Mon', '11:00:00', '12:00:00', 25), /* POLI101 - Winter */
-(40, 'Aristotle Building', 'Wed', '11:00:00', '12:00:00', 25), /* POLI101 - Winter */
-(51, 'Alan Turing Center', 'Tue', '11:00:00', '12:00:00', 26), /* POLI102 - Winter */
-(52, 'Alan Turing Center', 'Thu', '11:00:00', '12:00:00', 26), /* POLI102 - Winter */
-(53, 'Wordsworth Building', 'Tue', '14:00:00', '15:00:00', 27), /* POLI201 - Winter */
-(54, 'Wordsworth Building', 'Thu', '14:00:00', '15:00:00', 27), /* POLI201 - Winter */
-(55, 'Thompson Hall', 'Wed', '14:00:00', '15:00:00', 28), /* POLI202 - Winter */
-(56, 'Thompson Hall', 'Fri', '14:00:00', '15:00:00', 28), /* POLI202 - Winter */
-(57, 'Summer Studies Complex', 'Mon', '14:00:00', '16:00:00', 29), /* POLI101 - Summer */
-(58, 'Summer Studies Complex', 'Tue', '14:00:00', '16:00:00', 30), /* POLI102 - Summer */
+(41, 'Literary Arts Center 205', 'Mon', '11:00:00', '12:00:00', 21), /* POLI101 - Fall */
+(42, 'Literary Arts Center 205', 'Wed', '11:00:00', '12:00:00', 21), /* POLI101 - Fall */
+(43, 'Civic Center Building 205', 'Tue', '11:00:00', '12:00:00', 22), /* POLI102 - Fall */
+(44, 'Civic Center Building 205', 'Thu', '11:00:00', '12:00:00', 22), /* POLI102 - Fall */
+(45, 'International Affairs Building 305', 'Tue', '14:00:00', '15:00:00', 23), /* POLI201 - Fall */
+(46, 'International Affairs Building 305', 'Thu', '14:00:00', '15:00:00', 23), /* POLI201 - Fall */
+(47, 'Adam Smith Hall 301', 'Wed', '14:00:00', '15:00:00', 24), /* POLI202 - Fall */
+(48, 'Adam Smith Hall 301', 'Fri', '14:00:00', '15:00:00', 24), /* POLI202 - Fall */
+(49, 'Aristotle Building 305', 'Mon', '11:00:00', '12:00:00', 25), /* POLI101 - Winter */
+(40, 'Aristotle Building 305', 'Wed', '11:00:00', '12:00:00', 25), /* POLI101 - Winter */
+(51, 'Alan Turing Center 205', 'Tue', '11:00:00', '12:00:00', 26), /* POLI102 - Winter */
+(52, 'Alan Turing Center 205', 'Thu', '11:00:00', '12:00:00', 26), /* POLI102 - Winter */
+(53, 'Wordsworth Building 305', 'Tue', '14:00:00', '15:00:00', 27), /* POLI201 - Winter */
+(54, 'Wordsworth Building 305', 'Thu', '14:00:00', '15:00:00', 27), /* POLI201 - Winter */
+(55, 'Thompson Hall 412', 'Wed', '14:00:00', '15:00:00', 28), /* POLI202 - Winter */
+(56, 'Thompson Hall 412', 'Fri', '14:00:00', '15:00:00', 28), /* POLI202 - Winter */
+(57, 'Summer Studies Complex 101', 'Mon', '14:00:00', '16:00:00', 29), /* POLI101 - Summer */
+(58, 'Summer Studies Complex 102', 'Tue', '14:00:00', '16:00:00', 30), /* POLI102 - Summer */
 
-(61, 'Ethics Center', 'Mon', '13:00:00', '14:00:00', 31), /* ECON101 - Fall */
-(62, 'Ethics Center', 'Wed', '13:00:00', '14:00:00', 31), /* ECON101 - Fall */
-(63, 'Darwin Laboratory', 'Tue', '13:00:00', '14:00:00', 32), /* ECON102 - Fall */
-(64, 'Darwin Laboratory', 'Thu', '13:00:00', '14:00:00', 32), /* ECON102 - Fall */
-(65, 'Maxwell Science Center', 'Tue', '16:00:00', '17:00:00', 33), /* ECON201 - Fall */
-(66, 'Maxwell Science Center', 'Thu', '16:00:00', '17:00:00', 33), /* ECON201 - Fall */
-(67, 'Keynes Hall', 'Wed', '16:00:00', '17:00:00', 34), /* ECON202 - Fall */
-(68, 'Keynes Hall', 'Fri', '16:00:00', '17:00:00', 34), /* ECON202 - Fall */
-(69, 'Literary Arts Center', 'Mon', '13:00:00', '14:00:00', 35), /* ECON101 - Winter */
-(70, 'Literary Arts Center', 'Wed', '13:00:00', '14:00:00', 35), /* ECON101 - Winter */
-(71, 'Civic Center Building', 'Tue', '13:00:00', '14:00:00', 36), /* ECON102 - Winter */
-(72, 'Civic Center Building', 'Thu', '13:00:00', '14:00:00', 36), /* ECON102 - Winter */
-(73, 'International Affairs Building', 'Tue', '16:00:00', '17:00:00', 37), /* ECON201 - Winter */
-(74, 'International Affairs Building', 'Thu', '16:00:00', '17:00:00', 37), /* ECON201 - Winter */
-(75, 'Adam Smith Hall', 'Wed', '16:00:00', '17:00:00', 38), /* ECON202 - Winter */
-(76, 'Adam Smith Hall', 'Fri', '16:00:00', '17:00:00', 38), /* ECON202 - Winter */
-(77, 'Summer Studies Complex', 'Mon', '16:00:00', '18:00:00', 39), /* ECON101 - Summer */
-(78, 'Summer Studies Complex', 'Tue', '16:00:00', '18:00:00', 40), /* ECON102 - Summer */
+(61, 'Ethics Center 210', 'Mon', '13:00:00', '14:00:00', 31), /* ECON101 - Fall */
+(62, 'Ethics Center 210', 'Wed', '13:00:00', '14:00:00', 31), /* ECON101 - Fall */
+(63, 'Darwin Laboratory 102', 'Tue', '13:00:00', '14:00:00', 32), /* ECON102 - Fall */
+(64, 'Darwin Laboratory 102', 'Thu', '13:00:00', '14:00:00', 32), /* ECON102 - Fall */
+(65, 'Maxwell Science Center 301', 'Tue', '16:00:00', '17:00:00', 33), /* ECON201 - Fall */
+(66, 'Maxwell Science Center 301', 'Thu', '16:00:00', '17:00:00', 33), /* ECON201 - Fall */
+(67, 'Keynes Hall 401', 'Wed', '16:00:00', '17:00:00', 34), /* ECON202 - Fall */
+(68, 'Keynes Hall 401', 'Fri', '16:00:00', '17:00:00', 34), /* ECON202 - Fall */
+(69, 'Literary Arts Center 101', 'Mon', '13:00:00', '14:00:00', 35), /* ECON101 - Winter */
+(70, 'Literary Arts Center 101', 'Wed', '13:00:00', '14:00:00', 35), /* ECON101 - Winter */
+(71, 'Civic Center Building 401', 'Tue', '13:00:00', '14:00:00', 36), /* ECON102 - Winter */
+(72, 'Civic Center Building 401', 'Thu', '13:00:00', '14:00:00', 36), /* ECON102 - Winter */
+(73, 'International Affairs Building 401', 'Tue', '16:00:00', '17:00:00', 37), /* ECON201 - Winter */
+(74, 'International Affairs Building 401', 'Thu', '16:00:00', '17:00:00', 37), /* ECON201 - Winter */
+(75, 'Adam Smith Hall 205', 'Wed', '16:00:00', '17:00:00', 38), /* ECON202 - Winter */
+(76, 'Adam Smith Hall 205', 'Fri', '16:00:00', '17:00:00', 38), /* ECON202 - Winter */
+(77, 'Summer Studies Complex 101', 'Mon', '16:00:00', '18:00:00', 39), /* ECON101 - Summer */
+(78, 'Summer Studies Complex 102', 'Tue', '16:00:00', '18:00:00', 40), /* ECON102 - Summer */
 
-(81, 'Aristotle Building', 'Mon', '14:00:00', '15:00:00', 41), /* PHIL101 - Fall */
-(82, 'Aristotle Building', 'Wed', '14:00:00', '15:00:00', 41), /* PHIL101 - Fall */
-(83, 'Alan Turing Center', 'Tue', '14:00:00', '15:00:00', 42), /* PHIL102 - Fall */
-(84, 'Alan Turing Center', 'Thu', '14:00:00', '15:00:00', 42), /* PHIL102 - Fall */
-(85, 'Wordsworth Building', 'Tue', '17:00:00', '18:00:00', 43), /* PHIL201 - Fall */
-(86, 'Wordsworth Building', 'Thu', '17:00:00', '18:00:00', 43), /* PHIL201 - Fall */
-(87, 'Thompson Hall', 'Wed', '17:00:00', '18:00:00', 44), /* PHIL202 - Fall */
-(88, 'Thompson Hall', 'Fri', '17:00:00', '18:00:00', 44), /* PHIL202 - Fall */
-(89, 'Ethics Center', 'Mon', '14:00:00', '15:00:00', 45), /* PHIL101 - Winter */
-(90, 'Ethics Center', 'Wed', '14:00:00', '15:00:00', 45), /* PHIL101 - Winter */
-(91, 'Darwin Laboratory', 'Tue', '14:00:00', '15:00:00', 46), /* PHIL102 - Winter */
-(92, 'Darwin Laboratory', 'Thu', '14:00:00', '15:00:00', 46), /* PHIL102 - Winter */
-(93, 'Maxwell Science Center', 'Tue', '17:00:00', '18:00:00', 47), /* PHIL201 - Winter */
-(94, 'Maxwell Science Center', 'Thu', '17:00:00', '18:00:00', 47), /* PHIL201 - Winter */
-(95, 'Keynes Hall', 'Wed', '17:00:00', '18:00:00', 48), /* PHIL202 - Winter */
-(96, 'Keynes Hall', 'Fri', '17:00:00', '18:00:00', 48), /* PHIL202 - Winter */
-(97, 'Summer Studies Complex', 'Mon', '17:00:00', '19:00:00', 49), /* PHIL101 - Summer */
-(98, 'Summer Studies Complex', 'Tue', '17:00:00', '19:00:00', 50), /* PHIL102 - Summer */
+(81, 'Aristotle Building 401', 'Mon', '14:00:00', '15:00:00', 41), /* PHIL101 - Fall */
+(82, 'Aristotle Building 401', 'Wed', '14:00:00', '15:00:00', 41), /* PHIL101 - Fall */
+(83, 'Alan Turing Center 401', 'Tue', '14:00:00', '15:00:00', 42), /* PHIL102 - Fall */
+(84, 'Alan Turing Center 401', 'Thu', '14:00:00', '15:00:00', 42), /* PHIL102 - Fall */
+(85, 'Wordsworth Building 401', 'Tue', '17:00:00', '18:00:00', 43), /* PHIL201 - Fall */
+(86, 'Wordsworth Building 401', 'Thu', '17:00:00', '18:00:00', 43), /* PHIL201 - Fall */
+(87, 'Thompson Hall 401', 'Wed', '17:00:00', '18:00:00', 44), /* PHIL202 - Fall */
+(88, 'Thompson Hall 401', 'Fri', '17:00:00', '18:00:00', 44), /* PHIL202 - Fall */
+(89, 'Ethics Center 401', 'Mon', '14:00:00', '15:00:00', 45), /* PHIL101 - Winter */
+(90, 'Ethics Center 401', 'Wed', '14:00:00', '15:00:00', 45), /* PHIL101 - Winter */
+(91, 'Darwin Laboratory 401', 'Tue', '14:00:00', '15:00:00', 46), /* PHIL102 - Winter */
+(92, 'Darwin Laboratory 401', 'Thu', '14:00:00', '15:00:00', 46), /* PHIL102 - Winter */
+(93, 'Maxwell Science Center 401', 'Tue', '17:00:00', '18:00:00', 47), /* PHIL201 - Winter */
+(94, 'Maxwell Science Center 401', 'Thu', '17:00:00', '18:00:00', 47), /* PHIL201 - Winter */
+(95, 'Keynes Hall 105', 'Wed', '17:00:00', '18:00:00', 48), /* PHIL202 - Winter */
+(96, 'Keynes Hall 105', 'Fri', '17:00:00', '18:00:00', 48), /* PHIL202 - Winter */
+(97, 'Summer Studies Complex 101', 'Mon', '17:00:00', '19:00:00', 49), /* PHIL101 - Summer */
+(98, 'Summer Studies Complex 102', 'Tue', '17:00:00', '19:00:00', 50), /* PHIL102 - Summer */
 
-(101, 'Adam Smith Hall', 'Mon', '14:00:00', '15:00:00', 51), /* ENGL101 - Fall */
-(102, 'Adam Smith Hall', 'Wed', '14:00:00', '15:00:00', 51), /* ENGL101 - Fall */
-(103, 'Thompson Hall', 'Tue', '14:00:00', '15:00:00', 52), /* ENGL102 - Fall */
-(104, 'Thompson Hall', 'Thu', '14:00:00', '15:00:00', 52), /* ENGL102 - Fall */
-(105, 'Ethics Center', 'Tue', '17:00:00', '18:00:00', 53), /* ENGL201 - Fall */
-(106, 'Ethics Center', 'Thu', '17:00:00', '18:00:00', 53), /* ENGL201 - Fall */
-(107, 'Darwin Laboratory', 'Wed', '17:00:00', '18:00:00', 54), /* ENGL202 - Fall */
-(108, 'Darwin Laboratory', 'Fri', '17:00:00', '18:00:00', 54), /* ENGL202 - Fall */
-(109, 'Maxwell Science Center', 'Mon', '14:00:00', '15:00:00', 55), /* ENGL101 - Winter */
-(110, 'Maxwell Science Center', 'Wed', '14:00:00', '15:00:00', 55), /* ENGL101 - Winter */
-(111, 'International Affairs Building', 'Tue', '14:00:00', '15:00:00', 56), /* ENGL102 - Winter */
-(112, 'International Affairs Building', 'Thu', '14:00:00', '15:00:00', 56), /* ENGL102 - Winter */
-(113, 'Aristotle Building', 'Tue', '17:00:00', '18:00:00', 57), /* ENGL201 - Winter */
-(114, 'Aristotle Building', 'Thu', '17:00:00', '18:00:00', 57), /* ENGL201 - Winter */
-(115, 'Literary Arts Center', 'Wed', '17:00:00', '18:00:00', 58), /* ENGL202 - Winter */
-(116, 'Literary Arts Center', 'Fri', '17:00:00', '18:00:00', 58), /* ENGL202 - Winter */
-(117, 'Summer Studies Complex', 'Mon', '17:00:00', '19:00:00', 59), /* ENGL101 - Summer */
-(118, 'Summer Studies Complex', 'Tue', '17:00:00', '19:00:00', 60); /* ENGL102 - Summer */
+(101, 'Adam Smith Hall 101', 'Mon', '14:00:00', '15:00:00', 51), /* ENGL101 - Fall */
+(102, 'Adam Smith Hall 101', 'Wed', '14:00:00', '15:00:00', 51), /* ENGL101 - Fall */
+(103, 'Thompson Hall 218', 'Tue', '14:00:00', '15:00:00', 52), /* ENGL102 - Fall */
+(104, 'Thompson Hall 218', 'Thu', '14:00:00', '15:00:00', 52), /* ENGL102 - Fall */
+(105, 'Ethics Center 315', 'Tue', '17:00:00', '18:00:00', 53), /* ENGL201 - Fall */
+(106, 'Ethics Center 315', 'Thu', '17:00:00', '18:00:00', 53), /* ENGL201 - Fall */
+(107, 'Darwin Laboratory 205', 'Wed', '17:00:00', '18:00:00', 54), /* ENGL202 - Fall */
+(108, 'Darwin Laboratory 205', 'Fri', '17:00:00', '18:00:00', 54), /* ENGL202 - Fall */
+(109, 'Maxwell Science Center 105', 'Mon', '14:00:00', '15:00:00', 55), /* ENGL101 - Winter */
+(110, 'Maxwell Science Center 105', 'Wed', '14:00:00', '15:00:00', 55), /* ENGL101 - Winter */
+(111, 'International Affairs Building 105', 'Tue', '14:00:00', '15:00:00', 56), /* ENGL102 - Winter */
+(112, 'International Affairs Building 105', 'Thu', '14:00:00', '15:00:00', 56), /* ENGL102 - Winter */
+(113, 'Aristotle Building 105', 'Tue', '17:00:00', '18:00:00', 57), /* ENGL201 - Winter */
+(114, 'Aristotle Building 105', 'Thu', '17:00:00', '18:00:00', 57), /* ENGL201 - Winter */
+(115, 'Literary Arts Center 401', 'Wed', '17:00:00', '18:00:00', 58), /* ENGL202 - Winter */
+(116, 'Literary Arts Center 401', 'Fri', '17:00:00', '18:00:00', 58), /* ENGL202 - Winter */
+(117, 'Summer Studies Complex 101', 'Mon', '17:00:00', '19:00:00', 59), /* ENGL101 - Summer */
+(118, 'Summer Studies Complex 102', 'Tue', '17:00:00', '19:00:00', 60); /* ENGL102 - Summer */
 
 
 CREATE TABLE `coursescompleted` (
