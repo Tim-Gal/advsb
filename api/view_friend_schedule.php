@@ -27,6 +27,8 @@ if (empty($friend_id) || empty($semester)) {
     exit();
 }
 
+
+
 $sql = "
     SELECT COUNT(*) as count
     FROM friendswith

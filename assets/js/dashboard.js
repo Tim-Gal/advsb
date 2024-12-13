@@ -434,10 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    /**
-     * Function to display enrolled courses in the sidebar
-     * @param {Array} courses 
-     */
+    
     function displayEnrolledCourses(courses) {
         enrolledCoursesList.innerHTML = '';
         if (courses.length === 0) {

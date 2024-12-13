@@ -4,6 +4,12 @@ session_start();
 include_once '../includes/config.php';
 include_once '../includes/functions.php';
 
+require '../vendor/autoload.php';
+
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $_SESSION['fp_error'] = "Invalid request method.";
     header("Location: ../public/forgot_password.php");
@@ -17,8 +23,6 @@ if (empty($email)) {
     header("Location: ../public/forgot_password.php");
     exit();
 }
-
-
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['fp_error'] = "Please enter a valid email address.";
@@ -51,10 +55,7 @@ $user_id = $user['student_id'];
 $user_email = $user['email'];
 
 $reset_code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
-
 $reset_expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
-
 
 $stmt_update = $conn->prepare("UPDATE students SET password_reset_code = ?, password_reset_expires = ? WHERE student_id = ?");
 if (!$stmt_update) {
@@ -83,20 +84,35 @@ $message = "
     <p>Thank you.</p>
 ";
 
-$headers = "From: no-reply@advsb.com\r\n"; 
-$headers .= "MIME-Version: 1.0\r\n";
-$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
 
-$mail_sent = mail($user_email, $subject, $message, $headers);
+$mail = new PHPMailer(true);
 
-if ($mail_sent) {
+try {
+    $mail->isSMTP();                                          
+    $mail->Host       = 'smtp.gmail.com';                  
+    $mail->SMTPAuth   = true;                                   
+    $mail->Username   = 'efertugrul6@gmail.com';              
+    $mail->Password   = 'btaf jkay gddz pcwq';               
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;      
+    $mail->Port       = 587;                                 
+
+    $mail->setFrom('no-reply@advsb.com', 'Advanced Schedule Builder');
+    $mail->addAddress($user_email);                            
+
+    $mail->isHTML(true);                                       
+    $mail->Subject = $subject;
+    $mail->Body    = $message;
+
+
+    $mail->send();
+
     $_SESSION['reset_code_sent'] = true;
     $_SESSION['fp_success'] = "A password reset code has been sent to your email.";
     header("Location: ../public/forgot_password.php");
     exit();
-} else {
-    $_SESSION['fp_error'] = "Failed to send reset email. Please try again.";
+} catch (Exception $e) {
+    $_SESSION['fp_error'] = "Failed to send reset email. Mailer Error: {$mail->ErrorInfo}";
     header("Location: ../public/forgot_password.php");
     exit();
 }

@@ -3,7 +3,8 @@ session_start();
 include '../includes/config.php';
 include '../includes/functions.php';
 
-// Check if user is logged in
+
+
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['settings_error'] = "You must be logged in to update your settings.";
     header("Location: ../public/login.php");
@@ -16,13 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $minor_id = isset($_POST['minor_id']) ? $_POST['minor_id'] : NULL;
     $new_username = isset($_POST['new_username']) ? trim($_POST['new_username']) : '';
 
-    // Initialize error array
     $errors = [];
 
-    // Validate New Username if provided
-    $username_to_update = false; // Flag to check if username needs to be updated
+
+    $uname_upd = false; // Flag to check if username needs to be updated
     if (!empty($new_username)) {
-        $username_to_update = true;
+        $uname_upd = true;
 
         // Check username length
         if (strlen($new_username) < 3 || strlen($new_username) > 20) {
@@ -69,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Validate Minor if provided
     if (!empty($minor_id)) {
         $minor_id = intval($minor_id);
         $stmt_minor = $conn->prepare("SELECT degree_id FROM degrees WHERE degree_id = ? AND type = 'Minor'");
@@ -85,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt_minor->close();
         }
     } else {
-        $minor_id = NULL; // Explicitly set to NULL if no minor is selected
+        $minor_id = NULL; 
     }
 
     if (!empty($errors)) {
@@ -94,12 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Begin Transaction
     $conn->begin_transaction();
 
     try {
-        // Update the student's major, minor, and username if applicable
-        if ($username_to_update) {
+        if ($uname_upd) {
             $stmt_update = $conn->prepare("UPDATE students SET major_id = ?, minor_id = ?, username = ? WHERE student_id = ?");
             if (!$stmt_update) {
                 throw new Exception("Database error: " . $conn->error);
@@ -115,22 +112,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt_update->bind_param("iii", $major_id, $minor_id, $user_id);
         }
 
+
         if (!$stmt_update->execute()) {
             throw new Exception("Failed to update settings: " . $stmt_update->error);
         }
 
         $stmt_update->close();
-
-        // Commit Transaction
         $conn->commit();
 
-        // Set Success Message
+
         $_SESSION['settings_success'] = "Settings successfully updated.";
 
         header("Location: ../public/settings.php");
         exit();
     } catch (Exception $e) {
-        // Rollback Transaction
         $conn->rollback();
         error_log("Error updating settings: " . $e->getMessage());
         $_SESSION['settings_error'] = "Failed to update settings. Please try again later.";
