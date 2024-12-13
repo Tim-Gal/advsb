@@ -211,13 +211,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function selectCourse(course) {
         selectedCourse = {
             code: course.code,
-            section_code: course.section_code
+            section_code: course.section_code,
+            name: course.name  // Add the course name to the stored selection
         };
-        selectedCourseText.textContent = `${course.code}`;
+        selectedCourseText.textContent = `${course.code} - ${course.name}`; // Display both code and name
         selectedCourseContainer.style.display = 'block';
 
         // Disable the input and semester select
-        courseSearchInput.value = `${course.code}`;
+        courseSearchInput.value = `${course.code} - ${course.name}`; // Show both in the input field
         courseSearchInput.disabled = true;
         semesterRadios.forEach(radio => {
             radio.disabled = true;
@@ -227,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
         searchSuggestions.innerHTML = '';
         searchSuggestions.style.display = 'none';
     }
-
     /**
      * Function to remove the selected course
      */

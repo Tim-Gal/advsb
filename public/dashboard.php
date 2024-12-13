@@ -48,22 +48,6 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                 </div>
 
-                <!-- Enrolled Courses -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Enrolled Courses</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="enrolledCoursesList" class="list-group">
-                        </div>
-                        <div id="enrolledCoursesLoading" class="text-center my-3" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Course Adder -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -86,6 +70,22 @@ if (!isset($_SESSION['user_id'])) {
                         <button id="removeSelectedCourse" class="btn btn-sm btn-danger me-2">Remove</button>
                         <button id="confirmAddCourse" class="btn btn-sm btn-primary">Confirm Add</button>
                         <input type="hidden" id="csrfToken" value="<?php echo $csrf_token; ?>">
+                    </div>
+                </div>
+
+                <!-- Enrolled Courses -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Enrolled Courses</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="enrolledCoursesList" class="list-group">
+                        </div>
+                        <div id="enrolledCoursesLoading" class="text-center my-3" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
