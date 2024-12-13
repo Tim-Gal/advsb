@@ -28,11 +28,6 @@ if ($section_code <= 0 || empty($semesterName)) {
 
 $sqlCheck = "SELECT course_code FROM sections WHERE section_code = ? AND LOWER(semester) = LOWER(?)";
 $stmtCheck = $conn->prepare($sqlCheck);
-if (!$stmtCheck) {
-    error_log("Query preparation failed: " . $conn->error);
-    echo json_encode(["success" => false, "error" => "Database error while checking section availability."]);
-    exit();
-}
 
 $stmtCheck->bind_param("is", $section_code, $semesterName);
 $stmtCheck->execute();
@@ -45,44 +40,35 @@ if ($resultCheck->num_rows === 0) {
 }
 
 $sectionData = $resultCheck->fetch_assoc();
-$course_code = strtoupper(trim($sectionData['course_code'])); // Convert to uppercase and trim
+$course_code = strtoupper(trim($sectionData['course_code'])); 
 
 $stmtCheck->close();
-// **End of Section Availability Check**
 
-// **Start of Duplicate Enrollment Across Semesters Check**
-/**
- * Check if the student is already enrolled in the same course in a different semester
- */
 $sqlDuplicateEnrollment = "
     SELECT ce.section_code, s.semester 
     FROM coursesenrolled ce
     JOIN sections s ON ce.section_code = s.section_code
     WHERE ce.student_id = ? AND s.course_code = ? AND LOWER(s.semester) != LOWER(?)
 ";
-$stmtDuplicate = $conn->prepare($sqlDuplicateEnrollment);
-if (!$stmtDuplicate) {
-    error_log("Query preparation failed for duplicate enrollment check: " . $conn->error);
-    echo json_encode(["success" => false, "error" => "Database error while checking existing enrollments."]);
-    exit();
-}
+$stmtDup = $conn->prepare($sqlDuplicateEnrollment);
 
-$stmtDuplicate->bind_param("iss", $user_id, $course_code, $semesterName);
-$stmtDuplicate->execute();
-$resultDuplicate = $stmtDuplicate->get_result();
 
-if ($resultDuplicate->num_rows > 0) {
-    // Fetch details of existing enrollments
+
+
+
+$stmtDup->bind_param("iss", $user_id, $course_code, $semesterName);
+$stmtDup->execute();
+$resultDup = $stmtDup->get_result();
+
+if ($resultDup->num_rows > 0) {
     $existingEnrollments = [];
-    while ($row = $resultDuplicate->fetch_assoc()) {
+    while ($row = $resultDup->fetch_assoc()) {
         $existingEnrollments[] = [
             'section_code' => $row['section_code'],
-            'semester' => ucfirst(strtolower($row['semester'])) // Format semester name
+            'semester' => ucfirst(strtolower($row['semester'])) 
         ];
     }
-    $stmtDuplicate->close();
-
-    // Prepare a detailed error message
+    $stmtDup->close();
     $errorCourses = array_map(function($enrollment) use ($course_code) {
         return "{$course_code} in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']})";
     }, $existingEnrollments);
@@ -96,18 +82,10 @@ if ($resultDuplicate->num_rows > 0) {
     exit();
 }
 
-$stmtDuplicate->close();
-// **End of Duplicate Enrollment Across Semesters Check**
-
-// **Start of Already Enrolled in the Same Section Check**
-// Check if the student is already enrolled in this section
+$stmtDup->close();
 $sqlEnrolled = "SELECT * FROM coursesenrolled WHERE student_id = ? AND section_code = ?";
 $stmtEnrolled = $conn->prepare($sqlEnrolled);
-if (!$stmtEnrolled) {
-    error_log("Query preparation failed for enrollment check: " . $conn->error);
-    echo json_encode(["success" => false, "error" => "Database error while checking enrollment."]);
-    exit();
-}
+
 
 $stmtEnrolled->bind_param("ii", $user_id, $section_code);
 $stmtEnrolled->execute();
@@ -120,13 +98,10 @@ if ($resultEnrolled->num_rows > 0) {
 }
 
 $stmtEnrolled->close();
-// **End of Already Enrolled in the Same Section Check**
 function normalizeCourseCode($code) {
     return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', trim($code)));
 }
-// **Start of Prerequisite Check**
 
-// Fetch prerequisites for the course
 $sqlPrereq = "SELECT UPPER(TRIM(prerequisite_course_code)) AS prerequisite_course_code FROM prerequisiteof WHERE course_code = ?";
 $stmtPrereq = $conn->prepare($sqlPrereq);
 if (!$stmtPrereq) {
@@ -143,18 +118,10 @@ $stmtPrereq->close();
 $prerequisites = array_column($prerequisites, 'prerequisite_course_code');
 error_log("Prerequisites for course {$course_code}: " . implode(', ', $prerequisites));
 
-// Check which prerequisites are missing
 $missingPrereqs = [];
 if (!empty($prerequisites)) {
-    // Fetch completed courses for the student
     $sqlCompleted = "SELECT UPPER(TRIM(course_code)) AS course_code FROM coursescompleted WHERE student_id = ? AND course_code IN ('" . implode("','", $prerequisites) . "')";
     $stmtCompleted = $conn->prepare($sqlCompleted);
-    if (!$stmtCompleted) {
-        error_log("Query preparation failed: " . $conn->error);
-        echo json_encode(["success" => false, "error" => "Database error while checking completed prerequisites."]);
-        exit();
-    }
-
     $stmtCompleted->bind_param("i", $user_id);
     $stmtCompleted->execute();
     $completedCourses = $stmtCompleted->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -162,8 +129,6 @@ if (!empty($prerequisites)) {
 
     $completedCourses = array_column($completedCourses, 'course_code');
     error_log("Completed courses for user {$user_id}: " . implode(', ', $completedCourses));
-
-    // Determine missing prerequisites
     $missingPrereqs = array_diff($prerequisites, $completedCourses);
     if (!empty($missingPrereqs)) {
         error_log("Missing prerequisites for course {$course_code}: " . implode(', ', $missingPrereqs));
@@ -171,50 +136,29 @@ if (!empty($prerequisites)) {
         error_log("All prerequisites completed for course {$course_code}.");
     }
 }
-
-// **End of Prerequisite Check**
-// **Start of Conflict Check**
-/**
- * Function to check if two time intervals overlap
- * Returns true if overlapping, false otherwise
- */
 function timesOverlap($day1, $start1, $end1, $day2, $start2, $end2) {
-    if (strcasecmp($day1, $day2) !== 0) { // Case-insensitive comparison for days
+    if (strcasecmp($day1, $day2) !== 0) { 
         return false;
     }
 
     return ($start1 < $end2) && ($start2 < $end1);
 }
 
-/**
- * Fetch lectures for the new section
- */
-$sqlNewLectures = "SELECT day_of_week, start_time, end_time FROM lectures WHERE section_code = ?";
-$stmtNewLectures = $conn->prepare($sqlNewLectures);
-if (!$stmtNewLectures) {
-    error_log("Query preparation failed for new lectures: " . $conn->error);
-    echo json_encode(["success" => false, "error" => "Database error while fetching lectures for the new course."]);
-    exit();
-}
-
-$stmtNewLectures->bind_param("i", $section_code);
-$stmtNewLectures->execute();
-$resultNewLectures = $stmtNewLectures->get_result();
+$sqlNews = "SELECT day_of_week, start_time, end_time FROM lectures WHERE section_code = ?";
+$stmtNews = $conn->prepare($sqlNews);
+$stmtNews->bind_param("i", $section_code);
+$stmtNews->execute();
+$resultNews = $stmtNews->get_result();
 
 $newLectures = [];
-while ($row = $resultNewLectures->fetch_assoc()) {
+while ($row = $resultNews->fetch_assoc()) {
     $newLectures[] = [
-        'day_of_week' => strtoupper(trim($row['day_of_week'])), // Convert to uppercase and trim
-        'start_time' => $row['start_time'],
+        'day_of_week' => strtoupper(trim($row['day_of_week'])), 'start_time' => $row['start_time'],
         'end_time' => $row['end_time']
     ];
 }
+$stmtNews->close();
 
-$stmtNewLectures->close();
-
-/**
- * Fetch existing enrollments for the student in the same semester
- */
 $sqlExistingEnrollments = "
     SELECT ce.section_code, c.course_code, c.course_name
     FROM coursesenrolled ce
@@ -223,11 +167,6 @@ $sqlExistingEnrollments = "
     WHERE ce.student_id = ? AND LOWER(s.semester) = LOWER(?)
 ";
 $stmtExistingEnrollments = $conn->prepare($sqlExistingEnrollments);
-if (!$stmtExistingEnrollments) {
-    error_log("Query preparation failed for existing enrollments: " . $conn->error);
-    echo json_encode(["success" => false, "error" => "Database error while fetching existing enrollments."]);
-    exit();
-}
 
 $stmtExistingEnrollments->bind_param("is", $user_id, $semesterName);
 $stmtExistingEnrollments->execute();
@@ -236,48 +175,33 @@ $resultExistingEnrollments = $stmtExistingEnrollments->get_result();
 $existingEnrollments = [];
 while ($row = $resultExistingEnrollments->fetch_assoc()) {
     $existingEnrollments[] = [
-        'section_code' => $row['section_code'],
-        'course_code' => strtoupper(trim($row['course_code'])), // Convert to uppercase and trim
+        'section_code' => $row['section_code'],'course_code' => strtoupper(trim($row['course_code'])), 
         'course_name' => $row['course_name']
     ];
 }
 
 $stmtExistingEnrollments->close();
 
-/**
- * Fetch lectures for existing enrollments
- */
 $conflictingCourses = [];
 
 foreach ($existingEnrollments as $enrollment) {
-    $sqlExistingLectures = "SELECT day_of_week, start_time, end_time FROM lectures WHERE section_code = ?";
-    $stmtExistingLectures = $conn->prepare($sqlExistingLectures);
-    if (!$stmtExistingLectures) {
-        error_log("Query preparation failed for existing lectures: " . $conn->error);
-        continue; // Skip this enrollment if there's an error
-    }
+    $sqlExisting = "SELECT day_of_week, start_time, end_time FROM lectures WHERE section_code = ?";
+    $stmtExisting = $conn->prepare($sqlExisting);
 
-    $stmtExistingLectures->bind_param("i", $enrollment['section_code']);
-    $stmtExistingLectures->execute();
-    $resultExistingLectures = $stmtExistingLectures->get_result();
+    $stmtExisting->bind_param("i", $enrollment['section_code']);
+    $stmtExisting->execute();
+    $resultExistingLectures = $stmtExisting->get_result();
 
     while ($row = $resultExistingLectures->fetch_assoc()) {
         $existingLecture = [
-            'day_of_week' => strtoupper(trim($row['day_of_week'])), // Convert to uppercase and trim
-            'start_time' => $row['start_time'],
+            'day_of_week' => strtoupper(trim($row['day_of_week'])), 'start_time' => $row['start_time'],
             'end_time' => $row['end_time']
         ];
-        // Compare with each new lecture
         foreach ($newLectures as $newLecture) {
             if (timesOverlap(
-                $newLecture['day_of_week'],
-                $newLecture['start_time'],
-                $newLecture['end_time'],
-                $existingLecture['day_of_week'],
-                $existingLecture['start_time'],
-                $existingLecture['end_time']
+                $newLecture['day_of_week'], $newLecture['start_time'],$newLecture['end_time'],
+                $existingLecture['day_of_week'],$existingLecture['start_time'],$existingLecture['end_time']
             )) {
-                // Add to conflicting courses if not already added
                 if (!in_array($enrollment['course_code'], array_column($conflictingCourses, 'course_code'))) {
                     $conflictingCourses[] = [
                         'course_code' => $enrollment['course_code'],
@@ -288,71 +212,47 @@ foreach ($existingEnrollments as $enrollment) {
         }
     }
 
-    $stmtExistingLectures->close();
+    $stmtExisting->close();
 }
-
-/**
- * **End of Conflict Check**
- */
-
-// **New Step: Prevent Insertion if Conflicts Exist**
 if (!empty($conflictingCourses)) {
-    // Prepare the response with conflict details
     echo json_encode([
         "success" => false,
         "error" => "Schedule conflict detected with course(s): " . implode(', ', array_map(function($c) {
             return "{$c['course_code']} ({$c['course_name']})";
         }, $conflictingCourses)) . ".",
-        // **Optional Debug Information**
-        //"debug" => [
-        //    "prerequisites" => $prerequisites,
-        //    "completedCourses" => $completedCourses,
-        //    "missingPrereqs" => $missingPrereqs
-        //]
     ]);
     exit();
 }
 
-/**
- * Insert the enrollment
- */
 $sql_insert = "
     INSERT INTO coursesenrolled (student_id, section_code)
     VALUES (?, ?)
 ";
 $stmt_insert = $conn->prepare($sql_insert);
-if (!$stmt_insert) {
-    echo json_encode(['success' => false, 'error' => 'Database query preparation failed: ' . $conn->error]);
-    exit();
-}
+
 $stmt_insert->bind_param("ii", $user_id, $section_code);
 
 if ($stmt_insert->execute()) {
-    // Prepare the response
     $response = [
         "success" => true,
         "message" => "Course added successfully.",
         "inserted" => 1
     ];
 
-    // Add warning if prerequisites are missing
     if (!empty($missingPrereqs)) {
-        // Fetch course names for missing prerequisites for better readability
         $placeholders = implode(',', array_fill(0, count($missingPrereqs), '?'));
         $types_prereq = str_repeat('s', count($missingPrereqs));
         $sqlCourseNames = "SELECT course_name FROM courses WHERE course_code IN ($placeholders)";
         $stmtCourseNames = $conn->prepare($sqlCourseNames);
         if ($stmtCourseNames) {
-            // Dynamically bind parameters using call_user_func_array
             $types_bind_prereq = $types_prereq;
             $bind_course_params = [];
             $bind_course_params[] = $types_prereq;
             foreach ($missingPrereqs as $prereq) {
-                $bind_course_params[] = &$prereq; // Pass by reference
+                $bind_course_params[] = &$prereq; 
             }
 
             call_user_func_array([$stmtCourseNames, 'bind_param'], $bind_course_params);
-
             $stmtCourseNames->execute();
             $resultCourseNames = $stmtCourseNames->get_result();
             $missingCourseNames = [];
@@ -363,7 +263,6 @@ if ($stmt_insert->execute()) {
 
             $response["warning"] = "You have not completed the following prerequisite(s): " . implode(', ', $missingCourseNames) . ".";
         } else {
-            // If fetching course names fails, return the codes
             $response["warning"] = "You have not completed the following prerequisite(s): " . implode(', ', $missingPrereqs) . ".";
         }
     }
