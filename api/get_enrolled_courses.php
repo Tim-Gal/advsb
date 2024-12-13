@@ -27,7 +27,9 @@ if (empty($semesterName)) {
 // Prepare the SQL query to fetch unique enrolled courses by course code
 $sql = "
 SELECT DISTINCT 
-    c.course_code AS code
+    c.course_code AS code,
+    c.course_name AS name,
+    s.professor AS professor
 FROM coursesenrolled ce
 JOIN sections s ON ce.section_code = s.section_code
 JOIN courses c ON s.course_code = c.course_code

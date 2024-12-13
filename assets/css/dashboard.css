@@ -110,3 +110,19 @@
 .toast {
     min-width: 250px;
 }
+
+.course-info {
+    flex: 1;
+    font-size: 0.9em;
+    line-height: 1.3;
+    padding-right: 10px; /* Add some space between text and delete button */
+}
+
+.course-info strong {
+    color: #333;
+}
+
+.course-info small {
+    color: #666;
+    font-size: 0.85em;
+}

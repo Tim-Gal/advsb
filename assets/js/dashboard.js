@@ -77,8 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     offerings.forEach(o => {
                         populateCourseBlock(o.section_code, o.code, o.day_of_week, o.start_time, o.end_time, o.location);
                     });
-                    // Attach delete listeners after populating
-                    attachDeleteListeners();
                 } else {
                     console.error("Error fetching schedule:", offerings.error);
                     showToast("Error fetching schedule: " + offerings.error, 'error');
@@ -132,20 +130,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Populate course information
                 const courseInfo = document.createElement('div');
                 courseInfo.innerHTML = `<strong>${courseCode}</strong> - ${location}<br>`;
-    
-                // Create the delete button
-                const deleteBtn = document.createElement('button');
-                deleteBtn.classList.add('delete-course-btn');
-                deleteBtn.setAttribute('aria-label', 'Remove Course');
-                deleteBtn.innerHTML = '&times;';
-    
+        
                 // Assemble the course block
-                courseBlock.appendChild(deleteBtn);
                 courseBlock.appendChild(courseInfo);
-    
-                // For first block in multi-hour lecture, add the time
-               
-    
+        
                 // Append to the container
                 courseBlockContainer.appendChild(courseBlock);
             }
@@ -431,30 +419,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Function to attach delete event listeners to all delete buttons in the main schedule
-     */
-    function attachDeleteListeners() {
-        const deleteButtons = document.querySelectorAll('.delete-course-btn');
-        deleteButtons.forEach(button => {
-            // To prevent attaching multiple listeners to the same button
-            if (!button.dataset.listenerAttached) {
-                button.addEventListener('click', function (e) {
-                    e.stopPropagation(); // Prevent triggering other click events
-                    const courseBlock = button.closest('.course-block');
-                    const sectionCode = parseInt(courseBlock.getAttribute('data-section-code'), 10);
-                    if (isNaN(sectionCode) || sectionCode <= 0) {
-                        showToast('Invalid section code.', 'error');
-                        return;
-                    }
-                    removeCourseFromSchedule(sectionCode, courseBlock);
-                });
-                // Mark the button as having an attached listener
-                button.dataset.listenerAttached = 'true';
-            }
-        });
-    }
-
-    /**
      * Function to download the schedule as a PDF
      */
     function downloadScheduleAsPDF() {
@@ -532,32 +496,37 @@ document.addEventListener('DOMContentLoaded', function () {
             enrolledCoursesList.innerHTML = '<p>No enrolled courses for this semester.</p>';
             return;
         }
-
+    
         courses.forEach(course => {
             const enrolledCourseDiv = document.createElement('div');
             enrolledCourseDiv.classList.add('enrolled-course');
-
+    
             const courseInfoDiv = document.createElement('div');
             courseInfoDiv.classList.add('course-info');
-            courseInfoDiv.textContent = `${course.code}`; // Display only course code
-
+            // Display code, name, and professor
+            courseInfoDiv.innerHTML = `
+                <strong>${course.code}</strong><br>
+                ${course.name}<br>
+                <small>Prof. ${course.professor}</small>
+            `;
+    
             const deleteBtn = document.createElement('button');
             deleteBtn.classList.add('delete-enrolled-course-btn');
             deleteBtn.setAttribute('aria-label', 'Remove Enrolled Course');
             deleteBtn.innerHTML = '&times;';
-
+    
             // Attach delete event
             deleteBtn.addEventListener('click', function () {
                 removeEnrolledCourse(course.code, enrolledCourseDiv);
             });
-
+    
             enrolledCourseDiv.appendChild(courseInfoDiv);
             enrolledCourseDiv.appendChild(deleteBtn);
-
+    
             enrolledCoursesList.appendChild(enrolledCourseDiv);
         });
     }
-
+    
     /**
      * Initial function calls
      */
