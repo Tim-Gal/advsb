@@ -1,13 +1,12 @@
-<?php
-// public/api/get_unique_enrolled_courses.php
-
+<?php 
 include '../includes/config.php';
 include '../includes/functions.php';
 
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json');
 
-// Verify user authentication
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
     echo json_encode(["error" => "Not logged in"]);
@@ -15,16 +14,17 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-
-// Get the semester parameter, default to 'Fall'
-$semesterName = trim($_GET['semester'] ?? 'Fall'); 
+if (isset($_GET['semester']) && $_GET['semester'] !== null) {
+    $semesterName = trim($_GET['semester']);
+} else {
+    $semesterName = 'Fall';
+}
 
 if (empty($semesterName)) {
     echo json_encode(["error" => "Semester parameter is required."]);
     exit();
 }
 
-// Prepare the SQL query to fetch unique enrolled courses by course code
 $sql = "
 SELECT DISTINCT 
     c.course_code AS code,
@@ -38,17 +38,12 @@ WHERE ce.student_id = ?
 ";
 
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    error_log("Query preparation failed: " . $conn->error);
-    echo json_encode(["error" => "Database error while fetching enrolled courses."]);
-    exit();
-}
+
 
 $stmt->bind_param("is", $user_id, $semesterName);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Fetch the enrolled courses
 $enrolledCourses = [];
 while ($row = $result->fetch_assoc()) {
     $enrolledCourses[] = $row;
@@ -56,6 +51,5 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 
-// Return the enrolled courses as JSON
 echo json_encode($enrolledCourses);
 ?>

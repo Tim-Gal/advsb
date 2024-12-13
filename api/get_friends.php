@@ -14,7 +14,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+
 $user_id = $_SESSION['user_id'];
+
+
 
 $sql = "
     SELECT u.student_id, u.username, u.email
@@ -24,10 +27,6 @@ $sql = "
         (fw.student_id2 = u.student_id AND fw.student_id1 = ?)
 ";
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
 
 $stmt->bind_param("ii", $user_id, $user_id);
 $stmt->execute();
