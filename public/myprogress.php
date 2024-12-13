@@ -21,8 +21,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Continue with fetching data after handling form submission
-
 // Fetch student's major and minor IDs
 $sql_degrees = "SELECT major_id, minor_id FROM students WHERE student_id = ?";
 $stmt_degrees = $conn->prepare($sql_degrees);
@@ -192,8 +190,16 @@ foreach ($degrees as $index => $degree_id) {
         }
     }
 }
-?>
 
+// Display messages from session
+$add_course_error = $_SESSION['add_course_error'] ?? '';
+$add_course_success = $_SESSION['add_course_success'] ?? '';
+$remove_course_error = $_SESSION['remove_course_error'] ?? '';
+$remove_course_success = $_SESSION['remove_course_success'] ?? '';
+unset($_SESSION['add_course_error'], $_SESSION['add_course_success'], $_SESSION['remove_course_error'], $_SESSION['remove_course_success']);
+
+?>
+    
 <!-- Pass PHP data to JavaScript -->
 <script>
     const degreeProgressData = <?php echo json_encode($degree_progress); ?>;
@@ -228,15 +234,23 @@ foreach ($degrees as $index => $degree_id) {
                 <div class="card-body">
                     <?php
                         // Display error message from backend
-                        if (isset($_SESSION['add_course_error'])) {
-                            echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['add_course_error']) . '</div>';
-                            unset($_SESSION['add_course_error']);
+                        if (!empty($add_course_error)) {
+                            echo '<div class="alert alert-danger">' . htmlspecialchars($add_course_error) . '</div>';
                         }
 
                         // Display success message from backend
-                        if (isset($_SESSION['add_course_success'])) {
-                            echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['add_course_success']) . '</div>';
-                            unset($_SESSION['add_course_success']);
+                        if (!empty($add_course_success)) {
+                            echo '<div class="alert alert-success">' . htmlspecialchars($add_course_success) . '</div>';
+                        }
+
+                        // Display error message for removal
+                        if (!empty($remove_course_error)) {
+                            echo '<div class="alert alert-danger">' . htmlspecialchars($remove_course_error) . '</div>';
+                        }
+
+                        // Display success message for removal
+                        if (!empty($remove_course_success)) {
+                            echo '<div class="alert alert-success">' . htmlspecialchars($remove_course_success) . '</div>';
                         }
                     ?>
                     <form action="../api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">
@@ -373,22 +387,22 @@ foreach ($degrees as $index => $degree_id) {
 <!-- Chart Initialization Script -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        <?php foreach ($degrees as $index => $degree_id): ?>
-            const ctx_<?php echo $degree_id; ?> = document.getElementById('progressChart_<?php echo $degree_id; ?>').getContext('2d');
-            const completed_<?php echo $degree_id; ?> = <?php echo $degree_progress[$degree_id]['completed_count']; ?>;
-            const total_<?php echo $degree_id; ?> = <?php echo $degree_progress[$degree_id]['total_required']; ?>;
-            const progress_<?php echo $degree_id; ?> = <?php echo $degree_progress[$degree_id]['progress']; ?>;
+        for (const [degree_id, degree] of Object.entries(degreeProgressData)) {
+            const ctx = document.getElementById(`progressChart_${degree_id}`).getContext('2d');
+            const completed = degree.completed_count;
+            const total = degree.total_required;
+            const progress = degree.progress;
 
-            const data_<?php echo $degree_id; ?> = {
+            const data = {
                 labels: ['Completed', 'Remaining'],
                 datasets: [{
-                    data: [completed_<?php echo $degree_id; ?>, total_<?php echo $degree_id; ?> - completed_<?php echo $degree_id; ?>],
+                    data: [completed, total - completed],
                     backgroundColor: ['#4caf50', '#e0e0e0'],
                     borderWidth: 0
                 }]
             };
 
-            const options_<?php echo $degree_id; ?> = {
+            const options = {
                 cutout: '70%',
                 rotation: -90,
                 circumference: 180,
@@ -409,7 +423,7 @@ foreach ($degrees as $index => $degree_id) {
                         ctx.font = fontSize + "em sans-serif";
                         ctx.textBaseline = "middle";
 
-                        const text = "<?php echo $degree_progress[$degree_id]['progress']; ?>%",
+                        const text = `${progress}%`,
                               textX = Math.round((width - ctx.measureText(text).width) / 2),
                               textY = height / 1.5;
 
@@ -419,12 +433,12 @@ foreach ($degrees as $index => $degree_id) {
                 }
             };
 
-            const progressChart_<?php echo $degree_id; ?> = new Chart(ctx_<?php echo $degree_id; ?>, {
+            new Chart(ctx, {
                 type: 'doughnut',
-                data: data_<?php echo $degree_id; ?>,
-                options: options_<?php echo $degree_id; ?>
+                data: data,
+                options: options
             });
-        <?php endforeach; ?>
+        }
     });
 </script>
 
@@ -457,7 +471,7 @@ foreach ($degrees as $index => $degree_id) {
                     }
                     // Create DIV elements for each matching course
                     data.forEach(course => {
-                        b = document.createElement("DIV");
+                        let b = document.createElement("DIV");
                         // Highlight the matching part
                         const regex = new RegExp("(" + val + ")", "gi");
                         const courseCode = course.course_code.replace(regex, "<strong>$1</strong>");

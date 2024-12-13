@@ -14,25 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch user's verification status
-$sql_verification = "SELECT is_verified FROM students WHERE student_id = ?";
-$stmt_verification = $conn->prepare($sql_verification);
-if (!$stmt_verification) {
-    $_SESSION['add_course_error'] = "Database error: " . $conn->error;
-    header("Location: ../public/myprogress.php");
-    exit();
-}
-$stmt_verification->bind_param("i", $user_id);
-$stmt_verification->execute();
-$stmt_verification->bind_result($is_verified);
-$stmt_verification->fetch();
-$stmt_verification->close();
 
-if ($is_verified != 1) {
-    $_SESSION['add_course_error'] = "Your account is not verified. Please verify your account before removing completed courses.";
-    header("Location: ../public/myprogress.php");
-    exit();
-}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $course_code = strtoupper(sanitizeInput($_POST['course_code']));
