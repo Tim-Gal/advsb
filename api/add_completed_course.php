@@ -1,32 +1,24 @@
 <?php
-// add_completed_course.php
 
 session_start();
 include '../includes/config.php';
 include '../includes/functions.php';
 
-// Ensure the user is logged in and verified
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['add_course_error'] = "You must be logged in to add completed courses.";
     header("Location: ../public/login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
 
-// Fetch user's verification status
-$sql_verification = "SELECT is_verified FROM students WHERE student_id = ?";
-$stmt_verification = $conn->prepare($sql_verification);
-if (!$stmt_verification) {
-    $_SESSION['add_course_error'] = "Database error: " . $conn->error;
-    header("Location: ../public/myprogress.php");
-    exit();
-}
-$stmt_verification->bind_param("i", $user_id);
-$stmt_verification->execute();
-$stmt_verification->bind_result($is_verified);
-$stmt_verification->fetch();
-$stmt_verification->close();
+$sql_verif = "SELECT is_verified FROM students WHERE student_id = ?";
+$stmt_verif = $conn->prepare($sql_verif);
+
+$stmt_verif->bind_param("i", $user_id);
+$stmt_verif->execute();
+$stmt_verif->bind_result($is_verified);
+$stmt_verif->fetch();
+$stmt_verif->close();
 
 if ($is_verified != 1) {
     $_SESSION['add_course_error'] = "Your account is not verified. Please verify your account before adding completed courses.";
@@ -37,14 +29,12 @@ if ($is_verified != 1) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $course_code = strtoupper(sanitizeInput($_POST['course_code']));
 
-    // Validate course code format (e.g., CS101)
     if (!preg_match('/^[A-Z]{2,4}-\d{3}$/', $course_code)) {
         $_SESSION['add_course_error'] = "Invalid course code format. Please enter a valid course code (e.g., COMP-101).";
         header("Location: ../public/myprogress.php");
         exit();
     }
 
-    // Check if the course exists
     $stmt_course = $conn->prepare("SELECT course_code FROM courses WHERE course_code = ?");
     if (!$stmt_course) {
         $_SESSION['add_course_error'] = "Database error: " . $conn->error;
@@ -64,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $stmt_course->close();
 
-    // Check if the course is already marked as completed
     $stmt_duplicate = $conn->prepare("SELECT course_code FROM coursescompleted WHERE student_id = ? AND course_code = ?");
     if (!$stmt_duplicate) {
         $_SESSION['add_course_error'] = "Database error: " . $conn->error;
@@ -84,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $stmt_duplicate->close();
 
-    // Insert the completed course
     $stmt_insert = $conn->prepare("INSERT INTO coursescompleted (student_id, course_code) VALUES (?, ?)");
     if (!$stmt_insert) {
         $_SESSION['add_course_error'] = "Database error: " . $conn->error;

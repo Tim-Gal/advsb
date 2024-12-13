@@ -3,9 +3,11 @@
 include '../includes/header.php'; 
 
 $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-
 $startHour = 8;  
-$endHour = 18;   
+$endHour = 18;
+
+
+
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');

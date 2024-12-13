@@ -8,19 +8,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($verification_code)) {
         $_SESSION['error'] = "Please enter the verification code.";
-        header("Location: egister.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
     if (!preg_match('/^\d{6}$/', $verification_code)) {
         $_SESSION['error'] = "Invalid verification code format. Please enter a 6-digit code.";
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
+
+    // Check the verification code against the students table
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE verification_code = ? AND is_verified = 0 LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
@@ -32,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Invalid or expired verification code.";
         $stmt->close();
         $conn->close();
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
@@ -44,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_update = $conn->prepare("UPDATE students SET is_verified = 1, verification_code = NULL WHERE student_id = ?");
     if (!$stmt_update) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: register.php");
+        header("Location: ../public/register.php");
         exit();
     }
 
@@ -57,10 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_update->close();
     $conn->close();
 
-    header("Location: dashboard.php");
+    header("Location: ../public/login.php");
     exit();
 } else {
-    header("Location: register.php");
+    header("Location: ../public/register.php");
     exit();
 }
 ?>

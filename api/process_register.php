@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Prepare the verification email
     $subject = "Verify Your Advanced Schedule Builder Account";
     $verification_message = "Hello $username,\n\nYour verification code is: $verification_code\n\nPlease enter this 6-digit code on the verification page to activate your account.\n\nIf you did not request this, please ignore this email.";
-    $headers = "From: noreply@yourdomain.com\r\n"; // Update to a valid sender email
+    $headers = "From: noreply@advsb.com\r\n"; 
 
     // Send verification email
     $mail_sent = mail($email, $subject, $verification_message, $headers);

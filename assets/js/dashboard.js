@@ -1,4 +1,3 @@
-/* assets/js/dashboard.js */
 
 document.addEventListener('DOMContentLoaded', function () {
     const semesterRadios = document.querySelectorAll('input[name="semester"]');
@@ -8,21 +7,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedCourseText = document.getElementById('selectedCourseText');
     const removeSelectedCourse = document.getElementById('removeSelectedCourse');
     const confirmAddCourseButton = document.getElementById('confirmAddCourse');
-    const downloadPdfButton = document.getElementById('downloadPdfButton'); // PDF Download Button
+    const downloadPdfButton = document.getElementById('downloadPdfButton'); 
     const sidebarSemesterSelect = document.getElementById('sidebarSemesterSelect');
     const enrolledCoursesList = document.getElementById('enrolledCoursesList');
     const enrolledCoursesLoading = document.getElementById('enrolledCoursesLoading');
     const csrfToken = document.getElementById('csrfToken').value;
 
-    let selectedSemester = 'Fall'; // Default semester
+    let selectedSemester = 'Fall'; 
     let searchTimeout = null;
-    let selectedCourse = null; // To store the selected course object
+    let selectedCourse = null; 
 
-    /**
-     * Function to display a Bootstrap Toast notification
-     * @param {string} message - The message to display in the toast
-     * @param {string} type - The type of toast ('success', 'error', 'warning', 'info')
-     */
     function showToast(message, type = 'success') {
         const toastElement = document.getElementById('notificationToast');
         const toastBody = document.getElementById('toastBody');
@@ -32,10 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Remove existing background classes
         toastElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary');
-
-        // Assign new background class based on type
         switch (type) {
             case 'success':
                 toastElement.classList.add('bg-success');

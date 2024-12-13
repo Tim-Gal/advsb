@@ -22,10 +22,6 @@ if (empty($requester_id)) {
 
 $sql = "SELECT id, status FROM friendrequests WHERE sender_id = ? AND receiver_id = ? AND status = 'pending'";
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
 
 $stmt->bind_param("ii", $requester_id, $user_id);
 $stmt->execute();
@@ -38,10 +34,7 @@ if ($result->num_rows === 0) {
 }
 $sql_delete = "DELETE FROM friendrequests WHERE sender_id = ? AND receiver_id = ? AND status = 'pending'";
 $stmt_delete = $conn->prepare($sql_delete);
-if (!$stmt_delete) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
+
 $stmt_delete->bind_param("ii", $requester_id, $user_id);
 
 if (!$stmt_delete->execute()) {
@@ -57,20 +50,13 @@ $friendship_id = $friendship['id'];
 $stmt->close();
 $sql = "UPDATE friendrequests SET status = 'accepted' WHERE id = ?";
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
+
 
 $stmt->bind_param("i", $friendship_id);
 
 if ($stmt->execute()) {
     $sql_insert = "INSERT INTO friendswith (student_id1, student_id2) VALUES (?, ?)";
     $stmt_insert = $conn->prepare($sql_insert);
-    if (!$stmt_insert) {
-        echo json_encode(['error' => 'Database error: ' . $conn->error]);
-        exit();
-    }
 
     $stmt_insert->bind_param("ii", $requester_id, $user_id);
     if ($stmt_insert->execute()) {
