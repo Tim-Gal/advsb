@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedSemester = 'Fall'; 
     let searchTimeout = null;
     let selectedCourse = null; 
-    function showToast(message, type = 'success') {
+    function displayToast(message, type = 'success') {
         const toastElement = document.getElementById('notificationToast');
         const toastBody = document.getElementById('toastBody');
 
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.show();
     }
 
-    function loadUserSchedule() {
+    function loadUsrSched() {
         fetch(`../api/get_user_schedule.php?semester=${encodeURIComponent(selectedSemester)}`)
             .then(response => {
                 if (!response.ok) {
@@ -54,28 +54,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(offerings => {
-                clearScheduleTable();
+                clrSchedTable();
                 if (!offerings.error) {
                     offerings.forEach(o => {
-                        populateCourseBlock(o.section_code, o.code, o.day_of_week, o.start_time, o.end_time, o.location);
+                        populCourseBlock(o.section_code, o.code, o.day_of_week, o.start_time, o.end_time, o.location);
                     });
                 } else {
                     console.error("Error fetching schedule:", offerings.error);
-                    showToast("Error fetching schedule: " + offerings.error, 'error');
+                    displayToast("Error fetching schedule: " + offerings.error, 'error');
                 }
             })
             .catch(err => {
                 console.error('Error loading user schedule:', err);
-                showToast('Error loading your schedule. Please try again.', 'error');
+                displayToast('Error loading your schedule. Please try again.', 'error');
             });
     }
 
-    function clearScheduleTable() {
+    function clrSchedTable() {
         document.querySelectorAll('.course-block').forEach(block => block.remove());
     }
 
   
-    function populateCourseBlock(sectionCode, courseCode, day, startTime, endTime, location) {
+    function populCourseBlock(sectionCode, courseCode, day, startTime, endTime, location) {
         const startHour = parseInt(startTime.split(':')[0], 10);
         const endHour = parseInt(endTime.split(':')[0], 10);
         const duration = endHour - startHour;
@@ -105,10 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             selectedSemester = radio.value;
-            loadUserSchedule();
+            loadUsrSched();
             loadEnrolledCourses();
             if (selectedCourse) {
-                rmSelected();
+                deleteSelected();
             }
         });
     });
@@ -123,14 +123,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         searchSuggestions.innerHTML = '';
                         if (data.success && data.courses.length > 0) {
-                            displayCourseSuggestions(data.courses);
+                            showCourseSuggestions(data.courses);
                         } else {
-                            displayNoSuggestions(data.error || 'No courses found.');
+                            showNoSuggestions(data.error || 'No courses found.');
                         }
                     })
                     .catch(error => {
                         console.error('Error fetching courses:', error);
-                        displayNoSuggestions('Error fetching courses. Please try again.');
+                        showNoSuggestions('Error fetching courses. Please try again.');
                     });
             }, 300);
         } else {
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function displayCourseSuggestions(courses) {
+    function showCourseSuggestions(courses) {
         searchSuggestions.innerHTML = '';
         courses.forEach(course => {
             const suggestionItem = document.createElement('button');
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
             suggestionItem.textContent = `${course.code} - ${course.name}`;
             suggestionItem.setAttribute('data-section-code', course.section_code); 
             suggestionItem.addEventListener('click', () => {
-                selectCourse(course);
+                chooseCourse(course);
             });
             searchSuggestions.appendChild(suggestionItem);
         });
@@ -156,12 +156,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    function displayNoSuggestions(message) {
+    function showNoSuggestions(message) {
         searchSuggestions.innerHTML = `<div class="list-group-item list-group-item-action disabled">${message}</div>`;
         searchSuggestions.style.display = 'block';
     }
 
-    function selectCourse(course) {
+    function chooseCourse(course) {
         selectedCourse = {
             code: course.code,
             section_code: course.section_code,
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchSuggestions.style.display = 'none';
     }
   
-    function rmSelected() {
+    function deleteSelected() {
         selectedCourse = null;
         selectedCourseText.textContent = '';
         selectedCourseContainer.style.display = 'none';
@@ -193,14 +193,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     removeSelectedCourse.addEventListener('click', function () {
-        rmSelected();
-        showToast('Selected course removed.', 'info');
+        deleteSelected();
+        displayToast('Selected course removed.', 'info');
     });
 
   
     confirmAddCourseButton.addEventListener('click', function () {
         if (!selectedCourse || !selectedCourse.section_code) {
-            showToast('No course selected to add.', 'warning');
+            displayToast('No course selected to add.', 'warning');
             return;
         }
 
@@ -232,16 +232,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if (data.success) {
-                    showToast(`Course ${selectedCourse.code} added successfully!`, 'success');
-                    loadUserSchedule();
+                    displayToast(`Course ${selectedCourse.code} added successfully!`, 'success');
+                    loadUsrSched();
                     loadEnrolledCourses(); 
-                    rmSelected();
+                    deleteSelected();
             
                     if (data.warning) {
-                        showToast(data.warning, 'warning');
+                        displayToast(data.warning, 'warning');
                     }
                 } else {
-                    showToast(data.error || 'Failed to add course.', 'error');
+                    displayToast(data.error || 'Failed to add course.', 'error');
                 }
             })
             
@@ -253,12 +253,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 console.error('Error adding course:', err);
-                showToast('Error adding course. Please try again.', 'error');
+                displayToast('Error adding course. Please try again.', 'error');
             });
     });
 
  
-    function removeEnrolledCourse(courseCode, enrolledCourseElement) {
+    function rmEnrolledCourse(courseCode, enrolledCourseElement) {
         if (!confirm('Are you sure you want to remove this course from your enrolled list?')) {
             return;
         }
@@ -280,16 +280,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     enrolledCourseElement.addEventListener('animationend', function () {
                         enrolledCourseElement.remove();
                     });
-                    showToast('Course removed successfully.', 'success');
-                    loadUserSchedule();
+                    displayToast('Course removed successfully.', 'success');
+                    loadUsrSched();
                     loadEnrolledCourses();
                 } else {
-                    showToast(data.error || 'Failed to remove the course.', 'error');
+                    displayToast(data.error || 'Failed to remove the course.', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error deleting course:', error);
-                showToast('An error occurred while removing the course. Please try again.', 'error');
+                displayToast('An error occurred while removing the course. Please try again.', 'error');
             });
     }
 
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function downloadPDF() {
         const scheduleTable = document.getElementById('scheduleTable');
         if (!scheduleTable) {
-            showToast('Schedule table not found.', 'error');
+            displayToast('Schedule table not found.', 'error');
             return;
         }
 
@@ -323,10 +323,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             pdf.save('my_schedule.pdf');
-            showToast('Schedule downloaded as PDF.', 'success');
+            displayToast('Schedule downloaded as PDF.', 'success');
         }).catch(err => {
             console.error('Error generating PDF:', err);
-            showToast('Failed to generate PDF. Please try again.', 'error');
+            displayToast('Failed to generate PDF. Please try again.', 'error');
         });
     }
 
@@ -344,17 +344,17 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(courses => {
                 enrolledCoursesLoading.style.display = 'none';
-                displayEnrolledCourses(courses);
+                showEnrolledCourses(courses);
             })
             .catch(err => {
                 enrolledCoursesLoading.style.display = 'none';
                 console.error('Error fetching enrolled courses:', err);
-                showToast('Error fetching enrolled courses. Please try again.', 'error');
+                displayToast('Error fetching enrolled courses. Please try again.', 'error');
             });
     }
 
     
-    function displayEnrolledCourses(courses) {
+    function showEnrolledCourses(courses) {
         enrolledCoursesList.innerHTML = '';
         if (courses.length === 0) {
             enrolledCoursesList.innerHTML = '<p>No enrolled courses for this semester.</p>';
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteBtn.setAttribute('aria-label', 'Remove Enrolled Course');
             deleteBtn.innerHTML = '&times;';
             deleteBtn.addEventListener('click', function () {
-                removeEnrolledCourse(course.code, enrolledCourseDiv);
+                rmEnrolledCourse(course.code, enrolledCourseDiv);
             });
     
             enrolledCourseDiv.appendChild(courseInfoDiv);
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
    
-    loadUserSchedule();
+    loadUsrSched();
     loadEnrolledCourses();
     const style = document.createElement('style');
     style.innerHTML = `

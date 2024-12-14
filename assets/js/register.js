@@ -1,5 +1,3 @@
-// assets/js/register.js
-
 document.addEventListener('DOMContentLoaded', function () {
     const registrationForm = document.querySelector('.register-form');
 
@@ -11,28 +9,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const requiredDomain = '@mail.mcgill.ca';
 
-        // Username validation (e.g., length, allowed characters)
+        // username validation (e.g. length, allowed characters)
         if (username.length < 3) {
             e.preventDefault();
             alert('Username must be at least 3 characters long.');
             return;
         }
 
-        // Email domain validation
+        // email domain validation
         if (!email.endsWith(requiredDomain)) {
             e.preventDefault();
             alert('Email must end with ' + requiredDomain);
             return;
         }
 
-        // Password strength validation
+        // password strength validation
         if (password.length < 8) {
             e.preventDefault();
             alert('Password must be at least 8 characters long.');
             return;
         }
 
-        // Password match validation
+        // password match validation
         if (password !== confirmPassword) {
             e.preventDefault();
             alert('Passwords do not match.');
