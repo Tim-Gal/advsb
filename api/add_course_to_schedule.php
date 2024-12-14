@@ -70,10 +70,10 @@ if ($resultDup->num_rows > 0) {
     }
     $stmtDup->close();
     $errorCourses = array_map(function($enrollment) use ($course_code) {
-        return "{$course_code} in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']})";
+        return " {$enrollment['semester']}";
     }, $existingEnrollments);
 
-    $errorMessage = "You are already enrolled in {$course_code} in the following semester(s): " . implode(', ', $errorCourses) . ". Please remove the existing enrollment before adding it to another semester.";
+    $errorMessage = "You are already enrolled in {$course_code} in the"  . implode(', ', $errorCourses) . " semester. Please remove the existing enrollment before adding it to another semester.";
 
     echo json_encode([
         "success" => false,

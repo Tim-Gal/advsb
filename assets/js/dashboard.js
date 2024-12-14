@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let selectedSemester = 'Fall'; 
     let searchTimeout = null;
-    let selectedCourse = null; 
-
+    let selectedCourse = null;
+    let currentTimeout = null;
+    let isNotificationVisible = false;
+    
 
     function loadUsrSched() {
         fetch(`../api/get_user_schedule.php?semester=${encodeURIComponent(selectedSemester)}`)
@@ -369,37 +371,78 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function displayNotification(message, type = 'success') {
+        // Clear any existing timeout
+        if (currentTimeout) {
+            clearTimeout(currentTimeout);
+            currentTimeout = null;
+        }
+    
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
         const notificationClose = document.getElementById('notificationClose');
     
-        notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
-        
-        notification.classList.add(type);
-        notification.classList.add('show');
-        
-        notificationText.textContent = message;
+        // If a hide animation is in progress, wait for it to complete
+        if (notification.classList.contains('hide')) {
+            notification.addEventListener('animationend', function handler() {
+                notification.removeEventListener('animationend', handler);
+                showNewNotification();
+            }, { once: true });
+        } else {
+            showNewNotification();
+        }
     
-        const hideTimeout = setTimeout(() => {
-            hideNotification();
-        }, 5000);
+        function showNewNotification() {
+            // Remove all existing classes
+            notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
+            
+            // Add the appropriate type class and show class
+            notification.classList.add(type);
+            notification.classList.add('show');
+            
+            // Set the message
+            notificationText.textContent = message;
     
+            // Set new timeout
+            currentTimeout = setTimeout(() => {
+                hideNotification();
+            }, 5000);
+    
+            // Update visibility flag
+            isNotificationVisible = true;
+        }
+    
+        // Close button handler
         notificationClose.onclick = () => {
-            clearTimeout(hideTimeout);
+            if (currentTimeout) {
+                clearTimeout(currentTimeout);
+                currentTimeout = null;
+            }
             hideNotification();
         };
     }
     
-
     function hideNotification() {
         const notification = document.getElementById('notification');
-        notification.classList.add('hide');
         
-        notification.addEventListener('animationend', function() {
+        // Only proceed if notification is actually visible
+        if (!isNotificationVisible) return;
+    
+        notification.classList.add('hide');
+        isNotificationVisible = false;
+        
+        // Clear any existing timeout
+        if (currentTimeout) {
+            clearTimeout(currentTimeout);
+            currentTimeout = null;
+        }
+    
+        // Remove classes after animation completes
+        notification.addEventListener('animationend', function handler() {
+            notification.removeEventListener('animationend', handler);
             notification.classList.remove('show', 'hide');
         }, { once: true });
     }
-        
+            
    
     loadUsrSched();
     loadEnrolledCourses();
