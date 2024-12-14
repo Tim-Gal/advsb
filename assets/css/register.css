@@ -98,3 +98,7 @@ body {
 .mt-3 {
     margin-top: 15px;
 }
+
+.verify-btn {
+    width: 300px;
+}
