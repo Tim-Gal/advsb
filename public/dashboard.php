@@ -130,11 +130,10 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body" id="toastBody"></div>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div id="notificationContainer" class="notification-container">
+        <div id="notification" class="notification">
+            <span id="notificationText"></span>
+            <button id="notificationClose" class="notification-close">&times;</button>
         </div>
     </div>
 

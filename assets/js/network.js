@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const sendFriendInput = document.getElementById('sendFriendInput');
     const sendFriendButton = document.getElementById('sendFriendButton');
     const sendFriendFeedback = document.getElementById('sendFriendFeedback');
-    const notificationToast = new bootstrap.Toast(document.getElementById('notificationToast'));
-    const toastBody = document.getElementById('toastBody');
 
     const viewScheduleModal = new bootstrap.Modal(document.getElementById('viewScheduleModal'), {
         keyboard: false
@@ -13,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const friendSemesterSelect = document.getElementById('friendSemesterSelect');
     const friendScheduleList = document.getElementById('friendScheduleList');
 
-    // Confirmation Modal Elements
     const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'), {
         keyboard: false
     });
@@ -25,41 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedFriendData = {}; // store data related to the action
     let selectedFriendId = null; // store the ID of the friend whose schedule is being viewed
 
-    // message param must be a string
-    // @param {string} type - 'success', 'error', 'warning', 'info'
      
-    function displayToastNotifications(message, type = 'primary') {
-        const toastElement = document.getElementById('notificationToast');
-        const toastBody = document.getElementById('toastBody');
-
-        // Remove existing bg classes
-        toastElement.classList.remove('bg-primary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info');
-
-        // Add new bg class based on type
-        switch (type) {
-            case 'success':
-                toastElement.classList.add('bg-success');
-                break;
-            case 'error':
-                toastElement.classList.add('bg-danger');
-                break;
-            case 'warning':
-                toastElement.classList.add('bg-warning');
-                break;
-            case 'info':
-                toastElement.classList.add('bg-info');
-                break;
-            default:
-                toastElement.classList.add('bg-primary');
-        }
-
-        // Set the message
-        toastBody.textContent = message;
-
-        // Show the toast
-        notificationToast.show();
-    }
-
     function getFriendsAndRequests() {
         fetch('../api/get_friends.php') // Ensure this path is correct
             .then(response => response.json())
@@ -69,14 +32,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     populatePendingFriendsList(data.pending_received);
                     // Optionally, handle pending_sent if you want to display sent requests
                 } else {
-                    displayToastNotifications(data.error || 'Failed to fetch friends.', 'error');
+                    displayNotification(data.error || 'Failed to fetch friends.', 'error');
                 }
             })
             .catch(err => {
                 console.error('Error fetching friends:', err);
-                displayToastNotifications('Error fetching friends. Please try again.', 'error');
+                displayNotification('Error fetching friends. Please try again.', 'error');
             });
     }
+
 
     // takes array as input parameter
     function populateFriendsList(friends) {
@@ -168,14 +132,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const receiverUsername = sendFriendInput.value.trim();
 
         if (receiverUsername === '') {
-            displayToastNotifications('Please enter an email to send a friend request.', 'warning');
+            displayNotification('Please enter an email to send a friend request.', 'warning');
             return;
         }
 
         // simple email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(receiverUsername)) {
-            displayToastNotifications('Please enter a valid email address.', 'warning');
+            displayNotification('Please enter a valid email address.', 'warning');
             return;
         }
 
@@ -193,16 +157,16 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    displayToastNotifications(data.message, 'success');
+                    displayNotification(data.message, 'success');
                     sendFriendInput.value = '';
                     getFriendsAndRequests();
                 } else {
-                    displayToastNotifications(data.error || 'Failed to send friend request.', 'error');
+                    displayNotification(data.error || 'Failed to send friend request.', 'error');
                 }
             })
             .catch(err => {
                 console.error('Error sending friend request:', err);
-                displayToastNotifications('Error sending friend request. Please try again.', 'error');
+                displayNotification('Error sending friend request. Please try again.', 'error');
             })
             .finally(() => {
                 sendFriendButton.disabled = false;
@@ -221,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const semester = friendSemesterSelect.value;
         console.log(`Selected Semester: ${semester}`);
         if (semester === '') {
-            displayToastNotifications('Please select a semester to view the schedule.', 'warning');
+            displayNotification('Please select a semester to view the schedule.', 'warning');
             return;
         }
 
@@ -239,13 +203,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     populateFriendSchedule(data.schedule);
                 } else {
-                    displayToastNotifications(data.error || 'Failed to fetch friend\'s schedule.', 'error');
+                    displayNotification(data.error || 'Failed to fetch friend\'s schedule.', 'error');
                     friendScheduleList.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to fetch schedule.'}</div>`;
                 }
             })
             .catch(err => {
                 console.error('Error fetching friend\'s schedule:', err);
-                displayToastNotifications('Error fetching friend\'s schedule. Please try again.', 'error');
+                displayNotification('Error fetching friend\'s schedule. Please try again.', 'error');
                 friendScheduleList.innerHTML = '<div class="alert alert-danger">An error occurred while fetching the schedule.</div>';
             })
             .finally(() => {
@@ -310,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // event listener in confirmation modal
     confirmActionButton.addEventListener('click', function () {
         if (!selectedAction || !selectedFriendData.id) {
-            displayToastNotifications('No action selected.', 'error');
+            displayNotification('No action selected.', 'error');
             confirmationModal.hide();
             return;
         }
@@ -329,15 +293,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        displayToastNotifications(data.message, 'success');
+                        displayNotification(data.message, 'success');
                         getFriendsAndRequests();
                     } else {
-                        displayToastNotifications(data.error || 'Failed to remove friend.', 'error');
+                        displayNotification(data.error || 'Failed to remove friend.', 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Error removing friend:', err);
-                    displayToastNotifications('Error removing friend. Please try again.', 'error');
+                    displayNotification('Error removing friend. Please try again.', 'error');
                 })
                 .finally(() => {
                     selectedAction = null;
@@ -359,15 +323,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        displayToastNotifications(data.message, 'success');
+                        displayNotification(data.message, 'success');
                         getFriendsAndRequests();
                     } else {
-                        displayToastNotifications(data.error || 'Failed to accept friend request.', 'error');
+                        displayNotification(data.error || 'Failed to accept friend request.', 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Error accepting friend request:', err);
-                    displayToastNotifications('Error accepting friend request. Please try again.', 'error');
+                    displayNotification('Error accepting friend request. Please try again.', 'error');
                 })
                 .finally(() => {
                     selectedAction = null;
@@ -375,10 +339,44 @@ document.addEventListener('DOMContentLoaded', function () {
                     confirmationModal.hide();
                 });
         } else {
-            displayToastNotifications('Unknown action.', 'error');
+            displayNotification('Unknown action.', 'error');
             confirmationModal.hide();
         }
     });
+
+
+    function displayNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const notificationClose = document.getElementById('notificationClose');
+    
+        notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
+        
+        notification.classList.add(type);
+        notification.classList.add('show');
+        
+        notificationText.textContent = message;
+    
+        const hideTimeout = setTimeout(() => {
+            hideNotification();
+        }, 5000);
+    
+        notificationClose.onclick = () => {
+            clearTimeout(hideTimeout);
+            hideNotification();
+        };
+    }
+    
+    function hideNotification() {
+        const notification = document.getElementById('notification');
+        notification.classList.add('hide');
+        
+        // Remove the notification from DOM after animation
+        notification.addEventListener('animationend', function() {
+            notification.classList.remove('show', 'hide');
+        }, { once: true });
+    }
+    
 
     // initial fetch of friends and pending requests
     getFriendsAndRequests();

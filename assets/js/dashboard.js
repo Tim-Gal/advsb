@@ -14,36 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedSemester = 'Fall'; 
     let searchTimeout = null;
     let selectedCourse = null; 
-    function displayToast(message, type = 'success') {
-        const toastElement = document.getElementById('notificationToast');
-        const toastBody = document.getElementById('toastBody');
 
-        if (!toastElement || !toastBody) {
-            console.error("Toast elements not found in the DOM.");
-            return;
-        }
-
-        toastElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary');
-        switch (type) {
-            case 'success':
-                toastElement.classList.add('bg-success');
-                break;
-            case 'error':
-                toastElement.classList.add('bg-danger');
-                break;
-            case 'warning':
-                toastElement.classList.add('bg-warning');
-                break;
-            case 'info':
-                toastElement.classList.add('bg-info');
-                break;
-            default:
-                toastElement.classList.add('bg-primary');
-        }
-        toastBody.textContent = message;
-        const toast = new bootstrap.Toast(toastElement);
-        toast.show();
-    }
 
     function loadUsrSched() {
         fetch(`../api/get_user_schedule.php?semester=${encodeURIComponent(selectedSemester)}`)
@@ -61,14 +32,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 } else {
                     console.error("Error fetching schedule:", offerings.error);
-                    displayToast("Error fetching schedule: " + offerings.error, 'error');
+                    displayNotification("Error fetching schedule: " + offerings.error, 'error');
                 }
             })
             .catch(err => {
                 console.error('Error loading user schedule:', err);
-                displayToast('Error loading your schedule. Please try again.', 'error');
+                displayNotification('Error loading your schedule. Please try again.', 'error');
             });
     }
+
 
     function clrSchedTable() {
         document.querySelectorAll('.course-block').forEach(block => block.remove());
@@ -102,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+
     semesterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             selectedSemester = radio.value;
@@ -113,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     
+
     courseSearchInput.addEventListener('keyup', function (e) {
         const query = courseSearchInput.value.trim();
         if (query.length >= 2) {
@@ -139,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
     function showCourseSuggestions(courses) {
         searchSuggestions.innerHTML = '';
         courses.forEach(course => {
@@ -161,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchSuggestions.style.display = 'block';
     }
 
+
     function chooseCourse(course) {
         selectedCourse = {
             code: course.code,
@@ -180,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchSuggestions.style.display = 'none';
     }
   
+
     function deleteSelected() {
         selectedCourse = null;
         selectedCourseText.textContent = '';
@@ -192,15 +169,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
     removeSelectedCourse.addEventListener('click', function () {
         deleteSelected();
-        displayToast('Selected course removed.', 'info');
+        displayNotification('Selected course removed.', 'info');
     });
 
   
     confirmAddCourseButton.addEventListener('click', function () {
         if (!selectedCourse || !selectedCourse.section_code) {
-            displayToast('No course selected to add.', 'warning');
+            displayNotification('No course selected to add.', 'warning');
             return;
         }
 
@@ -222,7 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         })
         
-
             .then(res => res.json())
             .then(data => {
                 
@@ -232,16 +209,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if (data.success) {
-                    displayToast(`Course ${selectedCourse.code} added successfully!`, 'success');
+                    displayNotification(`Course ${selectedCourse.code} added successfully!`, 'success');
                     loadUsrSched();
                     loadEnrolledCourses(); 
                     deleteSelected();
             
                     if (data.warning) {
-                        displayToast(data.warning, 'warning');
+                        displayNotification(data.warning, 'warning');
                     }
                 } else {
-                    displayToast(data.error || 'Failed to add course.', 'error');
+                    displayNotification(data.error || 'Failed to add course.', 'error');
                 }
             })
             
@@ -253,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 console.error('Error adding course:', err);
-                displayToast('Error adding course. Please try again.', 'error');
+                displayNotification('Error adding course. Please try again.', 'error');
             });
     });
 
@@ -273,6 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 csrf_token: csrfToken 
             })
         })
+
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -280,16 +258,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     enrolledCourseElement.addEventListener('animationend', function () {
                         enrolledCourseElement.remove();
                     });
-                    displayToast('Course removed successfully.', 'success');
+                    displayNotification('Course removed successfully.', 'success');
                     loadUsrSched();
                     loadEnrolledCourses();
                 } else {
-                    displayToast(data.error || 'Failed to remove the course.', 'error');
+                    displayNotification(data.error || 'Failed to remove the course.', 'error');
                 }
             })
+
             .catch(error => {
                 console.error('Error deleting course:', error);
-                displayToast('An error occurred while removing the course. Please try again.', 'error');
+                displayNotification('An error occurred while removing the course. Please try again.', 'error');
             });
     }
 
@@ -297,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function downloadPDF() {
         const scheduleTable = document.getElementById('scheduleTable');
         if (!scheduleTable) {
-            displayToast('Schedule table not found.', 'error');
+            displayNotification('Schedule table not found.', 'error');
             return;
         }
 
@@ -323,10 +302,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             pdf.save('my_schedule.pdf');
-            displayToast('Schedule downloaded as PDF.', 'success');
+            displayNotification('Schedule downloaded as PDF.', 'success');
         }).catch(err => {
             console.error('Error generating PDF:', err);
-            displayToast('Failed to generate PDF. Please try again.', 'error');
+            displayNotification('Failed to generate PDF. Please try again.', 'error');
         });
     }
 
@@ -349,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => {
                 enrolledCoursesLoading.style.display = 'none';
                 console.error('Error fetching enrolled courses:', err);
-                displayToast('Error fetching enrolled courses. Please try again.', 'error');
+                displayNotification('Error fetching enrolled courses. Please try again.', 'error');
             });
     }
 
@@ -387,6 +366,40 @@ document.addEventListener('DOMContentLoaded', function () {
             enrolledCoursesList.appendChild(enrolledCourseDiv);
         });
     }
+
+
+    function displayNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const notificationClose = document.getElementById('notificationClose');
+    
+        notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
+        
+        notification.classList.add(type);
+        notification.classList.add('show');
+        
+        notificationText.textContent = message;
+    
+        const hideTimeout = setTimeout(() => {
+            hideNotification();
+        }, 5000);
+    
+        notificationClose.onclick = () => {
+            clearTimeout(hideTimeout);
+            hideNotification();
+        };
+    }
+    
+
+    function hideNotification() {
+        const notification = document.getElementById('notification');
+        notification.classList.add('hide');
+        
+        notification.addEventListener('animationend', function() {
+            notification.classList.remove('show', 'hide');
+        }, { once: true });
+    }
+        
    
     loadUsrSched();
     loadEnrolledCourses();

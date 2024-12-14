@@ -97,10 +97,6 @@
     white-space: nowrap;
 }
 
-.toast {
-    min-width: 250px;
-}
-
 .course-info {
     flex: 1;
     font-size: 0.9em;
