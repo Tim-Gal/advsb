@@ -253,11 +253,11 @@ unset($_SESSION['add_course_error'], $_SESSION['add_course_success'], $_SESSION[
                         }
                     ?>
                     <form action="../api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">
-                        <div class="mb-3 position-relative">
-                            <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP-101" required>
-                            <div id="autocomplete-list" class="autocomplete-items"></div>
-                        </div>
+                    <div class="mb-3 position-relative">
+                        <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="course_code" name="course_display" placeholder="e.g., COMP-101" required>
+                        <div id="autocomplete-list" class="autocomplete-items"></div>
+                    </div>
                         <button type="submit" class="btn btn-primary">Add Completed Course</button>
                     </form>
                 </div>
@@ -441,7 +441,22 @@ unset($_SESSION['add_course_error'], $_SESSION['add_course_success'], $_SESSION[
 
                         if (!isCompleted) {
                             b.addEventListener("click", function(e) {
-                                inp.value = this.getElementsByTagName("input")[0].value;
+                                const courseCode = this.getElementsByTagName("input")[0].value;
+                                const courseName = course.course_name;
+                                // Show both code and name in the input field
+                                inp.value = `${courseCode} - ${courseName}`;
+                                // Add a hidden input field to store just the course code
+                                let hiddenInput = document.getElementById('hidden_course_code');
+                                if (!hiddenInput) {
+                                    hiddenInput = document.createElement('input');
+                                    hiddenInput.type = 'hidden';
+                                    hiddenInput.name = 'course_code';
+                                    hiddenInput.id = 'hidden_course_code';
+                                    inp.parentNode.appendChild(hiddenInput);
+                                }
+                                hiddenInput.value = courseCode;
+                                // Change the visible input to not be the form submission value
+                                inp.name = 'course_display';
                                 closeAllLists();
                             });
                         }
