@@ -88,7 +88,7 @@ include '../includes/header.php';
 
     <!-- Button to Open Verification Modal Anytime -->
     <div class="text-center mb-5">
-      <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#verificationModal">
+      <button type="button" class="btn btn-secondary" style="width: 300px;" data-bs-toggle="modal" data-bs-target="#verificationModal">
         Already have your verification code? Verify here
       </button>
     </div>
