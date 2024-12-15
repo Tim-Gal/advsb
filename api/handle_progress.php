@@ -1,9 +1,6 @@
 <?php
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
+session_start();
 header('Content-Type: text/html; charset=utf-8');
 
 include '../includes/config.php';
@@ -17,60 +14,55 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['course_code'])) {
         $course_code = strtoupper(trim($_POST['course_code']));
 
         if (empty($course_code)) {
             $_SESSION['add_course_error'] = "Course code cannot be empty.";
-            header("Location: ../public/myprogress.php");
+            header("Location: ../public/my_progress.php");
             exit();
         }
 
         if (!preg_match('/^[A-Z]{2,4}-\d{3}$/', $course_code)) {
             $_SESSION['add_course_error'] = "Invalid course code format. Please enter in the format XXXX-XXX.";
-            header("Location: ../public/myprogress.php");
+            header("Location: ../public/my_progress.php");
             exit();
         }
 
-        $conn->begin_transaction();
+-        $conn->begin_transaction();
 
         try {
-           
-            $sql_check = "SELECT course_code FROM courses WHERE course_code = ?";
-            $stmt_check_c = $conn->prepare($sql_check);
-            
-            $stmt_check_c->bind_param("s", $course_code);
-            $stmt_check_c->execute();
-            $resultCheckCourse = $stmt_check_c->get_result();
+          -
+            $sqlCheckCourse = "SELECT course_code FROM courses WHERE course_code = ?";
+            $stmtCheckCourse = $conn->prepare($sqlCheckCourse);
+          
+            $stmtCheckCourse->bind_param("s", $course_code);
+            $stmtCheckCourse->execute();
+            $resultCheckCourse = $stmtCheckCourse->get_result();
             if ($resultCheckCourse->num_rows === 0) {
-                $stmt_check_c->close();
+                $stmtCheckCourse->close();
                 throw new Exception("The course code '{$course_code}' does not exist.");
             }
-            $stmt_check_c->close();
+            $stmtCheckCourse->close();
 
-            
+          
+            $sqlInsertCompleted = "INSERT INTO coursescompleted (student_id, course_code) VALUES (?, ?)";
+            $stmtInsertCompleted = $conn->prepare($sqlInsertCompleted);
+           
+            $stmtInsertCompleted->bind_param("is", $user_id, $course_code);
 
-
-            $sqlInsert_compl = "INSERT INTO coursescompleted (student_id, course_code) VALUES (?, ?)";
-            $stmtInsert_compl = $conn->prepare($sqlInsert_compl);
-            
-            $stmtInsert_compl->bind_param("is", $user_id, $course_code);
-
-            if (!$stmtInsert_compl->execute()) {
-                if ($conn->errno === 1062) { 
-                    $stmtInsert_compl->close();
+            if (!$stmtInsertCompleted->execute()) {
+                if ($conn->errno === 1062) {
+                    $stmtInsertCompleted->close();
                     throw new Exception("You have already marked '{$course_code}' as completed.");
                 } else {
-                    throw new Exception("Database error while inserting completed course: " . $stmtInsert_compl->error);
+                    throw new Exception("Database error while inserting completed course: " . $stmtInsertCompleted->error);
                 }
             }
-            $stmtInsert_compl->close();
+            $stmtInsertCompleted->close();
 
-            
-
-
+         
             $sqlCheckEnrollment = "
                 SELECT ce.section_code, s.semester, c.course_name
                 FROM coursesenrolled ce
@@ -79,8 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 WHERE ce.student_id = ? AND c.course_code = ?
             ";
             $stmtCheckEnrollment = $conn->prepare($sqlCheckEnrollment);
-            
-
+            if (!$stmtCheckEnrollment) {
+                throw new Exception("Database error while checking existing enrollments: " . $conn->error);
+            }
             $stmtCheckEnrollment->bind_param("is", $user_id, $course_code);
             $stmtCheckEnrollment->execute();
             $resultEnrollment = $stmtCheckEnrollment->get_result();
@@ -95,31 +88,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $stmtCheckEnrollment->close();
 
-          
             if (!empty($existingEnrollments)) {
                 $section_codes = array_column($existingEnrollments, 'section_code');
-                $placeholders = implode(',', array_fill(0, count($section_codes), '?'));
+                $ph = implode(',', array_fill(0, count($section_codes), '?'));
                 $types = str_repeat('i', count($section_codes));
-                $sqlDeleteEnrollments = "DELETE FROM coursesenrolled WHERE student_id = ? AND section_code IN ($placeholders)";
+                $sqlDeleteEnrollments = "DELETE FROM coursesenrolled WHERE student_id = ? AND section_code IN ($ph)";
                 $stmtDeleteEnrollments = $conn->prepare($sqlDeleteEnrollments);
-              
-
 
                 $params = array_merge([$user_id], $section_codes);
                 $types_bind = 'i' . $types;
-
-
 
                 $refs = [];
                 foreach ($params as $key => $value) {
                     $refs[$key] = &$params[$key];
                 }
 
-
-
                 array_unshift($refs, $types_bind);
                 call_user_func_array([$stmtDeleteEnrollments, 'bind_param'], $refs);
-
 
                 if (!$stmtDeleteEnrollments->execute()) {
                     throw new Exception("Database error while deleting enrollments: " . $stmtDeleteEnrollments->error);
@@ -130,13 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     error_log("Auto-removed enrollment: User ID {$user_id} removed from course '{$course_code}' ({$enrollment['course_name']}) in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']}).");
                 }
 
-
-
                 $removedCourses = array_map(function($enrollment) use ($course_code) {
                     return "{$course_code} ({$enrollment['course_name']}) in {$enrollment['semester']} semester (Section Code: {$enrollment['section_code']})";
                 }, $existingEnrollments);
 
-                $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully. Existing enrollments for this course have been removed from your schedule: " . implode(', ', $removedCourses) . ".";
+                $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully. Existing enrollments for this course have been removed: " . implode(', ', $removedCourses) . ".";
             } else {
                 $_SESSION['add_course_success'] = "Course '{$course_code}' marked as completed successfully.";
             }
@@ -150,26 +133,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['add_course_error'] = $e->getMessage();
         }
 
-        header("Location: ../public/myprogress.php");
+        header("Location: ../public/my_progress.php");
         exit();
     } elseif (isset($_POST['remove_course_code'])) {
         $course_code = strtoupper(trim($_POST['remove_course_code']));
 
         if (empty($course_code)) {
             $_SESSION['remove_course_error'] = "Course code cannot be empty.";
-            header("Location: ../public/myprogress.php");
+            header("Location: ../public/my_progress.php");
             exit();
         }
 
-
         if (!preg_match('/^[A-Z]{2,4}-\d{3}$/', $course_code)) {
-            $_SESSION['remove_course_error'] = "Invalid course code format. ";
-            header("Location: ../public/myprogress.php");
+            $_SESSION['remove_course_error'] = "Invalid course code format. Please enter in the format XXXX-XXX.";
+            header("Location: ../public/my_progress.php");
             exit();
         }
 
         try {
             $stmt_check = $conn->prepare("SELECT course_code FROM coursescompleted WHERE student_id = ? AND course_code = ?");
+            if (!$stmt_check) {
+                throw new Exception("Database error: " . $conn->error);
+            }
             $stmt_check->bind_param("is", $user_id, $course_code);
             $stmt_check->execute();
             $stmt_check->store_result();
@@ -180,8 +165,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $stmt_check->close();
 
-
             $stmt_delete = $conn->prepare("DELETE FROM coursescompleted WHERE student_id = ? AND course_code = ?");
+           
             $stmt_delete->bind_param("is", $user_id, $course_code);
             if ($stmt_delete->execute()) {
                 $_SESSION['remove_course_success'] = "Course '{$course_code}' has been successfully removed from your completed courses.";
@@ -195,10 +180,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['remove_course_error'] = $e->getMessage();
         }
 
-        header("Location: ../public/myprogress.php");
+        header("Location: ../public/my_progress.php");
         exit();
     } else {
-        header("Location: ../public/myprogress.php");
+        header("Location: ../public/my_progress.php");
         exit();
     }
 }

@@ -289,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const imgWidth = 210; 
             const pageHeight = pdf.internal.pageSize.getHeight();
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
             let heightLeft = imgHeight;
             let position = 0;
 
@@ -424,19 +423,16 @@ document.addEventListener('DOMContentLoaded', function () {
     function hideNotification() {
         const notification = document.getElementById('notification');
         
-        // Only proceed if notification is actually visible
         if (!isNotificationVisible) return;
     
         notification.classList.add('hide');
         isNotificationVisible = false;
         
-        // Clear any existing timeout
         if (currentTimeout) {
             clearTimeout(currentTimeout);
             currentTimeout = null;
         }
     
-        // Remove classes after animation completes
         notification.addEventListener('animationend', function handler() {
             notification.removeEventListener('animationend', handler);
             notification.classList.remove('show', 'hide');
@@ -446,28 +442,7 @@ document.addEventListener('DOMContentLoaded', function () {
    
     loadUsrSched();
     loadEnrolledCourses();
-    const style = document.createElement('style');
-    style.innerHTML = `
-        /* Conflict Lecture Styling (Unused since conflicts prevent addition) */
-        .conflict-lecture {
-            background-color: rgba(255, 0, 0, 0.3) !important; /* Red background */
-            border: 2px solid red !important;
-            cursor: pointer; /* Change cursor to pointer to indicate tooltip */
-            z-index: 1000; /* Ensure it appears above other elements */
-        }
-
-        /* Tooltip Styling (Optional) */
-        .has-tooltip {
-            position: relative;
-        }
-
-        /* Ensure tooltips appear above other elements */
-        .tooltip {
-            z-index: 2000;
-        }
-    `;
-    document.head.appendChild(style);
-
+    
   
     if (downloadPdfButton) {
         downloadPdfButton.addEventListener('click', downloadPDF);
