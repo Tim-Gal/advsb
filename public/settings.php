@@ -41,12 +41,12 @@ $stmt->close();
 
             <?php
             if (isset($_SESSION['settings_success'])) {
-                echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['settings_success']) . '</div>';
+                echo '<div class="caution caution-success">' . htmlspecialchars($_SESSION['settings_success']) . '</div>';
                 unset($_SESSION['settings_success']);
             }
 
             if (isset($_SESSION['settings_error'])) {
-                echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['settings_error']) . '</div>';
+                echo '<div class="caution caution-danger">' . htmlspecialchars($_SESSION['settings_error']) . '</div>';
                 unset($_SESSION['settings_error']);
             }
             ?>

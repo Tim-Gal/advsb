@@ -25,7 +25,7 @@ $sql_degrees = "SELECT major_id, minor_id FROM students WHERE student_id = ?";
 $stmt_degrees = $conn->prepare($sql_degrees);
 if (!$stmt_degrees) {
     error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    echo "<div class='container my-5'><div class='alert alert-danger'>An error occurred. Please try again later.</div></div>";
+    echo "<div class='container my-5'><div class='caution caution-danger'>An error occurred. Please try again later.</div></div>";
     include '../includes/footer.php';
     exit();
 }
@@ -62,7 +62,7 @@ $sql_degree_names = "SELECT degree_id, name, type FROM degrees WHERE degree_id I
 $stmt_degree_names = $conn->prepare($sql_degree_names);
 if (!$stmt_degree_names) {
     error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    echo "<div class='container my-5'><div class='alert alert-danger'>An error occurred. Please try again later.</div></div>";
+    echo "<div class='container my-5'><div class='caution caution-danger'>An error occurred. Please try again later.</div></div>";
     include '../includes/footer.php';
     exit();
 }
@@ -85,7 +85,7 @@ $sql_degree_courses = "SELECT degree_id, course_code FROM degree_courses WHERE d
 $stmt_degree_courses = $conn->prepare($sql_degree_courses);
 if (!$stmt_degree_courses) {
     error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    echo "<div class='container my-5'><div class='alert alert-danger'>An error occurred. Please try again later.</div></div>";
+    echo "<div class='container my-5'><div class='caution caution-danger'>An error occurred. Please try again later.</div></div>";
     include '../includes/footer.php';
     exit();
 }
@@ -112,7 +112,7 @@ $sql_completed = "
 $stmt_completed = $conn->prepare($sql_completed);
 if (!$stmt_completed) {
     error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    echo "<div class='container my-5'><div class='alert alert-danger'>An error occurred. Please try again later.</div></div>";
+    echo "<div class='container my-5'><div class='caution caution-danger'>An error occurred. Please try again later.</div></div>";
     include '../includes/footer.php';
     exit();
 }
@@ -138,7 +138,7 @@ if (!empty($courses_to_fetch)) {
     $stmt_courses = $conn->prepare($sql_courses);
     if (!$stmt_courses) {
         error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-        echo "<div class='container my-5'><div class='alert alert-danger'>An error occurred. Please try again later.</div></div>";
+        echo "<div class='container my-5'><div class='caution caution-danger'>An error occurred. Please try again later.</div></div>";
         include '../includes/footer.php';
         exit();
     }
@@ -234,22 +234,22 @@ unset($_SESSION['add_course_error'], $_SESSION['add_course_success'], $_SESSION[
                     <?php
                         // Display error message from backend
                         if (!empty($add_course_error)) {
-                            echo '<div class="alert alert-danger">' . htmlspecialchars($add_course_error) . '</div>';
+                            echo '<div class="caution caution-danger">' . htmlspecialchars($add_course_error) . '</div>';
                         }
 
                         // Display success message from backend
                         if (!empty($add_course_success)) {
-                            echo '<div class="alert alert-success">' . htmlspecialchars($add_course_success) . '</div>';
+                            echo '<div class="caution caution-success">' . htmlspecialchars($add_course_success) . '</div>';
                         }
 
                         // Display error message for removal
                         if (!empty($remove_course_error)) {
-                            echo '<div class="alert alert-danger">' . htmlspecialchars($remove_course_error) . '</div>';
+                            echo '<div class="caution caution-danger">' . htmlspecialchars($remove_course_error) . '</div>';
                         }
 
                         // Display success message for removal
                         if (!empty($remove_course_success)) {
-                            echo '<div class="alert alert-success">' . htmlspecialchars($remove_course_success) . '</div>';
+                            echo '<div class="caution caution-success">' . htmlspecialchars($remove_course_success) . '</div>';
                         }
                     ?>
                     <form action="../api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">

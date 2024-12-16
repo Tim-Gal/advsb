@@ -17,7 +17,7 @@ include '../includes/header.php';
 
     <?php
     if (isset($_SESSION['success'])) {
-      echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success']) . '</div>';
+      echo '<div class="caution caution-success">' . htmlspecialchars($_SESSION['success']) . '</div>';
       echo '<script type="text/javascript">
               document.addEventListener("DOMContentLoaded", function() {
                   var myModal = new bootstrap.Modal(document.getElementById("verificationModal"), {});
@@ -28,7 +28,7 @@ include '../includes/header.php';
     }
 
     if (isset($_SESSION['error'])) {
-      echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
+      echo '<div class="caution caution-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
       unset($_SESSION['error']);
     }
     ?>
@@ -107,7 +107,7 @@ include '../includes/header.php';
             <p>Please enter your 6-digit verification code sent to your email to activate your account.</p>
             <?php
             if (isset($_SESSION['error'])) {
-                echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
+                echo '<div class="caution caution-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
                 unset($_SESSION['error']);
             }
             ?>

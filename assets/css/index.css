@@ -1,5 +1,5 @@
 body {
-    font-family: 'Open Sans', sans-serif; 
+    font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -8,7 +8,7 @@ body {
     height: 80vh;
     background: url('../images/hero.jpg') center / cover no-repeat;
     position: relative;
-    color: #FFFFFF; 
+    color: #FFFFFF;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -21,12 +21,12 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 23, 31, 0.6); 
+    background-color: rgba(0, 23, 31, 0.6);
     z-index: -1;
 }
 
 .hero-title {
-    font-family: 'Rubik', sans-serif; 
+    font-family: 'Rubik', sans-serif;
     font-size: 3rem;
     margin-bottom: 20px;
 }
@@ -37,8 +37,8 @@ body {
 }
 
 .get-started {
-    background: linear-gradient(to right, #00A8E8, #007EA7); 
-    color: #FFFFFF; 
+    background: linear-gradient(to right, #00A8E8, #007EA7);
+    color: #FFFFFF;
     padding: 10px 20px;
     border: none;
     border-radius: 10px;
@@ -54,10 +54,10 @@ body {
 }
 
 .features-section {
-    background-color: #003459; 
+    background-color: #003459;
     padding: 50px 20px;
     text-align: center;
-    color: #FFFFFF; 
+    color: #FFFFFF;
 }
 
 .features-grid {
@@ -67,16 +67,14 @@ body {
 }
 
 .feature-card {
-    background: #FFFFFF; 
-    color: #003459; 
+    background: #FFFFFF;
+    color: #003459;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
 }
-
-
 
 .feature-card:hover {
     transform: scale(1.05);
@@ -86,5 +84,5 @@ body {
 .feature-icon {
     font-size: 36px;
     margin-bottom: 15px;
-    color: #00A8E8; 
+    color: #00A8E8;
 }

@@ -77,12 +77,12 @@ if (isset($_POST['verify_code'])) {
 
         <?php
         if (isset($_SESSION['fp_success'])) {
-            echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['fp_success']) . '</div>';
+            echo '<div class="caution caution-success">' . htmlspecialchars($_SESSION['fp_success']) . '</div>';
             unset($_SESSION['fp_success']);
         }
 
         if (isset($_SESSION['fp_error'])) {
-            echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['fp_error']) . '</div>';
+            echo '<div class="caution caution-danger">' . htmlspecialchars($_SESSION['fp_error']) . '</div>';
             unset($_SESSION['fp_error']);
         }
         ?>
@@ -104,12 +104,12 @@ if (isset($_POST['verify_code'])) {
 
         <?php
         if (isset($_SESSION['fp_success'])) {
-            echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['fp_success']) . '</div>';
+            echo '<div class="caution caution-success">' . htmlspecialchars($_SESSION['fp_success']) . '</div>';
             unset($_SESSION['fp_success']);
         }
 
         if (isset($_SESSION['fp_error'])) {
-            echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['fp_error']) . '</div>';
+            echo '<div class="caution caution-danger">' . htmlspecialchars($_SESSION['fp_error']) . '</div>';
             unset($_SESSION['fp_error']);
         }
         ?>
