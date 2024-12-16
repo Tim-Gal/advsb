@@ -5,12 +5,16 @@ html, body {
 }
 
 body {
-    font-family: 'Rubik', sans-serif;
+    font-family: 'Arial', 'Open Sans', 'Verdana', sans-serif;
     color: #00171F;
     min-height: 100vh;
     background: #ffffff;
     display: flex;
     flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Rubik', 'Oswald', sans-serif;
 }
 
 .main-content {
