@@ -35,23 +35,6 @@ body {
     font-size: 1.5em;
 }
 
-.alert {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 3px;
-    font-size: 0.9em;
-    text-align: center;
-}
-
-.alert-success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    color: #721c24;
-}
 
 .form-group {
     margin-bottom: 15px;
@@ -106,9 +89,6 @@ body {
     margin-top: 10px;
 }
 
-.text-center {
-    text-align: center;
-}
 
 .link {
     color: #007EA7;

@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -50,7 +51,7 @@ a {
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 4px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     animation: slideIn 0.3s ease-in-out;
     justify-content: space-between;
     align-items: center;
@@ -105,6 +106,7 @@ a {
         transform: translateX(100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -116,6 +118,7 @@ a {
         transform: translateX(0);
         opacity: 1;
     }
+
     to {
         transform: translateX(100%);
         opacity: 0;
@@ -124,4 +127,36 @@ a {
 
 .notification.hide {
     animation: slideOut 0.3s ease-in-out forwards;
+}
+
+.caution {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.95em;
+    text-align: center;
+}
+
+.caution-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.caution-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.caution-success:hover {
+    background-color: #e9f7ef;
+    border-color: #b1dfbb;
+}
+
+.caution-danger:hover {
+    background-color: #ffe6e6;
+    border-color: #d6a6a6;
+}
+
+.text-center {
+    text-align: center;
 }

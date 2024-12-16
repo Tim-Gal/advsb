@@ -19,24 +19,6 @@ body {
     font-size: 1.5em;
 }
 
-.alert {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 3px;
-    font-size: 0.9em;
-    text-align: center;
-}
-
-.alert-success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    color: #721c24;
-}
-
 .register-form {
     width: 100%;
     max-width: 400px;
@@ -80,10 +62,6 @@ body {
     background: #005f7a;
 }
 
-.text-center {
-    text-align: center;
-    margin-top: 15px;
-}
 
 .link {
     color: #007EA7;

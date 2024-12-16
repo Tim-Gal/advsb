@@ -22,24 +22,6 @@ body {
     color: #007EA7;
 }
 
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-    font-size: 0.95em;
-    text-align: center;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
 .settings-form {
     display: flex;
     flex-direction: column;

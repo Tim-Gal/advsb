@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedFriendData = {}; // store data related to the action
     let selectedFriendId = null; // store the ID of the friend whose schedule is being viewed
 
-     
+
     function getFriendsAndRequests() {
         fetch('../api/get_friends.php') // Ensure this path is correct
             .then(response => response.json())
@@ -207,13 +207,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     populateFriendSchedule(data.schedule);
                 } else {
                     displayNotification(data.error || 'Failed to fetch friend\'s schedule.', 'error');
-                    friendScheduleList.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to fetch schedule.'}</div>`;
+                    friendScheduleList.innerHTML = `<div class="caution caution-danger">${data.error || 'Failed to fetch schedule.'}</div>`;
                 }
             })
             .catch(err => {
                 console.error('Error fetching friend\'s schedule:', err);
                 displayNotification('Error fetching friend\'s schedule. Please try again.', 'error');
-                friendScheduleList.innerHTML = '<div class="alert alert-danger">An error occurred while fetching the schedule.</div>';
+                friendScheduleList.innerHTML = '<div class="caution caution-danger">An error occurred while fetching the schedule.</div>';
             })
             .finally(() => {
                 // Hide loading spinner
@@ -236,33 +236,33 @@ document.addEventListener('DOMContentLoaded', function () {
         schedule.forEach(course => {
             const courseCard = document.createElement('div');
             courseCard.className = 'list-group-item list-group-item-action flex-column align-items-start mb-2';
-            
+
             const courseHeader = document.createElement('div');
             courseHeader.className = 'd-flex w-100 justify-content-between';
-            
+
             const courseTitle = document.createElement('h5');
             courseTitle.textContent = `${course.course_code} - ${course.course_name}`;
-            
+
             const courseTime = document.createElement('small');
             courseTime.textContent = `${course.day_of_week} | ${course.start_time} - ${course.end_time}`;
-            
+
             courseHeader.appendChild(courseTitle);
             courseHeader.appendChild(courseTime);
-            
+
             const courseLocation = document.createElement('p');
             courseLocation.className = 'mb-1';
             courseLocation.textContent = `Location: ${course.location}`;
-            
+
             courseCard.appendChild(courseHeader);
             courseCard.appendChild(courseLocation);
-            
+
             friendScheduleList.appendChild(courseCard);
         });
     }
 
     sendFriendButton.addEventListener('click', sendFriendRequest);
 
-    
+
     // event listener for Enter key in Send Friend Request input
     sendFriendInput.addEventListener('keyup', function (e) {
         if (e.key === 'Enter') {
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // listener for semester selection in view schedule modal
     friendSemesterSelect.addEventListener('change', getFriendSchedule);
 
-    
+
     // event listener in confirmation modal
     confirmActionButton.addEventListener('click', function () {
         if (!selectedAction || !selectedFriendData.id) {
@@ -354,11 +354,11 @@ document.addEventListener('DOMContentLoaded', function () {
             clearTimeout(currentTimeout);
             currentTimeout = null;
         }
-    
+
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
         const notificationClose = document.getElementById('notificationClose');
-    
+
         // If a hide animation is in progress, wait for it to complete
         if (notification.classList.contains('hide')) {
             notification.addEventListener('animationend', function handler() {
@@ -368,27 +368,27 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             showNewNotification();
         }
-    
+
         function showNewNotification() {
             // Remove all existing classes
             notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
-            
+
             // Add the appropriate type class and show class
             notification.classList.add(type);
             notification.classList.add('show');
-            
+
             // Set the message
             notificationText.textContent = message;
-    
+
             // Set new timeout
             currentTimeout = setTimeout(() => {
                 hideNotification();
             }, 5000);
-    
+
             // Update visibility flag
             isNotificationVisible = true;
         }
-    
+
         // Close button handler
         notificationClose.onclick = () => {
             if (currentTimeout) {
@@ -398,29 +398,29 @@ document.addEventListener('DOMContentLoaded', function () {
             hideNotification();
         };
     }
-    
+
     function hideNotification() {
         const notification = document.getElementById('notification');
-        
+
         // Only proceed if notification is actually visible
         if (!isNotificationVisible) return;
-    
+
         notification.classList.add('hide');
         isNotificationVisible = false;
-        
+
         // Clear any existing timeout
         if (currentTimeout) {
             clearTimeout(currentTimeout);
             currentTimeout = null;
         }
-    
+
         // Remove classes after animation completes
         notification.addEventListener('animationend', function handler() {
             notification.removeEventListener('animationend', handler);
             notification.classList.remove('show', 'hide');
         }, { once: true });
     }
-    
+
 
     // initial fetch of friends and pending requests
     getFriendsAndRequests();
