@@ -5,10 +5,8 @@ $pageCSS = [
     '../assets/css/global.css',
     '../assets/css/settings.css'
 ];
-$pageJS = [
-    '../assets/js/settings.js'
-];
 
+// 
 include '../includes/header.php';
 
 if (!isset($_SESSION['user_id'])) {
