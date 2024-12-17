@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     const text = `${progress}%`,
                           textX = Math.round((width - ctx.measureText(text).width) / 2),
                           textY = height / 1.5;
-
                     ctx.fillText(text, textX, textY);
                     ctx.save();
                 }
@@ -133,6 +132,7 @@ function autocomplete(inp, fetchURL) {
         }
     });
 
+
     function addActive(x) {
         if (!x) return false;
         removeActive(x);
@@ -146,6 +146,10 @@ function autocomplete(inp, fetchURL) {
             x[i].classList.remove("autocomplete-active");
         }
     }
+
+
+
+
 
     function closeAllLists(elmnt) {
         const x = document.getElementsByClassName("autocomplete-items");

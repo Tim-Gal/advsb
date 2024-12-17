@@ -78,11 +78,11 @@ body {
 
 .feature-card:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0);
 }
 
 .feature-icon {
-    font-size: 36px;
+    font-size: 37px;
     margin-bottom: 15px;
     color: #00A8E8;
 }

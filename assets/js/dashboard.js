@@ -391,26 +391,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     
         function showNewNotification() {
-            // Remove all existing classes
             notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
             
-            // Add the appropriate type class and show class
             notification.classList.add(type);
             notification.classList.add('show');
-            
-            // Set the message
             notificationText.textContent = message;
     
-            // Set new timeout
             currentTimeout = setTimeout(() => {
                 hideNotification();
             }, 5000);
     
-            // Update visibility flag
             isNotificationVisible = true;
         }
     
-        // Close button handler
         notificationClose.onclick = () => {
             if (currentTimeout) {
                 clearTimeout(currentTimeout);

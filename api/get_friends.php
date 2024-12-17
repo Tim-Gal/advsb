@@ -68,10 +68,7 @@ $sql = "
     WHERE fr.sender_id = ? AND fr.status = 'pending'
 ";
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
+
 
 $stmt->bind_param("i", $user_id);
 $stmt->execute();

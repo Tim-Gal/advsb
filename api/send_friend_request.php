@@ -54,10 +54,7 @@ $sql = "SELECT status FROM friendrequests WHERE
         (sender_id = ? AND receiver_id = ?) OR 
         (sender_id = ? AND receiver_id = ?)";
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
+
 
 $stmt->bind_param("iiii", $user_id, $receiver_id, $receiver_id, $user_id);
 $stmt->execute();
@@ -78,10 +75,7 @@ $stmt->close();
 
 $sql = "INSERT INTO friendrequests (sender_id, receiver_id, status) VALUES (?, ?, 'pending')";
 $stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
-    exit();
-}
+
 
 $stmt->bind_param("ii", $user_id, $receiver_id);
 if ($stmt->execute()) {

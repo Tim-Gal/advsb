@@ -1,10 +1,7 @@
 <?php
-// public/network.php
-
 include '../includes/header.php'; 
 
 if (!isset($_SESSION['user_id'])) {
-  // Redirect to login page if not authenticated
   header('Location: login.php');
   exit();
 }
@@ -13,31 +10,26 @@ if (!isset($_SESSION['user_id'])) {
   <div class="container my-4">
       <h1 class="text-center mb-4">My Network</h1>
 
-      <!-- Friends List Section -->
       <div class="card mb-4">
           <div class="card-header">
               <h5>Friends</h5>
           </div>
           <div class="card-body">
               <ul class="list-group" id="friendsList">
-                  <!-- Friends will be dynamically loaded here -->
               </ul>
           </div>
       </div>
 
-      <!-- Pending Friend Requests Received -->
       <div class="card mb-4">
           <div class="card-header">
               <h5>Pending Friend Requests</h5>
           </div>
           <div class="card-body">
               <ul class="list-group" id="pendingReceivedList">
-                  <!-- Pending received requests will be loaded here -->
               </ul>
           </div>
       </div>
 
-      <!-- Send Friend Request Section -->
       <div class="card mb-4">
           <div class="card-header">
               <h5>Send Friend Request</h5>
@@ -51,8 +43,6 @@ if (!isset($_SESSION['user_id'])) {
           </div>
       </div>
   </div>
-
-  <!-- Custom Notification Container -->
   <div id="notificationContainer" class="notification-container">
     <div id="notification" class="notification">
       <span id="notificationText"></span>
@@ -60,7 +50,8 @@ if (!isset($_SESSION['user_id'])) {
     </div>
   </div>
 
-  <!-- Modal to View Friend's Schedule -->
+
+
   <div class="modal fade" id="viewScheduleModal" tabindex="-1" aria-labelledby="viewScheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
@@ -69,7 +60,6 @@ if (!isset($_SESSION['user_id'])) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!-- Semester Selection -->
           <div class="mb-3">
               <label for="friendSemesterSelect" class="form-label">Select Semester:</label>
               <select class="form-select" id="friendSemesterSelect">
@@ -80,23 +70,20 @@ if (!isset($_SESSION['user_id'])) {
               </select>
           </div>
           
-          <!-- Loading Indicator -->
+
           <div id="scheduleLoading" class="text-center my-3" style="display: none;">
               <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">Loading...</span>
               </div>
           </div>
           
-          <!-- Schedule List -->
           <div id="friendScheduleList" class="list-group">
-              <!-- Courses will be dynamically loaded here -->
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Confirmation Modal -->
   <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -105,7 +92,6 @@ if (!isset($_SESSION['user_id'])) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="confirmationModalBody">
-          <!-- Confirmation message will be injected here -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -116,15 +102,9 @@ if (!isset($_SESSION['user_id'])) {
   </div>
 </div>
 
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-<!-- External Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
 
-<!-- Custom JavaScript -->
+
 <script src="../assets/js/network.js"></script>
 
 <?php

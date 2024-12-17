@@ -81,8 +81,8 @@ if ($current_page === 'index.php' && isset($_SESSION['user_id'])) {
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="dashboard.php">Dashboard</a></li>
                             <li><a class="dropdown-item" href="my_progress.php">My Progress</a></li>
-                            <li><a class="dropdown-item" href="settings.php">Settings</a></li>
                             <li><a class="dropdown-item" href="network.php">Network</a></li>
+                            <li><a class="dropdown-item" href="settings.php">Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../api/logout.php">Logout</a></li>
                         </ul>

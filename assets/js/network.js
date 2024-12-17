@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const sendFriendInput = document.getElementById('sendFriendInput');
     const sendFriendButton = document.getElementById('sendFriendButton');
     const sendFriendFeedback = document.getElementById('sendFriendFeedback');
-
     let currentTimeout = null;
     let isNotificationVisible = false;
 
@@ -20,20 +19,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmationModalLabel = document.getElementById('confirmationModalLabel');
     const confirmationModalBody = document.getElementById('confirmationModalBody');
     const confirmActionButton = document.getElementById('confirmActionButton');
-
-    let selectedAction = null; // store action to be confirmed
-    let selectedFriendData = {}; // store data related to the action
-    let selectedFriendId = null; // store the ID of the friend whose schedule is being viewed
+    let selectedAction = null; 
+    let selectedFriendData = {}; 
+    let selectedFriendId = null;
 
 
     function getFriendsAndRequests() {
-        fetch('../api/get_friends.php') // Ensure this path is correct
+        fetch('../api/get_friends.php') 
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     populateFriendsList(data.friends);
                     populatePendingFriendsList(data.pending_received);
-                    // Optionally, handle pending_sent if you want to display sent requests
                 } else {
                     displayNotification(data.error || 'Failed to fetch friends.', 'error');
                 }
@@ -44,8 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-
-    // takes array as input parameter
     function populateFriendsList(friends) {
         friendsList.innerHTML = '';
         if (friends.length === 0) {
@@ -60,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const buttonsDiv = document.createElement('div');
 
-            // View Schedule Button
             const viewButton = document.createElement('button');
             viewButton.className = 'btn btn-sm btn-info me-2';
             viewButton.textContent = 'View Schedule';
@@ -68,15 +62,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 viewFriendSchedule(friend.id, friend.name);
             });
 
-            // Remove Friend Button
             const removeButton = document.createElement('button');
             removeButton.className = 'btn btn-sm btn-danger';
             removeButton.textContent = 'Remove Friend';
             removeButton.addEventListener('click', () => {
-                // Set the action and data
                 selectedAction = 'removeFriend';
                 selectedFriendData = { id: friend.id, name: friend.name };
-                // Configure and show the confirmation modal
                 confirmationModalLabel.textContent = 'Confirm Removal';
                 confirmationModalBody.textContent = `Are you sure you want to remove ${friend.name} from your friends?`;
                 confirmActionButton.textContent = 'Remove';
@@ -93,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // takes array as input parameter
     function populatePendingFriendsList(pending) {
         pendingReceivedList.innerHTML = '';
         if (pending.length === 0) {
@@ -108,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const buttonsDiv = document.createElement('div');
 
-            // accept Friend Request Button
             const acceptButton = document.createElement('button');
             acceptButton.className = 'btn btn-sm btn-success me-2';
             acceptButton.textContent = 'Accept';
@@ -123,8 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmationModal.show();
             });
 
-            // add "Reject" button here?
-
             buttonsDiv.appendChild(acceptButton);
             listItem.appendChild(buttonsDiv);
             pendingReceivedList.appendChild(listItem);
@@ -138,19 +125,16 @@ document.addEventListener('DOMContentLoaded', function () {
             displayNotification('Please enter an email to send a friend request.', 'warning');
             return;
         }
-
-        // simple email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(receiverUsername)) {
             displayNotification('Please enter a valid email address.', 'warning');
             return;
         }
 
-        // disable button to prevent multiple clicks
         sendFriendButton.disabled = true;
         sendFriendFeedback.innerHTML = '';
 
-        fetch('../api/send_friend_request.php', { // ensure this path is correct
+        fetch('../api/send_friend_request.php', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -184,6 +168,8 @@ document.addEventListener('DOMContentLoaded', function () {
         viewScheduleModal.show();
     }
 
+
+
     function getFriendSchedule() {
         const semester = friendSemesterSelect.value;
         console.log(`Selected Semester: ${semester}`);
@@ -191,10 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             displayNotification('Please select a semester to view the schedule.', 'warning');
             return;
         }
-
-        // Show loading spinner
         document.getElementById('scheduleLoading').style.display = 'block';
-        // Clear existing schedule
         friendScheduleList.innerHTML = '';
 
         console.log(`Fetching schedule for Friend ID: ${selectedFriendId}, Semester: ${semester}`);
@@ -216,23 +199,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 friendScheduleList.innerHTML = '<div class="caution caution-danger">An error occurred while fetching the schedule.</div>';
             })
             .finally(() => {
-                // Hide loading spinner
                 document.getElementById('scheduleLoading').style.display = 'none';
             });
     }
-
-    // takes array as input parameter
     function populateFriendSchedule(schedule) {
         console.log('Populating Schedule:', schedule);
         const friendScheduleList = document.getElementById('friendScheduleList');
-        friendScheduleList.innerHTML = ''; // clears any existing content
+        friendScheduleList.innerHTML = ''; 
 
         if (schedule.length === 0) {
             friendScheduleList.innerHTML = '<div class="alert alert-info">No courses scheduled for this semester.</div>';
             return;
         }
-
-        // iterate through each course and create bs card for each one
         schedule.forEach(course => {
             const courseCard = document.createElement('div');
             courseCard.className = 'list-group-item list-group-item-action flex-column align-items-start mb-2';
@@ -255,26 +233,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
             courseCard.appendChild(courseHeader);
             courseCard.appendChild(courseLocation);
-
             friendScheduleList.appendChild(courseCard);
         });
     }
 
     sendFriendButton.addEventListener('click', sendFriendRequest);
 
+    
 
-    // event listener for Enter key in Send Friend Request input
     sendFriendInput.addEventListener('keyup', function (e) {
         if (e.key === 'Enter') {
             sendFriendRequest();
         }
     });
 
-    // listener for semester selection in view schedule modal
     friendSemesterSelect.addEventListener('change', getFriendSchedule);
 
-
-    // event listener in confirmation modal
     confirmActionButton.addEventListener('click', function () {
         if (!selectedAction || !selectedFriendData.id) {
             displayNotification('No action selected.', 'error');
@@ -284,9 +258,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (selectedAction === 'removeFriend') {
             const friendId = selectedFriendData.id;
-            const friendName = selectedFriendData.name;
 
-            fetch('../api/remove_friend.php', { // ensure this path is correct
+            fetch('../api/remove_friend.php', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -314,9 +287,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } else if (selectedAction === 'acceptFriendRequest') {
             const requesterId = selectedFriendData.id;
-            const requesterName = selectedFriendData.name;
 
-            fetch('../api/accept_friend_request.php', { // ensure this path is correct
+            fetch('../api/accept_friend_request.php', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -347,9 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
     function displayNotification(message, type = 'success') {
-        // Clear any existing timeout
         if (currentTimeout) {
             clearTimeout(currentTimeout);
             currentTimeout = null;
@@ -358,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
         const notificationClose = document.getElementById('notificationClose');
+    
 
-        // If a hide animation is in progress, wait for it to complete
         if (notification.classList.contains('hide')) {
             notification.addEventListener('animationend', function handler() {
                 notification.removeEventListener('animationend', handler);
@@ -370,26 +340,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function showNewNotification() {
-            // Remove all existing classes
             notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
+            
 
-            // Add the appropriate type class and show class
             notification.classList.add(type);
             notification.classList.add('show');
 
-            // Set the message
             notificationText.textContent = message;
+    
 
-            // Set new timeout
+
             currentTimeout = setTimeout(() => {
                 hideNotification();
             }, 5000);
 
-            // Update visibility flag
             isNotificationVisible = true;
         }
-
-        // Close button handler
+    
         notificationClose.onclick = () => {
             if (currentTimeout) {
                 clearTimeout(currentTimeout);
@@ -401,20 +368,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function hideNotification() {
         const notification = document.getElementById('notification');
-
-        // Only proceed if notification is actually visible
         if (!isNotificationVisible) return;
 
         notification.classList.add('hide');
         isNotificationVisible = false;
+        
 
-        // Clear any existing timeout
+
         if (currentTimeout) {
             clearTimeout(currentTimeout);
             currentTimeout = null;
         }
-
-        // Remove classes after animation completes
+    
         notification.addEventListener('animationend', function handler() {
             notification.removeEventListener('animationend', handler);
             notification.classList.remove('show', 'hide');
@@ -422,6 +387,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // initial fetch of friends and pending requests
     getFriendsAndRequests();
 });

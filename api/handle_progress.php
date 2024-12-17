@@ -29,9 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: ../public/my_progress.php");
             exit();
         }
+
+        $conn->begin_transaction();
         $conn->begin_transaction();
 
         try {
+          
             $sqlCheckCourse = "SELECT course_code FROM courses WHERE course_code = ?";
             $stmtCheckCourse = $conn->prepare($sqlCheckCourse);
           

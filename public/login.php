@@ -1,5 +1,4 @@
 <?php
-// login.php
 
 $pageTitle = "Login";
 $pageCSS = [
