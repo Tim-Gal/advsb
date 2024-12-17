@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedFriendId = null;
 
 
+
     function getFriendsAndRequests() {
+        fetch('../api/get_friends.php') 
         fetch('../api/get_friends.php') 
             .then(response => response.json())
             .then(data => {
@@ -135,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sendFriendFeedback.innerHTML = '';
 
         fetch('../api/send_friend_request.php', { 
+        fetch('../api/send_friend_request.php', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -170,6 +173,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+
     function getFriendSchedule() {
         const semester = friendSemesterSelect.value;
         console.log(`Selected Semester: ${semester}`);
@@ -191,11 +196,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     displayNotification(data.error || 'Failed to fetch friend\'s schedule.', 'error');
                     friendScheduleList.innerHTML = `<div class="caution caution-danger">${data.error || 'Failed to fetch schedule.'}</div>`;
+                    friendScheduleList.innerHTML = `<div class="caution caution-danger">${data.error || 'Failed to fetch schedule.'}</div>`;
                 }
             })
             .catch(err => {
                 console.error('Error fetching friend\'s schedule:', err);
                 displayNotification('Error fetching friend\'s schedule. Please try again.', 'error');
+                friendScheduleList.innerHTML = '<div class="caution caution-danger">An error occurred while fetching the schedule.</div>';
                 friendScheduleList.innerHTML = '<div class="caution caution-danger">An error occurred while fetching the schedule.</div>';
             })
             .finally(() => {
@@ -206,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Populating Schedule:', schedule);
         const friendScheduleList = document.getElementById('friendScheduleList');
         friendScheduleList.innerHTML = ''; 
+        friendScheduleList.innerHTML = ''; 
 
         if (schedule.length === 0) {
             friendScheduleList.innerHTML = '<div class="alert alert-info">No courses scheduled for this semester.</div>';
@@ -214,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
         schedule.forEach(course => {
             const courseCard = document.createElement('div');
             courseCard.className = 'list-group-item list-group-item-action flex-column align-items-start mb-2';
+
 
             const courseHeader = document.createElement('div');
             courseHeader.className = 'd-flex w-100 justify-content-between';
@@ -224,12 +233,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const courseTime = document.createElement('small');
             courseTime.textContent = `${course.day_of_week} | ${course.start_time} - ${course.end_time}`;
 
+
             courseHeader.appendChild(courseTitle);
             courseHeader.appendChild(courseTime);
+
 
             const courseLocation = document.createElement('p');
             courseLocation.className = 'mb-1';
             courseLocation.textContent = `Location: ${course.location}`;
+
 
             courseCard.appendChild(courseHeader);
             courseCard.appendChild(courseLocation);
@@ -260,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const friendId = selectedFriendData.id;
 
             fetch('../api/remove_friend.php', { 
+            fetch('../api/remove_friend.php', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -288,6 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (selectedAction === 'acceptFriendRequest') {
             const requesterId = selectedFriendData.id;
 
+            fetch('../api/accept_friend_request.php', { 
             fetch('../api/accept_friend_request.php', { 
                 method: 'POST',
                 headers: {
@@ -339,6 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showNewNotification();
         }
 
+
         function showNewNotification() {
             notification.classList.remove('success', 'error', 'warning', 'info', 'hide');
             
@@ -366,13 +381,17 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+
     function hideNotification() {
         const notification = document.getElementById('notification');
         if (!isNotificationVisible) return;
 
+
         notification.classList.add('hide');
         isNotificationVisible = false;
         
+
+
 
 
         if (currentTimeout) {

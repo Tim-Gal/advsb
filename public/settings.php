@@ -11,9 +11,10 @@ $pageJS = [
 
 include '../includes/header.php';
 
+// if the session variable user_id key is not set, then user is redirected to login.php page
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
-    exit();
+    exit(); // ends script execution
 }
 
 $user_id = $_SESSION['user_id'];
@@ -101,3 +102,7 @@ $stmt->close();
 <?php
 include '../includes/footer.php';
 ?>
+
+<?php foreach ($pageJS as $jsFile): ?>
+    <script src="<?php echo $jsFile; ?>"></script>
+<?php endforeach; ?>
