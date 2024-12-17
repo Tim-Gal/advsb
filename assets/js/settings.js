@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function disableSelectedMajorInMinor() {
         const selectedMajor = majorSelect.name;
-        const selectedMinor = minorSelect.value;
        
         Array.from(minorSelect.options).forEach(option => {
             if (option.value === selectedMajor) {

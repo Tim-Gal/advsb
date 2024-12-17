@@ -23,17 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-
-
-
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Invalid email format.";
         header("Location: ../public/register.php");
         exit();
     }
-
-
-
 
     if (substr($email, -strlen($req_ext)) !== $req_ext) {
         $_SESSION['error'] = "Email must end with " . htmlspecialchars($req_ext);
@@ -41,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-
+    // Check if username is taken
     $stmt = $conn->prepare("SELECT username FROM students WHERE username = ? LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
@@ -62,8 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $stmt->close();
 
-
-
+    // Check if email is taken
     $stmt_email = $conn->prepare("SELECT email FROM students WHERE email = ? LIMIT 1");
     if (!$stmt_email) {
         $_SESSION['error'] = "Database error: " . $conn->error;
@@ -82,22 +75,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
     $stmt_email->close();
+
+    // Password length check
     if (strlen($password) < 8) {
         $_SESSION['error'] = "Password must be at least 8 characters long.";
         header("Location: ../public/register.php");
         exit();
     }
 
-
+    // Password confirmation check
     if ($password !== $confirm_password) {
         $_SESSION['error'] = "Passwords do not match.";
         header("Location: ../public/register.php");
         exit();
     }
 
-
-
-    $stmt_major = $conn->prepare("SELECT degree_id FROM degrees WHERE degree_id = ? AND type = 'Major'");
+    // Validate Major
+    $stmt_major = $conn->prepare("SELECT name FROM degrees WHERE degree_id = ? AND type = 'Major' LIMIT 1");
     if ($stmt_major) {
         $stmt_major->bind_param("i", $major_id);
         $stmt_major->execute();
@@ -108,6 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: ../public/register.php");
             exit();
         }
+        $major_data = $res_major->fetch_assoc();
+        $major_name = $major_data['name'];
         $stmt_major->close();
     } else {
         $_SESSION['error'] = "Database error: " . $conn->error;
@@ -115,10 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-
-
+    // Validate Minor (if selected)
     if (!empty($minor_id)) {
-        $stmt_minor = $conn->prepare("SELECT degree_id FROM degrees WHERE degree_id = ? AND type = 'Minor'");
+        $stmt_minor = $conn->prepare("SELECT name FROM degrees WHERE degree_id = ? AND type = 'Minor' LIMIT 1");
         if ($stmt_minor) {
             $stmt_minor->bind_param("i", $minor_id);
             $stmt_minor->execute();
@@ -129,7 +124,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: ../public/register.php");
                 exit();
             }
+            $minor_data = $res_minor->fetch_assoc();
+            $minor_name = $minor_data['name'];
             $stmt_minor->close();
+
+            // Check if Major and Minor names are the same
+            if (strcasecmp($major_name, $minor_name) === 0) { // Case-insensitive comparison
+                $_SESSION['error'] = "Minor cannot be the same as Major.";
+                header("Location: ../public/register.php");
+                exit();
+            }
         } else {
             $_SESSION['error'] = "Database error: " . $conn->error;
             header("Location: ../public/register.php");
@@ -137,25 +141,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    if (!empty($minor_id) && $minor_id === $major_id) {
-        $_SESSION['error'] = "Minor cannot be the same as Major.";
-        header("Location: ../public/register.php");
-        exit();
-    }
-
-
+    // Hash the password
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
+    // Generate verification code
     $verification_code = generateVerificationCode(); 
 
+    // Prepare email content
     $subject = "Verify Your Advanced Schedule Builder Account";
     $verification_message = "Hello $username,\n\nYour verification code is: $verification_code\n\nPlease enter this 6-digit code on the verification page to activate your account.\n\nIf you did not request this, please ignore this email.";
 
-
+    // Initialize PHPMailer
     $mail = new PHPMailer(true);
 
     try {
-       
+        // SMTP configuration
         $mail->isSMTP();                                           
         $mail->Host       = 'smtp.gmail.com';                    
         $mail->SMTPAuth   = true;                                  
@@ -164,15 +164,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;     
         $mail->Port       = 587;                                
 
+        // Sender and recipient settings
         $mail->setFrom('noreply@advsb.com', 'Advanced Schedule Builder');
         $mail->addAddress($email, $username);                      
 
-
+        // Email content
         $mail->isHTML(false);                                       
         $mail->Subject = $subject;
         $mail->Body    = $verification_message;
 
-
+        // Send email
         $mail->send();
         $mail_sent = true;
     } catch (Exception $e) {

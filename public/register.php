@@ -51,7 +51,7 @@ include '../includes/header.php';
                   $sql_majors = "SELECT degree_id, name FROM degrees WHERE type = 'Major' ORDER BY name ASC";
                   $res_majors = $conn->query($sql_majors);
                   while ($major = $res_majors->fetch_assoc()) {
-                      echo "<option value='" . htmlspecialchars($major['degree_id']) . "'>" . htmlspecialchars($major['name']) . "</option>";
+                    echo "<option value='" . htmlspecialchars($major['degree_id']) . "' data-name='" . htmlspecialchars($major['name']) . "'>" . htmlspecialchars($major['name']) . "</option>";
                   }
               ?>
           </select>
@@ -64,7 +64,7 @@ include '../includes/header.php';
                   $sql_minors = "SELECT degree_id, name FROM degrees WHERE type = 'Minor' ORDER BY name ASC";
                   $res_minors = $conn->query($sql_minors);
                   while ($minor = $res_minors->fetch_assoc()) {
-                      echo "<option value='" . htmlspecialchars($minor['degree_id']) . "'>" . htmlspecialchars($minor['name']) . "</option>";
+                    echo "<option value='" . htmlspecialchars($minor['degree_id']) . "' data-name='" . htmlspecialchars($minor['name']) . "'>" . htmlspecialchars($minor['name']) . "</option>";
                   }
               ?>
           </select>

@@ -3,21 +3,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const majorSelect = document.getElementById('major');
     const minorSelect = document.getElementById('minor');
 
-    // Function to disable the selected major in the minor dropdown
+    if (!majorSelect || !minorSelect || !registrationForm) {
+        console.error("Major, Minor select elements or registration form not found.");
+        return;
+    }
+
+    // Function to disable minor options that have the same name as the selected major
     function disableSelectedMajorInMinor() {
-        const selectedMajor = majorSelect.value;
+        const selectedMajorName = majorSelect.options[majorSelect.selectedIndex].getAttribute('data-name') || '';
 
         Array.from(minorSelect.options).forEach(option => {
-            if (option.value === selectedMajor) {
+            const minorName = option.getAttribute('data-name') || '';
+            if (minorName === selectedMajorName && option.value !== "") {
                 option.disabled = true;
+                console.log(`Disabled minor option: ${minorName}`);
             } else {
                 option.disabled = false;
             }
         });
 
-        // If minor was previously set to the new major, reset it
-        if (minorSelect.value === selectedMajor) {
+        // If minor was previously set to the same as major, reset it
+        const currentMinorName = minorSelect.options[minorSelect.selectedIndex].getAttribute('data-name') || '';
+        if (currentMinorName === selectedMajorName) {
             minorSelect.value = '';
+            console.log("Minor reset because it matched the major.");
         }
     }
 
@@ -62,7 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if (minor && minor === major) {
+        // Fetch selected major and minor names
+        const selectedMajorName = majorSelect.options[majorSelect.selectedIndex].getAttribute('data-name') || '';
+        const selectedMinorName = minorSelect.options[minorSelect.selectedIndex].getAttribute('data-name') || '';
+
+        if (selectedMinorName && selectedMinorName === selectedMajorName) {
             e.preventDefault();
             alert('Minor cannot be the same as Major.');
             return;
