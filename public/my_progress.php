@@ -10,14 +10,14 @@ include '../includes/header.php';
 include '../api/my_progress_logic.php';
 
 if (!empty($_SESSION['error_message'])) {
-    echo "<div class='container my-5'><div class='alert alert-danger'>" . htmlspecialchars($_SESSION['error_message']) . "</div></div>";
+    echo "<div class='container my-5'><div class='caution caution-danger'>" . htmlspecialchars($_SESSION['error_message']) . "</div></div>";
     unset($_SESSION['error_message']);
     include '../includes/footer.php';
     exit();
 }
 
 if ($no_degrees_registered) {
-    echo "<div class='container my-5'><div class='alert alert-warning'>You have not registered for any degree programs yet.</div></div>";
+    echo "<div class='container my-5'><div class='caution caution-warning'>You have not registered for any degree programs yet.</div></div>";
     include '../includes/footer.php';
     exit();
 }
@@ -52,16 +52,16 @@ if ($no_degrees_registered) {
                 <div class="card-body">
                     <?php
                         if (!empty($add_course_error)) {
-                            echo '<div class="alert alert-danger">' . htmlspecialchars($add_course_error) . '</div>';
+                            echo '<div class="caution caution-danger">' . htmlspecialchars($add_course_error) . '</div>';
                         }
                         if (!empty($add_course_success)) {
-                            echo '<div class="alert alert-success">' . htmlspecialchars($add_course_success) . '</div>';
+                            echo '<div class="caution caution-success">' . htmlspecialchars($add_course_success) . '</div>';
                         }
                         if (!empty($remove_course_error)) {
-                            echo '<div class="alert alert-danger">' . htmlspecialchars($remove_course_error) . '</div>';
+                            echo '<div class="caution caution-danger">' . htmlspecialchars($remove_course_error) . '</div>';
                         }
                         if (!empty($remove_course_success)) {
-                            echo '<div class="alert alert-success">' . htmlspecialchars($remove_course_success) . '</div>';
+                            echo '<div class="caution caution-success">' . htmlspecialchars($remove_course_success) . '</div>';
                         }
                     ?>
                     <form action="../api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">
