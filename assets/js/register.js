@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Function to disable minor options that have the same name as the selected major
-    function disableSelectedMajorInMinor() {
+    function disable_minor() {
         const selectedMajorName = majorSelect.options[majorSelect.selectedIndex].getAttribute('data-name') || '';
 
         Array.from(minorSelect.options).forEach(option => {
@@ -22,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // If minor was previously set to the same as major, reset it
         const currentMinorName = minorSelect.options[minorSelect.selectedIndex].getAttribute('data-name') || '';
         if (currentMinorName === selectedMajorName) {
             minorSelect.value = '';
@@ -30,13 +28,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Initial disable on page load
-    disableSelectedMajorInMinor();
+    disable_minor();
 
-    // Listen for changes in the major select
-    majorSelect.addEventListener('change', disableSelectedMajorInMinor);
 
-    // Form submission validation
+
+    majorSelect.addEventListener('change', disable_minor);
+
+
+
     registrationForm.addEventListener('submit', function (e) {
         const username = document.getElementById('username').value.trim();
         const email = document.getElementById('email').value.trim();
@@ -71,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Fetch selected major and minor names
         const selectedMajorName = majorSelect.options[majorSelect.selectedIndex].getAttribute('data-name') || '';
         const selectedMinorName = minorSelect.options[minorSelect.selectedIndex].getAttribute('data-name') || '';
 

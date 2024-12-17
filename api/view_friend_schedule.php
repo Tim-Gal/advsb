@@ -1,6 +1,5 @@
 <?php
 
-ob_start();
 include '../includes/config.php';
 include '../includes/functions.php';
 
@@ -89,5 +88,4 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 
-ob_clean();
 echo json_encode(['success' => true, 'schedule' => $schedule]);

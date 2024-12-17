@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(err => {
-                console.error('Error fetching friends:', err);
                 displayNotification('Error fetching friends. Please try again.', 'error');
             });
     }
@@ -154,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(err => {
-                console.error('Error sending friend request:', err);
                 displayNotification('Error sending friend request. Please try again.', 'error');
             })
             .finally(() => {
@@ -177,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getFriendSchedule() {
         const semester = friendSemesterSelect.value;
-        console.log(`Selected Semester: ${semester}`);
         if (semester === '') {
             displayNotification('Please select a semester to view the schedule.', 'warning');
             return;
@@ -185,12 +182,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('scheduleLoading').style.display = 'block';
         friendScheduleList.innerHTML = '';
 
-        console.log(`Fetching schedule for Friend ID: ${selectedFriendId}, Semester: ${semester}`);
 
         fetch(`../api/view_friend_schedule.php?friend_id=${encodeURIComponent(selectedFriendId)}&semester=${encodeURIComponent(semester)}`)
             .then(res => res.json())
             .then(data => {
-                console.log('API Response:', data);
                 if (data.success) {
                     populateFriendSchedule(data.schedule);
                 } else {
@@ -200,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(err => {
-                console.error('Error fetching friend\'s schedule:', err);
                 displayNotification('Error fetching friend\'s schedule. Please try again.', 'error');
                 friendScheduleList.innerHTML = '<div class="caution caution-danger">An error occurred while fetching the schedule.</div>';
                 friendScheduleList.innerHTML = '<div class="caution caution-danger">An error occurred while fetching the schedule.</div>';
@@ -210,7 +204,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
     function populateFriendSchedule(schedule) {
-        console.log('Populating Schedule:', schedule);
         const friendScheduleList = document.getElementById('friendScheduleList');
         friendScheduleList.innerHTML = ''; 
         friendScheduleList.innerHTML = ''; 
@@ -241,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const courseLocation = document.createElement('p');
             courseLocation.className = 'mb-1';
             courseLocation.textContent = `Location: ${course.location}`;
+
 
 
             courseCard.appendChild(courseHeader);
@@ -288,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(err => {
-                    console.error('Error removing friend:', err);
                     displayNotification('Error removing friend. Please try again.', 'error');
                 })
                 .finally(() => {
@@ -317,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(err => {
-                    console.error('Error accepting friend request:', err);
                     displayNotification('Error accepting friend request. Please try again.', 'error');
                 })
                 .finally(() => {
