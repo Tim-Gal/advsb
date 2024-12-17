@@ -137,6 +137,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    if (!empty($minor_id) && $minor_id === $major_id) {
+        $_SESSION['error'] = "Minor cannot be the same as Major.";
+        header("Location: ../public/register.php");
+        exit();
+    }
+
+
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     $verification_code = generateVerificationCode(); 

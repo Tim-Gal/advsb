@@ -71,7 +71,7 @@ $stmt->close();
                             $res_majors = $conn->query($sql_majors);
                             while ($major = $res_majors->fetch_assoc()) {
                                 $selected = ($major['degree_id'] == $user_data['major_id']) ? 'selected' : '';
-                                echo "<option value='" . htmlspecialchars($major['degree_id']) . "' $selected>" . htmlspecialchars($major['name']) . "</option>";
+                                echo "<option value='" . htmlspecialchars($major['name']) . "' $selected>" . htmlspecialchars($major['name']) . "</option>";
                             }
                         ?>
                     </select>
@@ -86,7 +86,7 @@ $stmt->close();
                             $res_minors = $conn->query($sql_minors);
                             while ($minor = $res_minors->fetch_assoc()) {
                                 $selected = ($minor['degree_id'] == $user_data['minor_id']) ? 'selected' : '';
-                                echo "<option value='" . htmlspecialchars($minor['degree_id']) . "' $selected>" . htmlspecialchars($minor['name']) . "</option>";
+                                echo "<option value='" . htmlspecialchars($minor['name']) . "' $selected>" . htmlspecialchars($minor['name']) . "</option>";
                             }
                         ?>
                     </select>
