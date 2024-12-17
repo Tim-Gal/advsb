@@ -137,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
         sendFriendFeedback.innerHTML = '';
 
         fetch('../api/send_friend_request.php', { 
-        fetch('../api/send_friend_request.php', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -161,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .finally(() => {
                 sendFriendButton.disabled = false;
             });
+            
     }
 
     function viewFriendSchedule(friendId, friendName) {
@@ -272,7 +272,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const friendId = selectedFriendData.id;
 
             fetch('../api/remove_friend.php', { 
-            fetch('../api/remove_friend.php', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -301,7 +300,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (selectedAction === 'acceptFriendRequest') {
             const requesterId = selectedFriendData.id;
 
-            fetch('../api/accept_friend_request.php', { 
             fetch('../api/accept_friend_request.php', { 
                 method: 'POST',
                 headers: {
