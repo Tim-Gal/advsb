@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getFriendsAndRequests() {
         fetch('../api/get_friends.php') 
-        fetch('../api/get_friends.php') 
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
