@@ -1,5 +1,4 @@
 <?php
-
 $pageTitle = "Settings";
 $pageCSS = [
     '../assets/css/global.css',
@@ -11,10 +10,9 @@ $pageJS = [
 
 include '../includes/header.php';
 
-// if the session variable user_id key is not set, then user is redirected to login.php page
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
-    exit(); // ends script execution
+    exit();
 }
 
 $user_id = $_SESSION['user_id'];
@@ -72,7 +70,7 @@ $stmt->close();
                             $res_majors = $conn->query($sql_majors);
                             while ($major = $res_majors->fetch_assoc()) {
                                 $selected = ($major['degree_id'] == $user_data['major_id']) ? 'selected' : '';
-                                echo "<option value='" . htmlspecialchars($major['name']) . "' $selected>" . htmlspecialchars($major['name']) . "</option>";
+                                echo "<option value='" . htmlspecialchars($major['degree_id']) . "' data-name='" . htmlspecialchars($major['name']) . "' $selected>" . htmlspecialchars($major['name']) . "</option>";
                             }
                         ?>
                     </select>
@@ -87,7 +85,7 @@ $stmt->close();
                             $res_minors = $conn->query($sql_minors);
                             while ($minor = $res_minors->fetch_assoc()) {
                                 $selected = ($minor['degree_id'] == $user_data['minor_id']) ? 'selected' : '';
-                                echo "<option value='" . htmlspecialchars($minor['name']) . "' $selected>" . htmlspecialchars($minor['name']) . "</option>";
+                                echo "<option value='" . htmlspecialchars($minor['degree_id']) . "' data-name='" . htmlspecialchars($minor['name']) . "' $selected>" . htmlspecialchars($minor['name']) . "</option>";
                             }
                         ?>
                     </select>
@@ -102,7 +100,3 @@ $stmt->close();
 <?php
 include '../includes/footer.php';
 ?>
-
-<?php foreach ($pageJS as $jsFile): ?>
-    <script src="<?php echo $jsFile; ?>"></script>
-<?php endforeach; ?>
