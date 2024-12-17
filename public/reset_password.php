@@ -1,6 +1,4 @@
 <?php
-// reset_password.php
-
 
 include_once '../includes/functions.php';
 
@@ -15,24 +13,20 @@ $pageJS = [
 
 include_once '../includes/header.php';
 
-// Redirect to forgot_password.php if reset_user_id is not set
 if (!isset($_SESSION['reset_user_id'])) {
     $_SESSION['fp_error'] = "Unauthorized access. Please verify your reset code first.";
     header("Location: forgot_password.php");
     exit();
 }
 
-// Determine the current step based on session variables
-$step = 2; // Step 2: Set New Password
+$step = 2; 
 
 if (isset($_POST['reset_password'])) {
-    // Handle password reset
     $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : '';
     $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 
     $errors = [];
 
-    // Validate new password
     if (empty($new_password)) {
         $errors[] = "Please enter a new password.";
     }
@@ -45,7 +39,8 @@ if (isset($_POST['reset_password'])) {
         $errors[] = "Passwords do not match.";
     }
 
-    // Enforce minimum length of 8 characters
+
+
     if (strlen($new_password) < 8) {
         $errors[] = "Password must be at least 8 characters long.";
     }
@@ -56,8 +51,7 @@ if (isset($_POST['reset_password'])) {
         exit();
     }
 
-    // Fetch the existing password_hash
-    include_once '../includes/config.php'; // Ensure database connection
+    include_once '../includes/config.php'; 
 
     $user_id = (int)$_SESSION['reset_user_id'];
 
@@ -84,7 +78,6 @@ if (isset($_POST['reset_password'])) {
     $existing_password_hash = $user['password_hash'];
     $stmt_fetch->close();
 
-    // Check if the new password is the same as the current password
     if (!empty($existing_password_hash) && password_verify($new_password, $existing_password_hash)) {
         $_SESSION['fp_error'] = "The new password cannot be the same as the current password.";
         $conn->close();
@@ -92,10 +85,8 @@ if (isset($_POST['reset_password'])) {
         exit();
     }
 
-    // Hash the new password
     $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
 
-    // Update the user's password_hash and clear password_reset_code and password_reset_expires
     $stmt_update = $conn->prepare("UPDATE students SET password_hash = ?, password_reset_code = NULL, password_reset_expires = NULL WHERE student_id = ?");
     if (!$stmt_update) {
         $_SESSION['fp_error'] = "Database error: " . $conn->error;
@@ -105,9 +96,7 @@ if (isset($_POST['reset_password'])) {
 
     $stmt_update->bind_param("si", $hashed_password, $user_id);
     if ($stmt_update->execute()) {
-        // Password updated successfully
         $_SESSION['fp_success'] = "Your password has been reset successfully. You can now log in.";
-        // Unset the reset_user_id
         unset($_SESSION['reset_user_id']);
     } else {
         $_SESSION['fp_error'] = "Failed to reset password. Please try again.";

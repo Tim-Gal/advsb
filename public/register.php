@@ -48,7 +48,6 @@ include '../includes/header.php';
           <select class="form-select" id="major" name="major_id" required>
               <option value="">-- Select Major --</option>
               <?php
-                  // Fetch all majors from degrees table
                   $sql_majors = "SELECT degree_id, name FROM degrees WHERE type = 'Major' ORDER BY name ASC";
                   $res_majors = $conn->query($sql_majors);
                   while ($major = $res_majors->fetch_assoc()) {
@@ -62,7 +61,6 @@ include '../includes/header.php';
           <select class="form-select" id="minor" name="minor_id">
               <option value="">-- Select Minor (Optional) --</option>
               <?php
-                  // Fetch all minors from degrees table
                   $sql_minors = "SELECT degree_id, name FROM degrees WHERE type = 'Minor' ORDER BY name ASC";
                   $res_minors = $conn->query($sql_minors);
                   while ($minor = $res_minors->fetch_assoc()) {
@@ -86,7 +84,7 @@ include '../includes/header.php';
       </form>
     <?php endif; ?>
 
-    <!-- Button to Open Verification Modal Anytime -->
+
     <div class="text-center mb-5">
       <button type="button" class="verify-btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#verificationModal">
         Already have your verification code? Verify here
@@ -94,7 +92,6 @@ include '../includes/header.php';
     </div>
   </div>
 
-  <!-- Verification Modal -->
   <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">

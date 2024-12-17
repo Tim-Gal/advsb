@@ -1,6 +1,4 @@
 <?php
-// forgot_password.php
-
 include_once '../includes/functions.php';
 
 $pageTitle = "Forgot Password";
@@ -19,26 +17,21 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Check if a reset code was sent
 $reset_code_sent = isset($_SESSION['reset_code_sent']) && $_SESSION['reset_code_sent'] === true;
-unset($_SESSION['reset_code_sent']); // Unset the flag
+unset($_SESSION['reset_code_sent']); 
 
-// Determine the current step based on session variables
-$step = 1; // Step 1: Enter Reset Code
+$step = 1; 
 
 if (isset($_POST['verify_code'])) {
-    // Handle reset code verification
     $reset_code = isset($_POST['reset_code']) ? sanitizeInput($_POST['reset_code']) : '';
 
-    // Validate reset code format (6-digit)
     if (!preg_match('/^\d{6}$/', $reset_code)) {
         $_SESSION['fp_error'] = "Invalid reset code format. Please enter a 6-digit code.";
         header("Location: ../public/forgot_password.php");
         exit();
     }
 
-    // Check the reset code against the database
-    include_once '../includes/config.php'; // Ensure database connection
+    include_once '../includes/config.php'; 
 
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE password_reset_code = ? AND password_reset_expires >= NOW() LIMIT 1");
     if (!$stmt) {
@@ -63,10 +56,8 @@ if (isset($_POST['verify_code'])) {
     $stmt->close();
     $conn->close();
 
-    // Set the user_id in session to allow password reset
     $_SESSION['reset_user_id'] = $user['student_id'];
 
-    // Proceed to password reset step
     $step = 2;
 }
 ?>
@@ -127,7 +118,6 @@ if (isset($_POST['verify_code'])) {
     </div>
 <?php elseif ($step == 2): ?>
     <?php
-    // Redirect to reset_password.php if the code is verified
     header("Location: reset_password.php");
     exit();
     ?>

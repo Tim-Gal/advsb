@@ -11,7 +11,6 @@ $pageJS = [
 include '../includes/header.php';
 ?>
 <div class="main-content">
-    <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
             <h1 class="hero-title">Welcome to Your Future</h1>
@@ -22,7 +21,6 @@ include '../includes/header.php';
         </div>
     </section>
 
-    <!-- Features Section -->
     <section class="features-section">
         <div class="container">
             <h2 class="text-center">Our Features</h2>

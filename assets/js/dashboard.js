@@ -370,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function displayNotification(message, type = 'success') {
-        // Clear any existing timeout
         if (currentTimeout) {
             clearTimeout(currentTimeout);
             currentTimeout = null;
@@ -380,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const notificationText = document.getElementById('notificationText');
         const notificationClose = document.getElementById('notificationClose');
     
-        // If a hide animation is in progress, wait for it to complete
+
         if (notification.classList.contains('hide')) {
             notification.addEventListener('animationend', function handler() {
                 notification.removeEventListener('animationend', handler);

@@ -12,12 +12,10 @@ $pageJS = [
 include '../includes/header.php';
 
 if (!isset($_SESSION['user_id'])) {
-    // Redirect to login page if not authenticated
     header('Location: login.php');
     exit();
 }
 
-// Fetch current user's data including username
 $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
@@ -52,7 +50,6 @@ $stmt->close();
             ?>
 
             <form action="../api/update_settings.php" method="POST" class="settings-form">
-                <!-- Username Update Section -->
                 <div class="mb-4">
                     <h4>Update Username</h4>
                     <div class="mb-3">
@@ -66,12 +63,10 @@ $stmt->close();
                     </div>
                 </div>
 
-                <!-- Major Selection -->
                 <div class="mb-3">
                     <label for="major" class="form-label">Update Major <span class="text-danger">*</span></label>
                     <select class="form-select" id="major" name="major_id" required>
                         <?php
-                            // Fetch all majors from degrees table
                             $sql_majors = "SELECT degree_id, name FROM degrees WHERE type = 'Major' ORDER BY name ASC";
                             $res_majors = $conn->query($sql_majors);
                             while ($major = $res_majors->fetch_assoc()) {
@@ -82,13 +77,11 @@ $stmt->close();
                     </select>
                 </div>
 
-                <!-- Minor Selection -->
                 <div class="mb-3">
                     <label for="minor" class="form-label">Update Minor</label>
                     <select class="form-select" id="minor" name="minor_id">
                         <option value="">-- No Minor --</option>
                         <?php
-                            // Fetch all minors from degrees table
                             $sql_minors = "SELECT degree_id, name FROM degrees WHERE type = 'Minor' ORDER BY name ASC";
                             $res_minors = $conn->query($sql_minors);
                             while ($minor = $res_minors->fetch_assoc()) {

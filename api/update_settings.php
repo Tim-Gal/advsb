@@ -20,22 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errors = [];
 
 
-    $uname_upd = false; // Flag to check if username needs to be updated
+    $uname_upd = false; 
     if (!empty($new_username)) {
         $uname_upd = true;
 
-        // Check username length
+
         if (strlen($new_username) < 3 || strlen($new_username) > 20) {
             $errors[] = "Username must be between 3 and 20 characters long.";
         }
 
-        // Check allowed characters (letters, numbers, underscores, periods)
         if (!preg_match('/^[A-Za-z0-9_.]+$/', $new_username)) {
             $errors[] = "Username can only contain letters, numbers, underscores, and periods.";
         }
 
-        // Check if username is already taken by another user
-        if (empty($errors)) { // Proceed only if no previous errors
+        if (empty($errors)) {
             $stmt_username = $conn->prepare("SELECT student_id FROM students WHERE username = ? AND student_id != ?");
             if (!$stmt_username) {
                 $errors[] = "Database error: " . $conn->error;
@@ -51,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Validate Major
     if (empty($major_id)) {
         $errors[] = "Major selection is required.";
     } else {

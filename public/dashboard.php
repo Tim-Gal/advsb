@@ -15,9 +15,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -28,9 +26,7 @@ if (!isset($_SESSION['user_id'])) {
             <h1 class="text-center mb-4">My Schedule Builder</h1>
 
             <div class="row">
-                <!-- Left Side -->
                 <div class="col-md-4">
-                    <!-- Semester Selector -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5>Select Semester</h5>
@@ -48,7 +44,6 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
 
-                    <!-- Course Adder -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5>Add a Course</h5>
@@ -63,7 +58,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
 
-                    <!-- Selected Course Container -->
+
                     <div id="selectedCourseContainer" class="card mb-4" style="display: none;">
                         <div class="card-body d-flex align-items-center">
                             <span id="selectedCourseText" class="me-3"></span>
@@ -73,7 +68,8 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
 
-                    <!-- Enrolled Courses -->
+
+
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5>Enrolled Courses</h5>
@@ -90,7 +86,6 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                 </div>
 
-                <!-- Right Side - Schedule Table -->
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
