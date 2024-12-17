@@ -48,12 +48,7 @@ if (empty($degrees)) {
 $placeholders = implode(',', array_fill(0, count($degrees), '?'));
 $sql_degree_names = "SELECT degree_id, name, type FROM degrees WHERE degree_id IN ($placeholders)";
 $stmt_degree_names = $conn->prepare($sql_degree_names);
-if (!$stmt_degree_names) {
-    error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    $_SESSION['error_message'] = "An error occurred. Please try again later.";
-    header('Location: my_progress.php'); 
-    exit();
-}
+
 
 $types = str_repeat('i', count($degrees));
 $stmt_degree_names->bind_param($types, ...$degrees);

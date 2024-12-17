@@ -50,23 +50,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $stmtCheckCourse->close();
 
-          
+            $sqlCheckCompleted = "SELECT 1 FROM coursescompleted WHERE student_id = ? AND course_code = ?";
+            $stmtCheckCompleted = $conn->prepare($sqlCheckCompleted);
+            if (!$stmtCheckCompleted) {
+                throw new Exception("Database error while checking completion status: " . $conn->error);
+            }
+
+            $stmtCheckCompleted->bind_param("is", $user_id, $course_code);
+            $stmtCheckCompleted->execute();
+            $resultCompleted = $stmtCheckCompleted->get_result();
+
+            if ($resultCompleted->num_rows > 0) {
+                $stmtCheckCompleted->close();
+                throw new Exception("You have already marked '{$course_code}' as completed.");
+            }
+            $stmtCheckCompleted->close();
+
             $sqlInsertCompleted = "INSERT INTO coursescompleted (student_id, course_code) VALUES (?, ?)";
             $stmtInsertCompleted = $conn->prepare($sqlInsertCompleted);
-           
+            if (!$stmtInsertCompleted) {
+                throw new Exception("Database error while inserting completed course: " . $conn->error);
+            }
+
             $stmtInsertCompleted->bind_param("is", $user_id, $course_code);
 
             if (!$stmtInsertCompleted->execute()) {
-                if ($conn->errno === 1062) {
-                    $stmtInsertCompleted->close();
-                    throw new Exception("You have already marked '{$course_code}' as completed.");
-                } else {
-                    throw new Exception("Database error while inserting completed course: " . $stmtInsertCompleted->error);
-                }
+                throw new Exception("Failed to mark course as completed. Please try again.");
             }
             $stmtInsertCompleted->close();
 
-         
+
             $sqlCheckEnrollment = "
                 SELECT ce.section_code, s.semester, c.course_name
                 FROM coursesenrolled ce
