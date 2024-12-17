@@ -5,7 +5,9 @@ $pageCSS = [
     '../assets/css/global.css',
     '../assets/css/settings.css'
 ];
-
+$pageJS = [
+    '../assets/js/settings.js'
+];
 
 include '../includes/header.php';
 
@@ -100,3 +102,7 @@ $stmt->close();
 <?php
 include '../includes/footer.php';
 ?>
+
+<?php foreach ($pageJS as $jsFile): ?>
+    <script src="<?php echo $jsFile; ?>"></script>
+<?php endforeach; ?>
