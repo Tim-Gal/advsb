@@ -2,11 +2,11 @@
 
 $pageTitle = "Login";
 $pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/login.css'
+    '/assets/css/global.css',
+    '/assets/css/login.css'
 ];
 $pageJS = [
-    '../assets/js/login.js'
+    '/assets/js/login.js'
 ];
 
 include '../includes/header.php';

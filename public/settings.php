@@ -1,11 +1,11 @@
 <?php
 $pageTitle = "Settings";
 $pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/settings.css'
+    '/assets/css/global.css',
+    '/assets/css/settings.css'
 ];
 $pageJS = [
-    '../assets/js/settings.js'
+    '/assets/js/settings.js'
 ];
 
 include '../includes/header.php';

@@ -1,8 +1,8 @@
 <?php
 $pageTitle = "My Progress";
 $pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/my_progress.css'
+    '/assets/css/global.css',
+    '/assets/css/my_progress.css'
 ];
 
 include '../includes/header.php';
@@ -137,6 +137,6 @@ if ($no_degrees_registered) {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-<script src="../assets/js/my_progress.js"></script>
+<script src="/assets/js/my_progress.js"></script>
 
 <?php include '../includes/footer.php'; ?>

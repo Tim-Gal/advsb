@@ -1,11 +1,11 @@
 <?php
 $pageTitle = "Advanced Schedule Builder | Home";
 $pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/index.css'
+    '/assets/css/global.css',
+    '/assets/css/index.css'
 ];
 $pageJS = [
-    '../assets/js/index.js'
+    '/assets/js/index.js'
 ];
 
 include '../includes/header.php';

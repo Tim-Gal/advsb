@@ -1,11 +1,11 @@
 <?php
 $pageTitle = "Register";
 $pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/register.css'
+    '/assets/css/global.css',
+    '/assets/css/register.css'
 ];
 $pageJS = [
-    '../assets/js/register.js'
+    '/assets/js/register.js'
 ];
 
 include '../includes/header.php';

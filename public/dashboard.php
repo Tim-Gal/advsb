@@ -17,7 +17,7 @@ if (!isset($_SESSION['user_id'])) {
 <!DOCTYPE html>
 <head>
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -132,7 +132,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <script src="../assets/js/dashboard.js"></script>
+    <script src="/assets/js/dashboard.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
 </body>

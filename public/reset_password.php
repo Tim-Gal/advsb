@@ -4,11 +4,11 @@ include_once '../includes/functions.php';
 
 $pageTitle = "Reset Password";
 $pageCSS = [
-    '../assets/css/global.css',
-    '../assets/css/login.css'
+    '/assets/css/global.css',
+    '/assets/css/login.css'
 ];
 $pageJS = [
-    '../assets/js/login.js'
+    '/assets/js/login.js'
 ];
 
 include_once '../includes/header.php';
