@@ -27,7 +27,7 @@ if (isset($_POST['verify_code'])) {
 
     if (!preg_match('/^\d{6}$/', $reset_code)) {
         $_SESSION['fp_error'] = "Invalid reset code format. Please enter a 6-digit code.";
-        header("Location: ../public/forgot_password.php");
+        header("Location: /forgot_password.php");
         exit();
     }
 
@@ -36,7 +36,7 @@ if (isset($_POST['verify_code'])) {
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE password_reset_code = ? AND password_reset_expires >= NOW() LIMIT 1");
     if (!$stmt) {
         $_SESSION['fp_error'] = "Database error: " . $conn->error;
-        header("Location: ../public/forgot_password.php");
+        header("Location: /forgot_password.php");
         exit();
     }
 
@@ -48,7 +48,7 @@ if (isset($_POST['verify_code'])) {
         $_SESSION['fp_error'] = "Invalid or expired reset code.";
         $stmt->close();
         $conn->close();
-        header("Location: ../public/forgot_password.php");
+        header("Location: /forgot_password.php");
         exit();
     }
 
