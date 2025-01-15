@@ -1,6 +1,6 @@
 <?php
 
-include '../includes/header.php'; 
+include '/includes/header.php'; 
 
 $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 $startHour = 8;  
@@ -138,5 +138,5 @@ if (!isset($_SESSION['user_id'])) {
 </body>
 </html>
 <?php
-include '../includes/footer.php';
+include '/includes/footer.php';
 ?>

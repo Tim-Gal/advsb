@@ -1,6 +1,6 @@
 <?php
 
-include_once '../includes/functions.php';
+include_once '/includes/functions.php';
 
 $pageTitle = "Reset Password";
 $pageCSS = [
@@ -11,7 +11,7 @@ $pageJS = [
     '/assets/js/login.js'
 ];
 
-include_once '../includes/header.php';
+include_once '/includes/header.php';
 
 if (!isset($_SESSION['reset_user_id'])) {
     $_SESSION['fp_error'] = "Unauthorized access. Please verify your reset code first.";
@@ -51,7 +51,7 @@ if (isset($_POST['reset_password'])) {
         exit();
     }
 
-    include_once '../includes/config.php'; 
+    include_once '/includes/config.php'; 
 
     $user_id = (int)$_SESSION['reset_user_id'];
 
@@ -144,5 +144,5 @@ if (isset($_POST['reset_password'])) {
 <?php endif; ?>
 
 <?php
-include_once '../includes/footer.php';
+include_once '/includes/footer.php';
 ?>

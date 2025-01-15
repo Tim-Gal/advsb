@@ -1,5 +1,5 @@
 <?php
-include '../includes/header.php'; 
+include '/includes/header.php'; 
 
 if (!isset($_SESSION['user_id'])) {
   header('Location: login.php');
@@ -108,5 +108,5 @@ if (!isset($_SESSION['user_id'])) {
 <script src="/assets/js/network.js"></script>
 
 <?php
-include '../includes/footer.php';
+include '/includes/footer.php';
 ?>

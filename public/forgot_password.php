@@ -1,5 +1,5 @@
 <?php
-include_once '../includes/functions.php';
+include_once '/includes/functions.php';
 
 $pageTitle = "Forgot Password";
 $pageCSS = [
@@ -10,7 +10,7 @@ $pageJS = [
     '/assets/js/login.js'
 ];
 
-include_once '../includes/header.php';
+include_once '/includes/header.php';
 
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
@@ -31,7 +31,7 @@ if (isset($_POST['verify_code'])) {
         exit();
     }
 
-    include_once '../includes/config.php'; 
+    include_once '/includes/config.php'; 
 
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE password_reset_code = ? AND password_reset_expires >= NOW() LIMIT 1");
     if (!$stmt) {
@@ -124,5 +124,5 @@ if (isset($_POST['verify_code'])) {
 <?php endif; ?>
 
 <?php
-include_once '../includes/footer.php';
+include_once '/includes/footer.php';
 ?>

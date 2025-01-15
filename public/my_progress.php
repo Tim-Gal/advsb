@@ -5,20 +5,20 @@ $pageCSS = [
     '/assets/css/my_progress.css'
 ];
 
-include '../includes/header.php';
+include '/includes/header.php';
 
 include '/api/my_progress_logic.php';
 
 if (!empty($_SESSION['error_message'])) {
     echo "<div class='container my-5'><div class='caution caution-danger'>" . htmlspecialchars($_SESSION['error_message']) . "</div></div>";
     unset($_SESSION['error_message']);
-    include '../includes/footer.php';
+    include '/includes/footer.php';
     exit();
 }
 
 if ($no_degrees_registered) {
     echo "<div class='container my-5'><div class='caution caution-warning'>You have not registered for any degree programs yet.</div></div>";
-    include '../includes/footer.php';
+    include '/includes/footer.php';
     exit();
 }
 ?>
@@ -139,4 +139,4 @@ if ($no_degrees_registered) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="/assets/js/my_progress.js"></script>
 
-<?php include '../includes/footer.php'; ?>
+<?php include '/includes/footer.php'; ?>

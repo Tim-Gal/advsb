@@ -9,7 +9,7 @@ $pageJS = [
     '/assets/js/login.js'
 ];
 
-include '../includes/header.php';
+include '/includes/header.php';
 
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
@@ -56,5 +56,5 @@ if (isset($_SESSION['user_id'])) {
 </div>
 
 <?php
-include '../includes/footer.php';
+include '/includes/footer.php';
 ?>

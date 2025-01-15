@@ -8,7 +8,7 @@ $pageJS = [
     '/assets/js/index.js'
 ];
 
-include '../includes/header.php';
+include '/includes/header.php';
 ?>
 <div class="main-content">
     <section class="hero-section">
@@ -44,4 +44,4 @@ include '../includes/header.php';
         </div>
     </section>
 </div>
-<?php include '../includes/footer.php'; ?>
+<?php include '/includes/footer.php'; ?>

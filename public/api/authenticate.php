@@ -3,8 +3,8 @@
 
 <?php
 session_start();
-include '../../includes/config.php';
-include '../../includes/functions.php';
+include '../includes/config.php';
+include '../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $identifier = strtolower(sanitizeInput($_POST['identifier'])); 

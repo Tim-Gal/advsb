@@ -3,8 +3,8 @@
 session_start();
 header('Content-Type: text/html; charset=utf-8');
 
-include '../../includes/config.php';
-include '../../includes/functions.php';
+include '../includes/config.php';
+include '../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['error'] = "You must be logged in to manage your progress.";

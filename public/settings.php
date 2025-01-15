@@ -8,7 +8,7 @@ $pageJS = [
     '/assets/js/settings.js'
 ];
 
-include '../includes/header.php';
+include '/includes/header.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -101,5 +101,5 @@ $stmt->close();
 </div>
 
 <?php
-include '../includes/footer.php';
+include '/includes/footer.php';
 ?>
