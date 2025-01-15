@@ -3,12 +3,12 @@
 session_start();
 header('Content-Type: text/html; charset=utf-8');
 
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['error'] = "You must be logged in to manage your progress.";
-    header("Location: ../public/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -20,13 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($course_code)) {
             $_SESSION['add_course_error'] = "Course code cannot be empty.";
-            header("Location: ../public/my_progress.php");
+            header("Location: ../my_progress.php");
             exit();
         }
 
         if (!preg_match('/^[A-Z]{2,4}-\d{3}$/', $course_code)) {
             $_SESSION['add_course_error'] = "Invalid course code format. Please enter in the format XXXX-XXX.";
-            header("Location: ../public/my_progress.php");
+            header("Location: ../my_progress.php");
             exit();
         }
 
@@ -150,20 +150,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['add_course_error'] = $e->getMessage();
         }
 
-        header("Location: ../public/my_progress.php");
+        header("Location: ../my_progress.php");
         exit();
     } elseif (isset($_POST['remove_course_code'])) {
         $course_code = strtoupper(trim($_POST['remove_course_code']));
 
         if (empty($course_code)) {
             $_SESSION['remove_course_error'] = "Course code cannot be empty.";
-            header("Location: ../public/my_progress.php");
+            header("Location: ../my_progress.php");
             exit();
         }
 
         if (!preg_match('/^[A-Z]{2,4}-\d{3}$/', $course_code)) {
             $_SESSION['remove_course_error'] = "Invalid course code format. Please enter in the format XXXX-XXX.";
-            header("Location: ../public/my_progress.php");
+            header("Location: ../my_progress.php");
             exit();
         }
 
@@ -197,10 +197,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['remove_course_error'] = $e->getMessage();
         }
 
-        header("Location: ../public/my_progress.php");
+        header("Location: ../my_progress.php");
         exit();
     } else {
-        header("Location: ../public/my_progress.php");
+        header("Location: ../my_progress.php");
         exit();
     }
 }

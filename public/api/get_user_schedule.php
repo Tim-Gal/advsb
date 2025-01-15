@@ -1,12 +1,14 @@
-<?php 
-include '../includes/config.php';
-include '../includes/functions.php';
+<?php
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-header('Content-Type: application/json');
 
+
+
+header('Content-Type: application/json');
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
     echo json_encode(["error" => "Not logged in"]);
@@ -14,11 +16,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-if (isset($_GET['semester']) && $_GET['semester'] !== null) {
-    $semesterName = trim($_GET['semester']);
-} else {
-    $semesterName = 'Fall';
-}
+
+
+
+$semesterName = trim($_GET['semester'] ?? 'Fall'); 
 
 if (empty($semesterName)) {
     echo json_encode(["error" => "Semester parameter is required."]);
@@ -26,13 +27,18 @@ if (empty($semesterName)) {
 }
 
 $sql = "
-SELECT DISTINCT 
+SELECT 
+    ce.section_code,
+    l.day_of_week, 
+    l.start_time, 
+    l.end_time, 
+    l.location, 
     c.course_code AS code,
-    c.course_name AS name,
-    s.professor AS professor
+    c.course_name AS course_name
 FROM coursesenrolled ce
 JOIN sections s ON ce.section_code = s.section_code
 JOIN courses c ON s.course_code = c.course_code
+JOIN lectures l ON l.section_code = s.section_code
 WHERE ce.student_id = ?
   AND LOWER(s.semester) = LOWER(?)
 ";
@@ -40,16 +46,20 @@ WHERE ce.student_id = ?
 $stmt = $conn->prepare($sql);
 
 
+
+
 $stmt->bind_param("is", $user_id, $semesterName);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$enrolledCourses = [];
+
+
+$offerings = [];
 while ($row = $result->fetch_assoc()) {
-    $enrolledCourses[] = $row;
+    $offerings[] = $row;
 }
 
 $stmt->close();
 
-echo json_encode($enrolledCourses);
+echo json_encode($offerings);
 ?>

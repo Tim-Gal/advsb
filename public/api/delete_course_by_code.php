@@ -1,7 +1,7 @@
 <?php
 
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 session_start();
 header('Content-Type: application/json');

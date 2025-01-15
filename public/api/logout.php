@@ -4,7 +4,7 @@
 
 <?php
 session_start();
-include '../includes/config.php';
+include '../../includes/config.php';
 
 if (isset($_SESSION['user_id'])) {
     $student_id = $_SESSION['user_id'];
@@ -26,6 +26,6 @@ setcookie("remember_me", "", time() - 3600, "/");
 
 session_start();
 $_SESSION['logout_success'] = "You have been logged out successfully.";
-header("Location: ../public/index.php");
+header("Location: ../index.php");
 exit();
 ?>

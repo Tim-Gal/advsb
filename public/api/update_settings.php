@@ -1,13 +1,13 @@
 <?php
 session_start();
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 
 
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['settings_error'] = "You must be logged in to update your settings.";
-    header("Location: ../public/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!empty($errors)) {
         $_SESSION['settings_error'] = implode(' ', $errors);
-        header("Location: ../public/settings.php");
+        header("Location: ../settings.php");
         exit();
     }
 
@@ -120,17 +120,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $_SESSION['settings_success'] = "Settings successfully updated.";
 
-        header("Location: ../public/settings.php");
+        header("Location: ../settings.php");
         exit();
     } catch (Exception $e) {
         $conn->rollback();
         error_log("Error updating settings: " . $e->getMessage());
         $_SESSION['settings_error'] = "Failed to update settings. Please try again later.";
-        header("Location: ../public/settings.php");
+        header("Location: ../settings.php");
         exit();
     }
 } else {
-    header("Location: ../public/settings.php");
+    header("Location: ../settings.php");
     exit();
 }
 ?>

@@ -3,8 +3,8 @@
 
 <?php
 session_start();
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $identifier = strtolower(sanitizeInput($_POST['identifier'])); 
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($identifier) || empty($password)) {
         $_SESSION['error'] = "Please enter both Username/Email and Password.";
-        header("Location: ../public/login.php");
+        header("Location: ../login.php");
         exit();
     }
     if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "No account found with that Username/Email.";
         $stmt->close();
         $conn->close();
-        header("Location: ../public/login.php");
+        header("Location: ../login.php");
         exit();
     }
     $stmt->bind_result($student_id, $password_hash, $is_verified);
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Incorrect password.";
         $stmt->close();
         $conn->close();
-        header("Location: ../public/login.php");
+        header("Location: ../login.php");
         exit();
     }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Your account is not verified. Please verify your account before logging in.";
         $stmt->close();
         $conn->close();
-        header("Location: ../public/login.php");
+        header("Location: ../login.php");
         exit();
     }
     $_SESSION['user_id'] = $student_id;
@@ -69,10 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         setcookie("remember_me", "", time() - 3600, "/");
     }
     $conn->close();
-    header("Location: ../public/dashboard.php");
+    header("Location: ../dashboard.php");
     exit();
 } else {
-    header("Location: ../public/login.php");
+    header("Location: ../login.php");
     exit();
 }
 ?>

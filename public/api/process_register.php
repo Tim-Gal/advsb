@@ -1,7 +1,7 @@
 <?php
 session_start();
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 require '../vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -19,26 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($major_id)) {
         $_SESSION['error'] = "All required fields must be filled out.";
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Invalid email format.";
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
     if (substr($email, -strlen($req_ext)) !== $req_ext) {
         $_SESSION['error'] = "Email must end with " . htmlspecialchars($req_ext);
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
     $stmt = $conn->prepare("SELECT username FROM students WHERE username = ? LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Username already taken. Please choose another.";
         $stmt->close();
         $conn->close();
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
     $stmt->close();
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_email = $conn->prepare("SELECT email FROM students WHERE email = ? LIMIT 1");
     if (!$stmt_email) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
     $stmt_email->bind_param("s", $email);
@@ -69,20 +69,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "An account with this email already exists.";
         $stmt_email->close();
         $conn->close();
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
     $stmt_email->close();
 
     if (strlen($password) < 8) {
         $_SESSION['error'] = "Password must be at least 8 characters long.";
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
     if ($password !== $confirm_password) {
         $_SESSION['error'] = "Passwords do not match.";
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($res_major->num_rows === 0) {
             $_SESSION['error'] = "Selected Major is invalid.";
             $stmt_major->close();
-            header("Location: ../public/register.php");
+            header("Location: ../register.php");
             exit();
         }
         $major_data = $res_major->fetch_assoc();
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt_major->close();
     } else {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($res_minor->num_rows === 0) {
                 $_SESSION['error'] = "Selected Minor is invalid.";
                 $stmt_minor->close();
-                header("Location: ../public/register.php");
+                header("Location: ../register.php");
                 exit();
             }
             $minor_data = $res_minor->fetch_assoc();
@@ -124,12 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if (strcasecmp($major_name, $minor_name) === 0) { // Case-insensitive comparison
                 $_SESSION['error'] = "Minor cannot be the same as Major.";
-                header("Location: ../public/register.php");
+                header("Location: ../register.php");
                 exit();
             }
         } else {
             $_SESSION['error'] = "Database error: " . $conn->error;
-            header("Location: ../public/register.php");
+            header("Location: ../register.php");
             exit();
         }
     }
@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         $_SESSION['error'] = "Failed to send verification email. Mailer Error: {$mail->ErrorInfo}";
         $conn->close();
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -188,10 +188,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $conn->close();
-    header("Location: ../public/register.php");
+    header("Location: ../register.php");
     exit();
 } else {
-    header("Location: ../public/register.php");
+    header("Location: ../register.php");
     exit();
 }
 ?>

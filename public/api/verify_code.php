@@ -3,21 +3,21 @@
 
 <?php
 session_start();
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $verification_code = sanitizeInput($_POST['verification_code']);
 
     if (empty($verification_code)) {
         $_SESSION['error'] = "Please enter the verification code.";
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
     if (!preg_match('/^\d{6}$/', $verification_code)) {
         $_SESSION['error'] = "Invalid verification code format. Please enter a 6-digit code.";
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare("SELECT student_id FROM students WHERE verification_code = ? AND is_verified = 0 LIMIT 1");
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Invalid or expired verification code.";
         $stmt->close();
         $conn->close();
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_update = $conn->prepare("UPDATE students SET is_verified = 1, verification_code = NULL WHERE student_id = ?");
     if (!$stmt_update) {
         $_SESSION['error'] = "Database error: " . $conn->error;
-        header("Location: ../public/register.php");
+        header("Location: ../register.php");
         exit();
     }
 
@@ -62,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_update->close();
     $conn->close();
 
-    header("Location: ../public/login.php");
+    header("Location: ../login.php");
     exit();
 } else {
-    header("Location: ../public/register.php");
+    header("Location: ../register.php");
     exit();
 }
 ?>

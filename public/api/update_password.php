@@ -2,21 +2,21 @@
 
 
 
-include '../includes/config.php';
-include '../includes/functions.php';
+include '../../includes/config.php';
+include '../../includes/functions.php';
 
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $_SESSION['fp_error'] = "Invalid request method.";
-    header("Location: ../public/reset_password.php");
+    header("Location: ../reset_password.php");
     exit();
 }
 
 
 if (!isset($_SESSION['reset_user_id'])) {
     $_SESSION['fp_error'] = "Unauthorized access. Please verify your reset code first.";
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
@@ -46,7 +46,7 @@ if (strlen($new_password) < 8) {
 
 if (!empty($errors)) {
     $_SESSION['fp_error'] = implode(' ', $errors);
-    header("Location: ../public/reset_password.php");
+    header("Location: ../reset_password.php");
     exit();
 }
 
@@ -55,7 +55,7 @@ if (!empty($errors)) {
 $stmt_fetch = $conn->prepare("SELECT password_hash FROM students WHERE student_id = ?");
 if (!$stmt_fetch) {
     $_SESSION['fp_error'] = "Database error: " . $conn->error;
-    header("Location: ../public/reset_password.php");
+    header("Location: ../reset_password.php");
     exit();
 }
 
@@ -67,7 +67,7 @@ if ($result_fetch->num_rows === 0) {
     $_SESSION['fp_error'] = "User not found.";
     $stmt_fetch->close();
     $conn->close();
-    header("Location: ../public/reset_password.php");
+    header("Location: ../reset_password.php");
     exit();
 }
 
@@ -80,7 +80,7 @@ $stmt_fetch->close();
 if (!empty($existing_ph) && password_verify($new_password, $existing_ph)) {
     $_SESSION['fp_error'] = "The new password cannot be the same as the current password.";
     $conn->close();
-    header("Location: ../public/reset_password.php");
+    header("Location: ../reset_password.php");
     exit();
 }
 
@@ -91,7 +91,7 @@ $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
 $stmt_update = $conn->prepare("UPDATE students SET password_hash = ?, password_reset_code = NULL, password_reset_expires = NULL WHERE student_id = ?");
 if (!$stmt_update) {
     $_SESSION['fp_error'] = "Database error: " . $conn->error;
-    header("Location: ../public/reset_password.php");
+    header("Location: ../reset_password.php");
     exit();
 }
 
@@ -106,6 +106,6 @@ if ($stmt_update->execute()) {
 $stmt_update->close();
 $conn->close();
 
-header("Location: ../public/login.php");
+header("Location: ../login.php");
 exit();
 ?>

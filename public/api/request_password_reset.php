@@ -1,8 +1,8 @@
 <?php
 session_start(); 
 
-include_once '../includes/config.php';
-include_once '../includes/functions.php';
+include_once '../../includes/config.php';
+include_once '../../includes/functions.php';
 
 require '../vendor/autoload.php';
 
@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\Exception;
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $_SESSION['fp_error'] = "Invalid request method.";
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
@@ -20,20 +20,20 @@ $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : '';
 
 if (empty($email)) {
     $_SESSION['fp_error'] = "Please enter your registered email.";
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['fp_error'] = "Please enter a valid email address.";
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
 $stmt = $conn->prepare("SELECT student_id, email FROM students WHERE email = ? LIMIT 1");
 if (!$stmt) {
     $_SESSION['fp_error'] = "Database error: " . $conn->error;
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
@@ -44,7 +44,7 @@ if ($result->num_rows === 0) {
     $_SESSION['fp_error'] = "No account found with that email.";
     $stmt->close();
     $conn->close();
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
@@ -60,7 +60,7 @@ $reset_expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
 $stmt_update = $conn->prepare("UPDATE students SET password_reset_code = ?, password_reset_expires = ? WHERE student_id = ?");
 if (!$stmt_update) {
     $_SESSION['fp_error'] = "Database error: " . $conn->error;
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 
@@ -69,7 +69,7 @@ if (!$stmt_update->execute()) {
     $_SESSION['fp_error'] = "Failed to set reset code. Please try again.";
     $stmt_update->close();
     $conn->close();
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 $stmt_update->close();
@@ -109,11 +109,11 @@ try {
 
     $_SESSION['reset_code_sent'] = true;
     $_SESSION['fp_success'] = "A password reset code has been sent to your email.";
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 } catch (Exception $e) {
     $_SESSION['fp_error'] = "Failed to send reset email. Mailer Error: {$mail->ErrorInfo}";
-    header("Location: ../public/forgot_password.php");
+    header("Location: ../forgot_password.php");
     exit();
 }
 ?>
