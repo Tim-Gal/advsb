@@ -78,7 +78,7 @@ if (isset($_POST['verify_code'])) {
         }
         ?>
 
-        <form action="../api/request_password_reset.php" method="POST" class="forgot-password-form mb-5">
+        <form action="/api/request_password_reset.php" method="POST" class="forgot-password-form mb-5">
             <div class="mb-3">
                 <label for="email" class="form-label">Registered Email <span class="text-danger">*</span></label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter your registered email" required>

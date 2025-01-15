@@ -51,7 +51,7 @@ $stmt->close();
             }
             ?>
 
-            <form action="../api/update_settings.php" method="POST" class="settings-form">
+            <form action="/api/update_settings.php" method="POST" class="settings-form">
                 <div class="mb-4">
                     <h4>Update Username</h4>
                     <div class="mb-3">

@@ -32,7 +32,7 @@ if (isset($_SESSION['user_id'])) {
     }
     ?>
 
-    <form action="../api/authenticate.php" method="POST" class="login-form mb-5">
+    <form action="/api/authenticate.php" method="POST" class="login-form mb-5">
         <div class="mb-3">
             <label for="identifier" class="form-label">Username or Email <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="identifier" name="identifier" placeholder="Enter your Username or Email" required>

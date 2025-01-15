@@ -34,7 +34,7 @@ include '../includes/header.php';
     ?>
 
     <?php if (!isset($_SESSION['reset_code_sent'])): ?>
-      <form action="../api/process_register.php" method="POST" class="register-form mb-5">
+      <form action="/api/process_register.php" method="POST" class="register-form mb-5">
         <div class="mb-3">
           <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
           <input type="text" class="form-control" id="username" name="username" placeholder="Create a unique username" required>
@@ -95,7 +95,7 @@ include '../includes/header.php';
   <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="../api/verify_code.php" method="POST" class="verify-form">
+        <form action="/api/verify_code.php" method="POST" class="verify-form">
           <div class="modal-header">
             <h5 class="modal-title" id="verificationModalLabel">Verify Your Account</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

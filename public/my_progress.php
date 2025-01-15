@@ -7,7 +7,7 @@ $pageCSS = [
 
 include '../includes/header.php';
 
-include '../api/my_progress_logic.php';
+include '/api/my_progress_logic.php';
 
 if (!empty($_SESSION['error_message'])) {
     echo "<div class='container my-5'><div class='caution caution-danger'>" . htmlspecialchars($_SESSION['error_message']) . "</div></div>";
@@ -64,7 +64,7 @@ if ($no_degrees_registered) {
                             echo '<div class="caution caution-success">' . htmlspecialchars($remove_course_success) . '</div>';
                         }
                     ?>
-                    <form action="../api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">
+                    <form action="/api/handle_progress.php" method="POST" class="add-course-form" autocomplete="off">
                         <div class="mb-3 position-relative">
                             <label for="course_code" class="form-label">Course Code <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="course_code" name="course_code" placeholder="e.g., COMP-101" required>
@@ -92,7 +92,7 @@ if ($no_degrees_registered) {
                                             echo htmlspecialchars($course['course_description'] ?? 'No description available.');
                                         ?>
                                     </div>
-                                    <form action="../api/handle_progress.php" method="POST" class="mb-0">
+                                    <form action="/api/handle_progress.php" method="POST" class="mb-0">
                                         <input type="hidden" name="remove_course_code" value="<?php echo htmlspecialchars($course['course_code']); ?>">
                                         <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                                     </form>
